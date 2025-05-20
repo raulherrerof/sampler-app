@@ -1,36 +1,35 @@
 import React, { useState } from 'react';
-import './LoginPage.css'; // Asegúrate que el CSS está en la misma carpeta
+import './LoginPage.css';
 
-// Si tuvieras el logo "Sampler" como una imagen SVG o PNG:
-// import samplerLogo from '../../assets/sampler-logo.png';
-
-// El componente LoginPage ahora acepta 'onLoginSuccess' como una prop
-function LoginPage({ onLoginSuccess }) {
+function LoginPage({ onLoginSuccess, onNavigateToRegister }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  console.log("[LoginPage.jsx] Renderizando. Props recibidas:", { onLoginSuccess, onNavigateToRegister });
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    
-    // Aquí iría la lógica para manejar el inicio de sesión con un backend
-    console.log('Intento de login con:');
-    console.log('Usuario:', username);
-    console.log('Contraseña:', password);
+    console.log("[LoginPage.jsx] handleSubmit. Usuario:", username, "Contraseña:", password);
 
-    if (onLoginSuccess) {
-      onLoginSuccess();
-}
-    // --- Simulación de un login exitoso ---
-    // En una aplicación real, validarías contra un servidor.
-    // Por ahora, consideraremos el login exitoso si ambos campos tienen algo.
     if (username.trim() !== '' && password.trim() !== '') {
-      // Si la función onLoginSuccess fue pasada como prop, llámala.
-      if (onLoginSuccess) {
-        onLoginSuccess(); // Esto le dirá a App.jsx que cambie la vista
+      if (typeof onLoginSuccess === 'function') {
+        console.log("[LoginPage.jsx] Llamando a onLoginSuccess...");
+        onLoginSuccess();
+      } else {
+        console.error("[LoginPage.jsx] onLoginSuccess NO es una función o no está definida:", onLoginSuccess);
       }
     } else {
-      // Podrías manejar el error de una forma más elegante (ej. mostrando un mensaje)
       alert('Por favor, ingresa tu usuario y contraseña.');
+    }
+  };
+
+  const handleNavigateToRegisterClick = () => {
+    console.log("[LoginPage.jsx] Botón 'Regístrate' clickeado.");
+    if (typeof onNavigateToRegister === 'function') {
+      console.log("[LoginPage.jsx] Llamando a onNavigateToRegister...");
+      onNavigateToRegister();
+    } else {
+      console.error("[LoginPage.jsx] onNavigateToRegister NO es una función o no está definida:", onNavigateToRegister);
     }
   };
 
@@ -38,13 +37,7 @@ function LoginPage({ onLoginSuccess }) {
     <div className="login-page">
       <header className="login-header">
         <div className="logo-container">
-          {/* Opción 1: Texto estilizado */}
-          <span className="logo-text">
-            Sampler
-          </span>
-          {/* Opción 2: Si tienes una imagen para el logo
-          <img src={samplerLogo} alt="Sampler Logo" className="logo-image" />
-          */}
+          <span className="logo-text">Sampler</span>
         </div>
         <h1 className="welcome-message">Bienvenido a Sampler</h1>
       </header>
@@ -54,10 +47,10 @@ function LoginPage({ onLoginSuccess }) {
           <h2 className="form-title">Iniciar sesión</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="username">Usuario</label>
+              <label htmlFor="username-login">Usuario</label>
               <input
                 type="text"
-                id="username"
+                id="username-login"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -65,10 +58,10 @@ function LoginPage({ onLoginSuccess }) {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="password">Contraseña</label>
+              <label htmlFor="password-login">Contraseña</label>
               <input
                 type="password"
-                id="password"
+                id="password-login"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -80,7 +73,14 @@ function LoginPage({ onLoginSuccess }) {
             </button>
           </form>
           <p className="signup-link">
-            ¿Aún no tienes cuenta? <a href="/register">Regístrate</a> {/* Cambia href si usas React Router */}
+            ¿Aún no tienes cuenta?{' '}
+            <button 
+              type="button" 
+              onClick={handleNavigateToRegisterClick} // Usamos la nueva función wrapper
+              className="link-button"
+            >
+              Regístrate
+            </button>
           </p>
         </div>
       </main>

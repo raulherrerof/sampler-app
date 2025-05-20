@@ -1,25 +1,12 @@
-/* Fuentes (ejemplo con Google Fonts para las fuentes script)
-   Para usar una fuente como "Pacifico" o "Dancing Script":
-   En tu public/index.html añade:
-   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Pacifico&display=swap" rel="stylesheet">
-   Luego puedes usarlas en font-family.
-*/
-
-body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background-color: #000000; /* Fondo negro general */
-  color: #ffffff; /* Texto blanco por defecto */
-}
+/* Estilos para la página LoginPage */
 
 .login-page {
   display: flex;
   flex-direction: column;
   min-height: 100vh; /* Asegura que ocupa al menos toda la altura de la pantalla */
   box-sizing: border-box;
+  background-color: #000000; /* Fondo negro general si no lo hereda de body */
+  color: #ffffff; /* Texto blanco por defecto */
 }
 
 .login-header {
@@ -32,22 +19,13 @@ body, html {
   box-sizing: border-box;
 }
 
-.logo-container .logo-text {
+.login-header .logo-container .logo-text {
   font-family: 'Pacifico', cursive; /* Ejemplo de fuente script, necesitas importarla */
-  /* Si no tienes Pacifico, puedes usar 'Brush Script MT', cursive o similar */
   font-size: 2.8em; /* Ajusta el tamaño según la imagen */
   color: #ffffff;
-  /* Las palmeras son difíciles de replicar solo con texto y CSS.
-     Lo ideal sería que fueran parte de un SVG o una imagen.
-     Para un intento muy básico con pseudoelementos o caracteres: 🌴 */
 }
-/* Si usas una imagen para el logo:
-.logo-container .logo-image {
-  height: 50px;
-}
-*/
 
-.welcome-message {
+.login-header .welcome-message {
   font-family: 'Dancing Script', cursive; /* Ejemplo de fuente script, necesitas importarla */
   font-size: 2em; /* Ajusta el tamaño */
   color: #ffffff;
@@ -73,7 +51,7 @@ body, html {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.form-title {
+.login-form-container .form-title {
   text-align: center;
   font-size: 1.8em;
   font-weight: bold;
@@ -82,19 +60,19 @@ body, html {
   color: #ffffff;
 }
 
-.form-group {
+.login-form-container .form-group {
   margin-bottom: 20px;
 }
 
-.form-group label {
+.login-form-container .form-group label {
   display: block;
   font-size: 0.9em;
   margin-bottom: 8px;
   color: #e0e0e0; /* Un gris un poco más claro para las etiquetas */
 }
 
-.form-group input[type="text"],
-.form-group input[type="password"] {
+.login-form-container .form-group input[type="text"],
+.login-form-container .form-group input[type="password"] {
   width: 100%;
   padding: 12px 15px;
   background-color: #ffffff;
@@ -105,12 +83,12 @@ body, html {
   color: #333333; /* Color del texto dentro del input */
 }
 
-.form-group input[type="text"]:focus,
-.form-group input[type="password"]:focus {
+.login-form-container .form-group input[type="text"]:focus,
+.login-form-container .form-group input[type="password"]:focus {
   outline: 2px solid #6200ea; /* O el color de acento que prefieras para el foco */
 }
 
-.submit-button {
+.login-form-container .submit-button {
   width: auto; /* Para que se ajuste al texto */
   padding: 12px 30px;
   background-color: #e0e0e0; /* Gris claro del botón */
@@ -126,23 +104,31 @@ body, html {
   transition: background-color 0.2s ease;
 }
 
-.submit-button:hover {
+.login-form-container .submit-button:hover {
   background-color: #c7c7c7; /* Un poco más oscuro al pasar el ratón */
 }
 
-.signup-link {
+.login-form-container .signup-link { /* Estilos para el párrafo que contiene el enlace/botón de registro */
   text-align: center;
   margin-top: 25px;
   font-size: 0.9em;
-  color: #b0b0b0; /* Color del texto del link */
+  color: #b0b0b0; /* Color del texto "¿Aún no tienes cuenta?" */
 }
 
-.signup-link a {
-  color: #ffffff; /* "Regístrate" en blanco */
+.login-form-container .signup-link .link-button { /* Estilos para el botón "Regístrate" */
+  background: none;
+  border: none;
+  color: #ffffff; /* Color del texto "Regístrate" (blanco) */
   text-decoration: underline;
   font-weight: bold;
+  cursor: pointer;
+  padding: 0; /* Quita padding por defecto de los botones */
+  font-size: inherit; /* Hereda el tamaño de fuente del párrafo .signup-link */
+  font-family: inherit; /* Hereda la fuente del párrafo .signup-link */
+  vertical-align: baseline; /* Ayuda a alinear con el texto circundante si es necesario */
 }
 
-.signup-link a:hover {
-  text-decoration: none;
+.login-form-container .signup-link .link-button:hover {
+  text-decoration: none; /* Quita el subrayado al pasar el ratón, como un enlace típico */
+  /* Puedes añadir otro efecto si quieres, ej: color: #dddddd; */
 }

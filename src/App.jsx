@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Añadido useEffect para un log más detallado del cambio de currentPage
 import './App.css';
 
-// Tus componentes originales
-import Header from './components/Header'; // Asumimos que aquí estará el botón de login
+import Header from './components/Header';
 import CategoryCard from './components/CategoryCard';
 import SongPlayer from './components/SongPlayer';
-
-// El componente de Login
-import LoginPage from './components/LoginPage'; // Asegúrate que esta ruta es correcta
+import LoginPage from './components/LoginPage';
+import RegisterPage from './components/RegisterPage';
 
 // Tus datos originales
 const categoriesData = [
@@ -32,14 +30,17 @@ const songsData = [
 ];
 
 function App() {
-  // Estado para controlar si se muestra la página de login o la app principal
-  // Inicialmente, NO mostramos la página de login (false)
-  const [showLoginPage, setShowLoginPage] = useState(false);
-  // Estado para simular si el usuario está logueado o no (podrías expandir esto)
+  const [currentPage, setCurrentPage] = useState('main');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  // Log para ver el estado actual en cada renderización
+  console.log("[App.js] Renderizando. currentPage:", currentPage, "isLoggedIn:", isLoggedIn);
 
-  // Lógica para tu aplicación principal
+  // Log para ver cuándo currentPage cambia efectivamente
+  useEffect(() => {
+    console.log("[App.js] useEffect: currentPage ha cambiado a:", currentPage);
+  }, [currentPage]);
+
   const gridCategoriesInOrder = [
     "Tendencias", "Top en España", "Del momento", "Recomendadas",
     "Artistas del momento", "Para ti",
@@ -48,36 +49,58 @@ function App() {
     .map(title => categoriesData.find(c => c.title === title))
     .filter(Boolean);
 
-
-  // Función para MOSTRAR la página de login
-  const handleShowLogin = () => {
-    setShowLoginPage(true);
+  const navigateToLogin = () => {
+    console.log("[App.js] navigateToLogin llamada. Estableciendo currentPage a 'login'");
+    setCurrentPage('login');
   };
 
-  // Función para cuando el login es exitoso (llamada desde LoginPage)
+  const navigateToRegister = () => {
+    console.log("[App.js] navigateToRegister llamada. Estableciendo currentPage a 'register'");
+    setCurrentPage('register');
+  };
+
   const handleLoginSuccess = () => {
-    setIsLoggedIn(true);    // Marcar como logueado
-    setShowLoginPage(false); // Ocultar la página de login
+    console.log("[App.js] handleLoginSuccess llamada.");
+    setIsLoggedIn(true);
+    setCurrentPage('main');
   };
 
-  // Función para hacer logout (la podrías llamar desde el Header si está logueado)
+  const handleRegisterSuccess = (userData) => {
+    console.log("[App.js] handleRegisterSuccess llamada con datos:", userData);
+    alert('¡Registro exitoso! Por favor, inicia sesión.');
+    setCurrentPage('login');
+  };
+
   const handleLogout = () => {
+    console.log("[App.js] handleLogout llamada.");
     setIsLoggedIn(false);
-    // Opcional: podrías redirigir a la home o mostrar de nuevo el botón de login
+    setCurrentPage('main');
   };
 
+  console.log("[App.js] Evaluando qué página mostrar. currentPage es:", currentPage);
 
-  // Si showLoginPage es true, muestra el componente LoginPage
-  if (showLoginPage) {
-    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+  if (currentPage === 'login') {
+    console.log("[App.js] Mostrando LoginPage.");
+    return <LoginPage 
+              onLoginSuccess={handleLoginSuccess} 
+              onNavigateToRegister={navigateToRegister} 
+           />;
   }
 
-  // Si no, muestra tu aplicación principal
-  // Pasamos 'handleShowLogin', 'isLoggedIn' y 'handleLogout' al Header
+  if (currentPage === 'register') {
+    console.log("[App.js] Mostrando RegisterPage.");
+    return <RegisterPage 
+              onRegisterSuccess={handleRegisterSuccess} 
+              onNavigateToLogin={navigateToLogin} 
+           />;
+  }
+
+  // Si no es 'login' ni 'register', es 'main'
+  console.log("[App.js] Mostrando la aplicación principal (main).");
   return (
     <div className="app-container">
       <Header 
-        onLoginClick={handleShowLogin} 
+        onLoginClick={navigateToLogin}
         isLoggedIn={isLoggedIn}
         onLogoutClick={handleLogout}
       />
