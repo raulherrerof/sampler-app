@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; // Añadido useEffect para un log más detallado del cambio de currentPage
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 import Header from './components/Header';
@@ -6,6 +6,7 @@ import CategoryCard from './components/CategoryCard';
 import SongPlayer from './components/SongPlayer';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
+import UploadPage from './components/UploadPage'; // Importar UploadPage
 
 // Tus datos originales
 const categoriesData = [
@@ -30,13 +31,11 @@ const songsData = [
 ];
 
 function App() {
+  // Estado para controlar qué página se muestra: 'main', 'login', 'register', 'upload'
   const [currentPage, setCurrentPage] = useState('main');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Log para ver el estado actual en cada renderización
   console.log("[App.js] Renderizando. currentPage:", currentPage, "isLoggedIn:", isLoggedIn);
-
-  // Log para ver cuándo currentPage cambia efectivamente
   useEffect(() => {
     console.log("[App.js] useEffect: currentPage ha cambiado a:", currentPage);
   }, [currentPage]);
@@ -50,82 +49,84 @@ function App() {
     .filter(Boolean);
 
   const navigateToLogin = () => {
-    console.log("[App.js] navigateToLogin llamada. Estableciendo currentPage a 'login'");
+    console.log("[App.js] navigateToLogin llamada.");
     setCurrentPage('login');
   };
-
   const navigateToRegister = () => {
-    console.log("[App.js] navigateToRegister llamada. Estableciendo currentPage a 'register'");
+    console.log("[App.js] navigateToRegister llamada.");
     setCurrentPage('register');
   };
+  const navigateToUpload = () => { // Nueva función de navegación
+    console.log("[App.js] navigateToUpload llamada.");
+    // Podrías verificar si está logueado antes de permitir la subida
+    if (isLoggedIn) {
+      setCurrentPage('upload');
+    } else {
+      setCurrentPage('login'); // Opcional: redirigir al login
+    }
+  };
+  const navigateToMain = () => { // Para volver a la app principal desde UploadPage
+    console.log("[App.js] navigateToMain llamada.");
+    setCurrentPage('main');
+  };
+
 
   const handleLoginSuccess = () => {
     console.log("[App.js] handleLoginSuccess llamada.");
     setIsLoggedIn(true);
     setCurrentPage('main');
   };
-
   const handleRegisterSuccess = (userData) => {
     console.log("[App.js] handleRegisterSuccess llamada con datos:", userData);
     alert('¡Registro exitoso! Por favor, inicia sesión.');
     setCurrentPage('login');
   };
-
   const handleLogout = () => {
     console.log("[App.js] handleLogout llamada.");
     setIsLoggedIn(false);
     setCurrentPage('main');
   };
+  const handleUploadSuccess = (uploadData) => { // Nueva función
+    console.log("[App.js] handleUploadSuccess llamada con datos:", uploadData);
+    alert(`¡"${uploadData.title}" subido con éxito (simulación)!`);
+    setCurrentPage('main'); // Volver a la app principal después de subir
+  };
+
 
   console.log("[App.js] Evaluando qué página mostrar. currentPage es:", currentPage);
 
   if (currentPage === 'login') {
     console.log("[App.js] Mostrando LoginPage.");
-    return <LoginPage 
-              onLoginSuccess={handleLoginSuccess} 
-              onNavigateToRegister={navigateToRegister} 
-           />;
+    return <LoginPage onLoginSuccess={handleLoginSuccess} onNavigateToRegister={navigateToRegister} />;
   }
-
   if (currentPage === 'register') {
     console.log("[App.js] Mostrando RegisterPage.");
-    return <RegisterPage 
-              onRegisterSuccess={handleRegisterSuccess} 
-              onNavigateToLogin={navigateToLogin} 
-           />;
+    return <RegisterPage onRegisterSuccess={handleRegisterSuccess} onNavigateToLogin={navigateToLogin} />;
+  }
+  if (currentPage === 'upload') { // Nuevo bloque condicional
+    console.log("[App.js] Mostrando UploadPage.");
+    return <UploadPage onUploadSuccess={handleUploadSuccess} onNavigateToMain={navigateToMain} />;
   }
 
-  // Si no es 'login' ni 'register', es 'main'
+  // Default: 'main'
   console.log("[App.js] Mostrando la aplicación principal (main).");
   return (
     <div className="app-container">
       <Header 
         onLoginClick={navigateToLogin}
+        onUploadClick={navigateToUpload} // Pasar la nueva función al Header
         isLoggedIn={isLoggedIn}
         onLogoutClick={handleLogout}
       />
       <h2 className="welcome-title">Bienvenido a <span className="highlight">Sampler</span></h2>
-
       <div className="categories-grid">
         {gridCategoriesInOrder.map(category => (
-          <CategoryCard
-            key={category.id}
-            title={category.title}
-            imageUrl={category.imageUrl}
-            size={category.size}
-          />
+          <CategoryCard key={category.id} title={category.title} imageUrl={category.imageUrl} size={category.size} />
         ))}
       </div>
-
       <div className="song-list">
         {songsData.map(song => (
-          <SongPlayer
-            key={song.id}
-            albumArt={song.albumArt}
-            title={song.title}
-            artist={song.artist}
-            duration={song.duration}
-          />
+          <SongPlayer key={song.id} albumArt={song.albumArt} title={song.title} artist={song.artist} duration={song.duration} />
         ))}
       </div>
     </div>

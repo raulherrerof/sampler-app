@@ -1,0 +1,147 @@
+/* Estilos para UploadPage */
+.upload-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.upload-page-header { /* Nombre de clase específico para evitar colisiones */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  border-bottom: 1px solid #ffffff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.upload-page-header .logo-container .logo-text {
+  font-family: 'Pacifico', cursive;
+  font-size: 2.8em;
+  color: #ffffff;
+}
+
+.upload-page-header .welcome-message {
+  font-family: 'Dancing Script', cursive;
+  font-size: 2em;
+  color: #ffffff;
+  margin: 0;
+  font-weight: normal;
+}
+
+.upload-page-main {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Alinea al inicio para que el form no esté centrado verticalmente si es largo */
+  padding: 40px 20px;
+  box-sizing: border-box;
+  overflow-y: auto; /* Permite scroll si el contenido es muy largo */
+}
+
+.upload-form-container {
+  background-color: #1c1c1c;
+  padding: 30px 40px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 600px; /* Un poco más ancho para este formulario */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.upload-form-container .form-title {
+  text-align: center;
+  font-size: 1.8em;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 30px;
+  color: #ffffff;
+}
+
+.upload-form-container .form-group {
+  margin-bottom: 20px;
+}
+
+.upload-form-container .form-group label {
+  display: block;
+  font-size: 0.9em;
+  margin-bottom: 8px;
+  color: #e0e0e0;
+}
+
+.upload-form-container .form-group input[type="text"] {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 1em;
+  color: #333333;
+}
+
+.upload-form-container .form-group input:focus {
+  outline: 2px solid #6200ea; /* O tu color de acento */
+}
+
+.upload-form-container .form-separator {
+  border: none;
+  border-top: 1px solid #444444; /* Color de la línea separadora */
+  margin: 30px 0;
+}
+
+.upload-form-container .file-input-group {
+  margin-bottom: 25px;
+  padding: 15px;
+  border: 1px dashed #555555; /* Borde punteado para la zona de subida */
+  border-radius: 5px;
+  text-align: center; /* Centra el label dentro del grupo */
+}
+
+.upload-form-container .file-input-label {
+  display: inline-block; /* Para que el padding y el centrado funcionen bien */
+  padding: 10px 15px;
+  font-size: 1em;
+  color: #e0e0e0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.upload-form-container .file-input-label:hover {
+  /* background-color: #333; Opcional: cambio de color al pasar el ratón */
+  color: #ffffff;
+}
+
+.upload-form-container .file-name-display {
+  display: block;
+  margin-top: 10px;
+  font-size: 0.85em;
+  color: #a0a0a0;
+}
+
+.upload-form-container .submit-button.upload-submit-button { /* Clase específica para el botón de este form */
+  width: auto;
+  padding: 12px 40px; /* Un poco más de padding */
+  background-color: #e0e0e0;
+  color: #000000;
+  border: none;
+  border-radius: 25px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  display: block;
+  margin: 40px auto 10px auto; /* Ajuste de márgenes */
+  text-transform: uppercase;
+  transition: background-color 0.2s ease;
+}
+
+.upload-form-container .submit-button.upload-submit-button:hover {
+  background-color: #c7c7c7;
+}
+
+/* Ocultar el input de archivo por defecto, ya que usamos un label estilizado */
+/* input[type="file"] { */
+  /* No es necesario aquí porque se hace inline style={{ display: 'none' }} en el JSX */
+/* } */
