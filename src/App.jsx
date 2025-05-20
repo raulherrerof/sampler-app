@@ -1,10 +1,15 @@
-// src/App.js
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
-import Header from './components/Header';
+
+// Tus componentes originales
+import Header from './components/Header'; // Asumimos que aquí estará el botón de login
 import CategoryCard from './components/CategoryCard';
 import SongPlayer from './components/SongPlayer';
 
+// El componente de Login
+import LoginPage from './components/LoginPage'; // Asegúrate que esta ruta es correcta
+
+// Tus datos originales
 const categoriesData = [
   { id: 1, title: "Tendencias", imageUrl: "/Imagenes/tupac.jpg" },
   { id: 2, title: "Top en España", imageUrl: "https://via.placeholder.com/300x300/5cb85c/fff?text=Artist+Green", size: "" },
@@ -27,17 +32,55 @@ const songsData = [
 ];
 
 function App() {
+  // Estado para controlar si se muestra la página de login o la app principal
+  // Inicialmente, NO mostramos la página de login (false)
+  const [showLoginPage, setShowLoginPage] = useState(false);
+  // Estado para simular si el usuario está logueado o no (podrías expandir esto)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+
+  // Lógica para tu aplicación principal
   const gridCategoriesInOrder = [
     "Tendencias", "Top en España", "Del momento", "Recomendadas",
     "Artistas del momento", "Para ti",
     "Álbum del momento", "Géneros", "Nuevos", "Random", "Podcasts"
   ]
     .map(title => categoriesData.find(c => c.title === title))
-    .filter(Boolean); // Elimina cualquier undefined
+    .filter(Boolean);
 
+
+  // Función para MOSTRAR la página de login
+  const handleShowLogin = () => {
+    setShowLoginPage(true);
+  };
+
+  // Función para cuando el login es exitoso (llamada desde LoginPage)
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);    // Marcar como logueado
+    setShowLoginPage(false); // Ocultar la página de login
+  };
+
+  // Función para hacer logout (la podrías llamar desde el Header si está logueado)
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    // Opcional: podrías redirigir a la home o mostrar de nuevo el botón de login
+  };
+
+
+  // Si showLoginPage es true, muestra el componente LoginPage
+  if (showLoginPage) {
+    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  // Si no, muestra tu aplicación principal
+  // Pasamos 'handleShowLogin', 'isLoggedIn' y 'handleLogout' al Header
   return (
     <div className="app-container">
-      <Header />
+      <Header 
+        onLoginClick={handleShowLogin} 
+        isLoggedIn={isLoggedIn}
+        onLogoutClick={handleLogout}
+      />
       <h2 className="welcome-title">Bienvenido a <span className="highlight">Sampler</span></h2>
 
       <div className="categories-grid">
