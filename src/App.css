@@ -38,7 +38,7 @@ body {
     display: flex; /* Para alinear las palmeras si las añades como texto */
     align-items: center;
   }
-
+  
   .logo-image{
     width: 150px; /* Ajusta el tamaño de la imagen del logo */
     height: auto; /* Mantener la proporción */

@@ -33,8 +33,11 @@ function LoginPage({ onLoginSuccess, onNavigateToRegister }) {
     }
   };
 
+<<<<<<< HEAD
   
 
+=======
+>>>>>>> 115794a86b73a0785276311f80549897c8da1927
   return (
     <div className="login-page">
       <header className="login-header">
