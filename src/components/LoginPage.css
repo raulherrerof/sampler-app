@@ -1,0 +1,134 @@
+/* Estilos para la página LoginPage */
+
+.login-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Asegura que ocupa al menos toda la altura de la pantalla */
+  box-sizing: border-box;
+  background-color: #000000; /* Fondo negro general si no lo hereda de body */
+  color: #ffffff; /* Texto blanco por defecto */
+}
+
+.login-header {
+  display: flex;
+  justify-content: space-between; /* O ajusta según prefieras */
+  align-items: center;
+  padding: 20px 40px;
+  border-bottom: 1px solid #ffffff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.login-header .logo-container .logo-text {
+  font-family: 'Pacifico', cursive; /* Ejemplo de fuente script, necesitas importarla */
+  font-size: 2.8em; /* Ajusta el tamaño según la imagen */
+  color: #ffffff;
+}
+
+.login-header .welcome-message {
+  font-family: 'Dancing Script', cursive; /* Ejemplo de fuente script, necesitas importarla */
+  font-size: 2em; /* Ajusta el tamaño */
+  color: #ffffff;
+  margin: 0;
+  font-weight: normal; /* Las fuentes script suelen tener su propio peso */
+}
+
+.login-main {
+  flex-grow: 1; /* Hace que el main ocupe el espacio restante */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px; /* Espacio alrededor del formulario */
+  box-sizing: border-box;
+}
+
+.login-form-container {
+  background-color: #1c1c1c; /* Gris oscuro para el contenedor del formulario */
+  padding: 30px 40px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 450px; /* Ancho máximo del formulario */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.login-form-container .form-title {
+  text-align: center;
+  font-size: 1.8em;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 30px;
+  color: #ffffff;
+}
+
+.login-form-container .form-group {
+  margin-bottom: 20px;
+}
+
+.login-form-container .form-group label {
+  display: block;
+  font-size: 0.9em;
+  margin-bottom: 8px;
+  color: #e0e0e0; /* Un gris un poco más claro para las etiquetas */
+}
+
+.login-form-container .form-group input[type="text"],
+.login-form-container .form-group input[type="password"] {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: #ffffff;
+  border: none; /* Sin borde visible como en la imagen */
+  border-radius: 5px; /* Bordes ligeramente redondeados */
+  box-sizing: border-box;
+  font-size: 1em;
+  color: #333333; /* Color del texto dentro del input */
+}
+
+.login-form-container .form-group input[type="text"]:focus,
+.login-form-container .form-group input[type="password"]:focus {
+  outline: 2px solid #6200ea; /* O el color de acento que prefieras para el foco */
+}
+
+.login-form-container .submit-button {
+  width: auto; /* Para que se ajuste al texto */
+  padding: 12px 30px;
+  background-color: #e0e0e0; /* Gris claro del botón */
+  color: #000000; /* Texto negro del botón */
+  border: none;
+  border-radius: 25px; /* Botón bien redondeado */
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  display: block; /* Para poder centrarlo con margin auto */
+  margin: 30px auto 0 auto; /* Centrar el botón y añadir margen superior */
+  text-transform: uppercase;
+  transition: background-color 0.2s ease;
+}
+
+.login-form-container .submit-button:hover {
+  background-color: #c7c7c7; /* Un poco más oscuro al pasar el ratón */
+}
+
+.login-form-container .signup-link { /* Estilos para el párrafo que contiene el enlace/botón de registro */
+  text-align: center;
+  margin-top: 25px;
+  font-size: 0.9em;
+  color: #b0b0b0; /* Color del texto "¿Aún no tienes cuenta?" */
+}
+
+.login-form-container .signup-link .link-button { /* Estilos para el botón "Regístrate" */
+  background: none;
+  border: none;
+  color: #ffffff; /* Color del texto "Regístrate" (blanco) */
+  text-decoration: underline;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0; /* Quita padding por defecto de los botones */
+  font-size: inherit; /* Hereda el tamaño de fuente del párrafo .signup-link */
+  font-family: inherit; /* Hereda la fuente del párrafo .signup-link */
+  vertical-align: baseline; /* Ayuda a alinear con el texto circundante si es necesario */
+}
+
+.login-form-container .signup-link .link-button:hover {
+  text-decoration: none; /* Quita el subrayado al pasar el ratón, como un enlace típico */
+  /* Puedes añadir otro efecto si quieres, ej: color: #dddddd; */
+}

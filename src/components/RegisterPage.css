@@ -1,0 +1,135 @@
+/* Estilos para RegisterPage - puedes basarte en LoginPage.css */
+
+/* Si los estilos son idénticos a LoginPage, podrías considerar un archivo CSS común
+   para formularios de autenticación, ej. AuthForm.css, e importarlo en ambos.
+   Por ahora, duplicamos y adaptamos para claridad. */
+
+.register-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+  background-color: #000000; /* Fondo negro general si no lo hereda de body */
+  color: #ffffff;
+}
+
+.register-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  border-bottom: 1px solid #ffffff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.register-header .logo-container .logo-text {
+  font-family: 'Pacifico', cursive; /* O la fuente que uses */
+  font-size: 2.8em;
+  color: #ffffff;
+}
+
+.register-header .welcome-message {
+  font-family: 'Dancing Script', cursive; /* O la fuente que uses */
+  font-size: 2em;
+  color: #ffffff;
+  margin: 0;
+  font-weight: normal;
+}
+
+.register-main {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.register-form-container {
+  background-color: #1c1c1c;
+  padding: 30px 40px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 450px; /* Ajusta según necesites */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.register-form-container .form-title {
+  text-align: center;
+  font-size: 1.8em;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 30px;
+  color: #ffffff;
+}
+
+.register-form-container .form-group {
+  margin-bottom: 20px;
+}
+
+.register-form-container .form-group label {
+  display: block;
+  font-size: 0.9em;
+  margin-bottom: 8px;
+  color: #e0e0e0;
+}
+
+.register-form-container .form-group input[type="text"],
+.register-form-container .form-group input[type="email"],
+.register-form-container .form-group input[type="password"] {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 1em;
+  color: #333333;
+}
+
+.register-form-container .form-group input:focus {
+  outline: 2px solid #6200ea; /* O tu color de acento */
+}
+
+.register-form-container .submit-button {
+  width: auto;
+  padding: 12px 30px;
+  background-color: #e0e0e0;
+  color: #000000;
+  border: none;
+  border-radius: 25px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  display: block;
+  margin: 30px auto 0 auto;
+  text-transform: uppercase;
+  transition: background-color 0.2s ease;
+}
+
+.register-form-container .submit-button:hover {
+  background-color: #c7c7c7;
+}
+
+.register-form-container .login-link-footer { /* Clase para el link de abajo */
+  text-align: center;
+  margin-top: 25px;
+  font-size: 0.9em;
+  color: #b0b0b0;
+}
+
+.register-form-container .login-link-footer .link-button { /* Estilo para el botón-enlace */
+  background: none;
+  border: none;
+  color: #ffffff;
+  text-decoration: underline;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit; /* Hereda el tamaño de fuente del párrafo */
+}
+
+.register-form-container .login-link-footer .link-button:hover {
+  text-decoration: none;
+}
