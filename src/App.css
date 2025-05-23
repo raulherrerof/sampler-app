@@ -31,7 +31,7 @@ body {
     font-size: 2.8em; /* Tamaño grande para el logo */
     font-weight: bold;
     /* Efecto de gradiente para el texto del logo */
-    background: linear-gradient(to right, #ff00ff, #8a2be2); /* Magenta a Púrpura */
+    background: linear-gradient(to right, #ff00ff, #8a2be2); 
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
