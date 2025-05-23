@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
+import './App.css'; // Contiene los estilos del Header y globales
 
-import Header from './components/Header';
-import CategoryCard from './components/CategoryCard';
-import SongPlayer from './components/SongPlayer';
+import Header from './components/Header'; // Asegúrate que la ruta es correcta para Header.js
+import CategoryCard from './components/CategoryCard'; // Asume que está en src/components/CategoryCard.jsx
+import SongPlayer from './components/SongPlayer';   // Asume que está en src/components/SongPlayer.jsx
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import UploadPage from './components/UploadPage';
+import ProfilePage from './components/ProfilePage';
 
 import card1 from './Imagenes/1.jpg'; 
 import card2 from './Imagenes/2.png';
@@ -19,7 +20,6 @@ import card8 from './Imagenes/8.png';
 import card9 from './Imagenes/9.png';
 import card10 from './Imagenes/10.png';
 import card11 from './Imagenes/11.png';
-import card12 from './Imagenes/12.png';
 
 const categoriesData = [
   { id: 1, title: "Tendencias", imageUrl: card1, size: "" },
@@ -42,15 +42,21 @@ const songsData = [
   { id: 4, albumArt: card7, title: "Canción", artist: "Nombre del artista", duration: "4:20" },
 ];
 
+const initialUserProfileData = {
+  username: 'sampler_user',
+  email: 'user@sampler.com',
+  name: 'Sampler',
+  lastName: 'Fan',
+  dob: '2000-01-01',
+  gender: 'other',
+  aboutMe: 'Me encanta descubrir nueva música en Sampler.',
+  profilePicUrl: null
+};
+
 function App() {
-  // Estado para controlar qué página se muestra: 'main', 'login', 'register', 'upload'
   const [currentPage, setCurrentPage] = useState('main');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  console.log("[App.jsx] Renderizando. currentPage:", currentPage, "isLoggedIn:", isLoggedIn);
-  useEffect(() => {
-    console.log("[App.jsx] useEffect: currentPage ha cambiado a:", currentPage);
-  }, [currentPage]);
+  const [currentUser, setCurrentUser] = useState(null);
 
   const gridCategoriesInOrder = [
     "Tendencias", "Top en España", "Del momento", "Recomendadas",
@@ -60,73 +66,66 @@ function App() {
     .map(title => categoriesData.find(c => c.title === title))
     .filter(Boolean);
 
-  const navigateToLogin = () => {
-    console.log("[App.jsx] navigateToLogin llamada.");
-    setCurrentPage('login');
+  const navigateToLogin = () => setCurrentPage('login');
+  const navigateToRegister = () => setCurrentPage('register');
+  const navigateToUpload = () => {
+    if (isLoggedIn) setCurrentPage('upload');
+    else setCurrentPage('login');
   };
-  const navigateToRegister = () => {
-    console.log("[App.jsx] navigateToRegister llamada.");
-    setCurrentPage('register');
+  const navigateToProfile = () => {
+    if (isLoggedIn) setCurrentPage('profile');
+    else setCurrentPage('login');
   };
-  const navigateToUpload = () => { // Nueva función de navegación
-    console.log("[App.jsx] navigateToUpload llamada.");
-    // Podrías verificar si está logueado antes de permitir la subida
-    if (isLoggedIn) {
-      setCurrentPage('upload');
-    } else {
-      setCurrentPage('login'); // Opcional: redirigir al login
-    }
-  };
-  const navigateToMain = () => { // Para volver a la app principal desde UploadPage
-    console.log("[App.jsx] navigateToMain llamada.");
-    setCurrentPage('main');
-  };
-
+  const navigateToMain = () => setCurrentPage('main');
 
   const handleLoginSuccess = () => {
-    console.log("[App.jsx] handleLoginSuccess llamada.");
     setIsLoggedIn(true);
+    setCurrentUser(initialUserProfileData);
     setCurrentPage('main');
   };
   const handleRegisterSuccess = (userData) => {
-    console.log("[App.jsx] handleRegisterSuccess llamada con datos:", userData);
     alert('¡Registro exitoso! Por favor, inicia sesión.');
     setCurrentPage('login');
   };
   const handleLogout = () => {
-    console.log("[App.jsx] handleLogout llamada.");
     setIsLoggedIn(false);
+    setCurrentUser(null);
     setCurrentPage('main');
   };
-  const handleUploadSuccess = (uploadData) => { // Nueva función
-    console.log("[App.jsx] handleUploadSuccess llamada con datos:", uploadData);
+  const handleUploadSuccess = (uploadData) => {
     alert(`¡"${uploadData.title}" subido con éxito (simulación)!`);
-    setCurrentPage('main'); // Volver a la app principal después de subir
+    setCurrentPage('main');
+  };
+  const handleProfileUpdateSuccess = (updatedProfileData) => {
+    alert('¡Perfil actualizado con éxito (simulación)!');
+    setCurrentUser(prev => ({ ...prev, ...updatedProfileData, profilePicFile: undefined })); 
+    setCurrentPage('main');
   };
 
-
-  console.log("[App.jsx] Evaluando qué página mostrar. currentPage es:", currentPage);
-
   if (currentPage === 'login') {
-    console.log("[App.jsx] Mostrando LoginPage.");
     return <LoginPage onLoginSuccess={handleLoginSuccess} onNavigateToRegister={navigateToRegister} />;
   }
   if (currentPage === 'register') {
-    console.log("[App.jsx] Mostrando RegisterPage.");
     return <RegisterPage onRegisterSuccess={handleRegisterSuccess} onNavigateToLogin={navigateToLogin} />;
   }
-  if (currentPage === 'upload') { // Nuevo bloque condicional
-    console.log("[App.jsx] Mostrando UploadPage.");
+  if (currentPage === 'upload') {
     return <UploadPage onUploadSuccess={handleUploadSuccess} onNavigateToMain={navigateToMain} />;
   }
+  if (currentPage === 'profile') {
+    return <ProfilePage 
+              initialUserData={currentUser} 
+              onProfileUpdateSuccess={handleProfileUpdateSuccess} 
+              onNavigateToMain={navigateToMain} 
+            />;
+  }
 
-  // Default: 'main'
-  console.log("[App.jsx] Mostrando la aplicación principal (main).");
   return (
     <div className="app-container">
       <Header 
         onLoginClick={navigateToLogin}
-        onUploadClick={navigateToUpload} // Pasar la nueva función al Header
+        onRegisterClick={navigateToRegister} 
+        onUploadClick={navigateToUpload}
+        onProfileClick={navigateToProfile}
         isLoggedIn={isLoggedIn}
         onLogoutClick={handleLogout}
       />

@@ -7,154 +7,208 @@ body {
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #0a0a0a; /* Fondo muy oscuro, casi negro como en la imagen */
-    color: #ffffff; /* Color de texto principal blanco */
+    background-color: #0a0a0a; 
+    color: #ffffff; 
   }
   
   .app-container {
-    max-width: 1200px; /* O un ancho que prefieras para el contenido principal */
-    margin: 0 auto; /* Centrar el contenido */
-    padding: 20px;
+    max-width: 1600px; 
+    margin: 0 auto; 
+    padding: 20px 30px; 
+    box-sizing: border-box; 
   }
   
   /* --- Header --- */
-  .header {
+  .header { 
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 0;
+    padding: 20px 30px; 
     margin-bottom: 30px;
+    background-color: #000; 
+    border-bottom: 1px solid #333; 
+    color: white;
   }
   
-  .logo {
-    font-family: 'Brush Script MT', 'Brush Script Std', 'Sofia', cursive; /* Fuentes cursivas, prueba cuál te gusta más o usa la de la imagen si la conoces */
-    font-size: 2.8em; /* Tamaño grande para el logo */
+  .logo { 
+    font-family: 'Brush Script MT', 'Brush Script Std', 'Sofia', cursive; 
+    font-size: 3em; 
     font-weight: bold;
-    /* Efecto de gradiente para el texto del logo */
     background: linear-gradient(to right, #ff00ff, #8a2be2); 
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    display: flex; /* Para alinear las palmeras si las añades como texto */
+    display: flex; 
     align-items: center;
   }
   
-  .logo-image{
-    width: 150px; /* Ajusta el tamaño de la imagen del logo */
-    height: auto; /* Mantener la proporción */
-    margin-right: 10px; /* Espacio entre la imagen y el texto */
-    border-radius: 12px;
+  .logo-image{ 
+    width: 160px; 
+    height: auto; 
+    margin-right: 15px; 
   }
   
   .search-bar-container {
-    flex-grow: 1; /* Para que la barra de búsqueda ocupe el espacio disponible */
-    margin: 0 40px; /* Espacio a los lados de la barra de búsqueda */
-    position: relative; /* Para posicionar los iconos dentro */
+    flex-grow: 1; 
+    margin: 0 30px; 
+    position: relative; 
   }
   
   .search-bar {
     width: 100%;
-    padding: 12px 40px 12px 45px; /* Espacio para iconos: izq (lupa), der (mic) */
-    border-radius: 25px; /* Bordes redondeados */
-    border: 1px solid #333; /* Borde sutil */
-    background-color: #1e1e1e; /* Fondo oscuro para la barra */
-    color: #fff; /* Color del texto dentro de la barra */
-    font-size: 1em;
-    box-sizing: border-box; /* Para que el padding no aumente el ancho total */
+    padding: 14px 45px 14px 50px; 
+    border-radius: 30px; 
+    border: 1px solid #333; 
+    background-color: #1e1e1e; 
+    color: #fff; 
+    font-size: 1.05em; 
+    box-sizing: border-box; 
   }
   
   .search-bar::placeholder {
-    color: #aaa; /* Color del placeholder */
+    color: #aaa; 
   }
   
   .search-icon, .mic-icon {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    color: #aaa; /* Color de los iconos */
-    font-size: 1.2em;
+    color: #aaa; 
+    font-size: 1.3em; 
   }
   
   .search-icon {
-    left: 15px; /* Posición del icono de lupa */
+    left: 20px; 
   }
   
   .mic-icon {
-    right: 15px; /* Posición del icono de micrófono */
+    right: 20px; 
     cursor: pointer;
   }
   
   .header-icons {
     display: flex;
-    gap: 15px; /* Espacio entre los iconos de la derecha */
+    align-items: center; 
+    gap: 20px; 
   }
   
-  .icon-button {
-    background-color: #8a2be2; /* Púrpura como en la imagen */
+  .icon-button { 
+    background-color: #8a2be2; 
     color: white;
     border: none;
-    border-radius: 50%; /* Para hacerlos circulares */
-    width: 40px;
-    height: 40px;
+    border-radius: 50%; 
+    width: 45px; 
+    height: 45px; 
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.5em; /* Tamaño del icono dentro del botón */
+    font-size: 1.7em; 
     cursor: pointer;
     transition: background-color 0.2s ease;
   }
   
   .icon-button:hover {
-    background-color: #7324bf; /* Un púrpura un poco más oscuro al pasar el mouse */
+    background-color: #7324bf; 
   }
   
-  /* --- Welcome Title --- */
+  .header-button { 
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    padding: 8px 15px; 
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.95em; 
+    margin-left: 8px; 
+  }
+  .header-button:hover {
+    background-color: #444;
+  }
+
+  .profile-dropdown-container {
+    position: relative; 
+    display: inline-block; 
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 10px); 
+    right: 0; 
+    background-color: #1e1e1e; 
+    border: 1px solid #444;
+    border-radius: 6px; 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); 
+    z-index: 1050; 
+    min-width: 200px; 
+    padding: 8px 0; 
+  }
+
+  .dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 12px 20px; 
+    text-align: left;
+    background: none;
+    border: none;
+    color: #e0e0e0; 
+    font-size: 1em; 
+    cursor: pointer;
+    white-space: nowrap; 
+  }
+
+  .dropdown-item:hover {
+    background-color: #333; 
+    color: #ffffff;
+  }
+  
   .welcome-title {
-    font-family: 'Brush Script MT', 'Brush Script Std', 'Sofia', cursive; /* Misma fuente cursiva que el logo */
-    font-size: 2.5em; /* Tamaño grande */
+    font-family: 'Brush Script MT', 'Brush Script Std', 'Sofia', cursive; 
+    font-size: 2.8em; 
     text-align: center;
-    margin-bottom: 30px;
-    color: #e0e0e0; /* Un blanco no tan brillante */
+    margin-top: 30px; 
+    margin-bottom: 40px; 
+    color: #e0e0e0; 
+  }
+  .welcome-title .highlight { 
+    color: #8a2be2; 
   }
   
-  /* --- Categories Grid --- */
   .categories-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 columnas como en la imagen */
-    gap: 20px; /* Espacio entre las tarjetas de categoría */
-    margin-bottom: 40px;
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 25px; 
+    margin-bottom: 50px; 
   }
   
   .category-card {
-    position: relative; /* Para posicionar el título de la tarjeta */
-    border-radius: 10px; /* Bordes redondeados para las tarjetas */
-    overflow: hidden; /* Para que la imagen no se salga de los bordes redondeados */
+    position: relative; 
+    border-radius: 10px; 
+    overflow: hidden; 
     cursor: pointer;
-    background-color: #1c1c1c; /* Color de fondo si la imagen tarda en cargar */
-    /* Por defecto, las tarjetas intentarán ser un poco más altas que anchas */
-    aspect-ratio: 3 / 4; /* Ajusta esto según veas que queda mejor, ej. 1 / 1.2 */
+    background-color: #1c1c1c; 
+    aspect-ratio: 3 / 4; 
   }
   
   .category-card.wide {
-    grid-column: span 2; /* Ocupa dos columnas */
-    aspect-ratio: 2 / 1.2; /* Más ancho que alto (ej. 620 / 300 de tus datos placeholder) */
+    grid-column: span 2; 
+    aspect-ratio: 2 / 1.2; 
   }
   
   .category-card.tall {
-    grid-row: span 2; /* Ocupa dos filas */
-    aspect-ratio: 3 / 8; /* Mucho más alto que ancho (ej. 300 / 800, si una fila mide 400) */
+    grid-row: span 2; 
+    aspect-ratio: 3 / 8; 
   }
   
   .category-card img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Para que la imagen cubra toda la tarjeta sin deformarse */
+    object-fit: cover; 
     display: block;
     transition: transform 0.3s ease;
   }
   
   .category-card:hover img {
-    transform: scale(1.05); /* Efecto de zoom sutil al pasar el mouse */
+    transform: scale(1.05); 
   }
   
   .category-card-title {
@@ -162,199 +216,247 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgba(0, 0, 0, 0.6); /* Fondo semi-transparente para el título */
-    padding: 10px;
-    font-size: 0.9em;
+    background-color: rgba(0, 0, 0, 0.7); 
+    padding: 12px; 
+    font-size: 1em; 
     font-weight: bold;
-    text-align: center; /* En la imagen parece centrado */
+    text-align: center; 
     color: #fff;
-    border-bottom-left-radius: 10px; /* Para que coincida con la tarjeta */
+    border-bottom-left-radius: 10px; 
     border-bottom-right-radius: 10px;
   }
   
-  /* --- Song List / Player --- */
   .song-list {
-    /* No necesita estilos especiales el contenedor de la lista, solo los items */
+    margin-top: 40px;
   }
   
   .song-player {
     display: flex;
     align-items: center;
-    background-color: #181818; /* Fondo un poco más claro que el body para cada canción */
-    padding: 12px 15px;
-    border-radius: 8px; /* Bordes redondeados para cada reproductor */
-    margin-bottom: 10px; /* Espacio entre canciones */
+    background-color: #181818; 
+    padding: 15px 20px; 
+    border-radius: 8px; 
+    margin-bottom: 12px; 
   }
   
   .song-album-art {
-    width: 50px;
-    height: 50px;
-    border-radius: 6px; /* Bordes redondeados para la carátula */
+    width: 55px; 
+    height: 55px; 
+    border-radius: 6px; 
     object-fit: cover;
-    margin-right: 15px; /* Espacio entre la carátula y la info */
+    margin-right: 20px; 
   }
   
   .song-info {
-    flex-grow: 1; /* Para que ocupe el espacio disponible */
-    margin-right: 15px; /* Espacio antes del botón de play */
+    flex-grow: 1; 
+    margin-right: 20px; 
   }
   
-  .song-info .title { /* El texto "Canción" */
-    font-size: 0.8em;
+  .song-info .title { 
+    font-size: 0.85em; 
     font-weight: normal;
-    color: #8a2be2; /* Púrpura */
-    margin: 0 0 3px 0; /* Pequeño margen inferior */
-    display: block; /* Para que ocupe su propia línea */
+    color: #8a2be2; 
+    margin: 0 0 4px 0; 
+    display: block; 
   }
   
-  .song-info .artist { /* El texto "Nombre del artista" */
-    font-size: 1em;
+  .song-info .artist { 
+    font-size: 1.05em; 
     font-weight: bold;
-    color: #e0e0e0; /* Blanco no tan brillante */
+    color: #e0e0e0; 
     margin: 0;
   }
   
   .play-pause-button {
-    background-color: #8a2be2; /* Púrpura */
+    background-color: #8a2be2; 
     color: white;
     border: none;
-    border-radius: 50%; /* Circular */
-    width: 35px;
-    height: 35px;
+    border-radius: 50%; 
+    width: 40px; 
+    height: 40px; 
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.2em; /* Tamaño del icono de play/pause */
+    font-size: 1.4em; 
     cursor: pointer;
-    margin: 0 15px; /* Espacio a los lados del botón */
-    flex-shrink: 0; /* Para que no se encoja */
+    margin: 0 20px; 
+    flex-shrink: 0; 
   }
   
   .waveform {
     display: flex;
     align-items: center;
-    height: 30px; /* Altura del contenedor del waveform */
-    /* background-color: #282828; */ /* Color de fondo del waveform para debug */
-    min-width: 150px; /* Ancho mínimo para el waveform, ajusta según necesites */
-    flex-grow: 1; /* Que ocupe espacio, pero no tanto como el título */
-    margin-right: 15px;
-    overflow: hidden; /* Si hay muchas barras */
+    height: 35px; 
+    min-width: 150px; 
+    flex-grow: 1; 
+    margin-right: 20px;
+    overflow: hidden; 
   }
   
   .waveform-bar {
-    background-color: #8a2be2; /* Púrpura para las barras */
-    width: 3px; /* Ancho de cada barra */
-    margin-right: 2px; /* Espacio entre barras */
-    border-radius: 1px; /* Bordes redondeados sutiles para las barras */
-    /* La altura se aplicará dinámicamente desde JS */
+    background-color: #8a2be2; 
+    width: 3px; 
+    margin-right: 2px; 
+    border-radius: 1px; 
   }
   
   .song-duration {
-    font-size: 0.9em;
-    color: #aaa; /* Color grisáceo para la duración */
-    min-width: 70px; /* Para evitar que el layout salte al cambiar los números */
+    font-size: 0.95em; 
+    color: #aaa; 
+    min-width: 70px; 
     text-align: right;
-    flex-shrink: 0; /* Para que no se encoja */
+    flex-shrink: 0; 
   }
-  
-  
-  /* --- Media Queries para Responsividad --- */
-  @media (max-width: 992px) { /* Tablets y pantallas más pequeñas */
+    
+  @media (max-width: 992px) { 
+    .app-container {
+      padding: 15px 20px; 
+    }
+    .header {
+      padding: 15px 20px; 
+    }
     .categories-grid {
-      grid-template-columns: repeat(3, 1fr); /* 3 columnas */
+      grid-template-columns: repeat(3, 1fr); 
+      gap: 20px;
     }
     .category-card.wide {
-      grid-column: span 3; /* Que ocupe todo el ancho disponible */
+      grid-column: span 3; 
     }
-    /* La tarjeta "tall" podría necesitar ajustes si el layout se rompe mucho */
-    /* .category-card.tall { grid-row: span 1; aspect-ratio: 3 / 4; } */
-  
     .search-bar-container {
-      margin: 0 20px;
+      margin: 0 15px; 
     }
   }
   
-  @media (max-width: 768px) { /* Móviles grandes y tablets en vertical */
+  @media (max-width: 768px) { 
+    .app-container {
+      padding: 10px 15px; 
+    }
     .header {
-      flex-direction: column; /* Apilar elementos del header */
-      gap: 15px;
-      align-items: stretch; /* Que los elementos ocupen todo el ancho */
+      flex-direction: column; 
+      gap: 20px; 
+      align-items: stretch; 
+      padding: 20px 15px; 
     }
     .search-bar-container {
-      margin: 0; /* Sin márgenes laterales cuando está apilado */
-      order: 1; /* Para cambiar el orden si es necesario, ej. logo primero */
+      margin: 0; 
+      order: 1; 
+      width: 100%; 
+    }
+    .search-bar {
+        padding: 12px 40px 12px 45px; 
     }
     .header-icons {
-      justify-content: center; /* Centrar los iconos si el header está en columna */
+      justify-content: space-around; 
+      width: 100%; 
       order: 2;
     }
-    .logo {
+    .logo, .logo-image { 
       text-align: center;
+      margin-left: auto;
+      margin-right: auto;
       justify-content: center;
       order: 0;
     }
+    .logo {
+        font-size: 2.5em; 
+    }
+    .logo-image{
+        width: 120px; 
+    }
   
     .categories-grid {
-      grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+      grid-template-columns: repeat(2, 1fr); 
+      gap: 15px;
     }
-    .category-card.wide, .category-card.tall { /* Resetear a span 1 si es necesario o ajustar */
-      grid-column: span 2; /* Wide ocupa todo el ancho */
-      /* Tall podría convertirse en un card normal o span 2 también */
-      /* grid-row: span 1; aspect-ratio: 3/4; */
+    .category-card.wide, .category-card.tall { 
+      grid-column: span 2; 
     }
     .category-card.tall{
-      grid-row: span 1; /* Que no sea tan alto para no ocupar demasiada pantalla */
-      aspect-ratio: 3 / 4; /* Volver al aspect ratio normal */
+      grid-row: span 1; 
+      aspect-ratio: 3 / 4; 
     }
-  
-  
+    
     .song-player {
-      flex-wrap: wrap; /* Permitir que los elementos se envuelvan a la siguiente línea */
-      padding: 10px;
+      flex-wrap: wrap; 
+      padding: 12px; 
+      gap: 10px; 
+    }
+    .song-album-art {
+        width: 50px;
+        height: 50px;
     }
     .song-info {
-      flex-basis: calc(100% - 70px); /* Ocupar casi todo menos el arte del album y algo de espacio */
+      flex-basis: 100%; 
+      order: 1; 
       margin-right: 0;
+      text-align: center; 
     }
     .play-pause-button {
-      margin: 10px auto 5px auto; /* Centrarlo si se va a una nueva línea */
+      order: 2;
+      margin: 10px auto; 
     }
     .waveform {
-      width: 100%; /* Que ocupe todo el ancho si está en una nueva línea */
-      margin-top: 10px;
+      width: 100%; 
+      margin-top: 5px;
       margin-right: 0;
-      min-width: auto; /* Resetear min-width */
-      order: 3; /* Para que el waveform vaya después de la info y el botón play */
+      min-width: auto; 
+      order: 3; 
     }
     .song-duration {
       width: 100%;
-      text-align: right; /* O left, según prefieras en móvil */
+      text-align: center; 
       margin-top: 5px;
-      order: 4; /* Que la duración vaya al final */
+      order: 4; 
     }
   }
   
-  @media (max-width: 480px) { /* Móviles pequeños */
+  @media (max-width: 480px) { 
+    .app-container {
+        padding: 10px;
+    }
     .logo {
       font-size: 2.2em;
+    }
+    .logo-image{
+        width: 100px;
     }
     .welcome-title {
       font-size: 2em;
     }
     .categories-grid {
-      grid-template-columns: 1fr; /* 1 columna */
+      grid-template-columns: 1fr; 
       gap: 15px;
     }
     .category-card.wide, .category-card.tall {
-      grid-column: span 1; /* Todos los cards ocupan 1 columna */
-      grid-row: span 1;    /* Todos los cards ocupan 1 fila */
-      aspect-ratio: 4 / 3; /* Puedes hacerlos más anchos que altos en 1 columna */
+      grid-column: span 1; 
+      grid-row: span 1;    
+      aspect-ratio: 4 / 3; 
+    }
+    .icon-button { 
+        width: 40px;
+        height: 40px;
+        font-size: 1.5em;
+    }
+    .header-icons {
+        gap: 10px;
+    }
+    .dropdown-menu {
+        min-width: 150px; 
+    }
+    .dropdown-item {
+        padding: 10px 15px;
+        font-size: 0.9em;
     }
     .song-album-art {
-      width: 40px;
-      height: 40px;
+      width: 45px;
+      height: 45px;
     }
     .song-info .artist {
       font-size: 0.9em;
+    }
+    .play-pause-button {
+        width: 35px;
+        height: 35px;
+        font-size: 1.2em;
     }
   }

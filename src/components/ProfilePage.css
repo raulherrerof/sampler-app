@@ -1,0 +1,214 @@
+/* src/components/ProfilePage/ProfilePage.css */
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* Estilos para el header específico de esta página */
+.profile-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px; /* Coincidir con el header principal */
+  border-bottom: 1px solid #333;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.profile-page-header .logo-container { /* Contenedor del logo si decides poner uno aquí */
+  display: flex;
+  align-items: center;
+}
+
+.profile-page-header .logo-text-page { /* Estilo para el texto del logo en esta página */
+  font-family: 'Pacifico', cursive; /* O la fuente de tu logo principal */
+  font-size: 2.5em; /* Ajusta según necesites */
+  color: #ffffff; /* O el gradiente si lo replicas */
+  /* Para replicar el gradiente del logo principal:
+  background: linear-gradient(to right, #ff00ff, #8a2be2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  */
+}
+/* Si usas una imagen para el logo en esta página específica:
+.profile-page-header .logo-image-page {
+  height: 50px;
+  margin-right: 10px;
+}
+*/
+
+.profile-page-header .welcome-message-page { /* Título en el header de esta página */
+  font-family: 'Dancing Script', cursive; /* O la fuente que uses */
+  font-size: 2em;
+  color: #ffffff;
+  margin: 0;
+  font-weight: normal;
+  /* Para centrarlo si el logo es pequeño o no existe y el botón de volver está: */
+  /* flex-grow: 1; text-align: center; */
+}
+
+.profile-page-header .header-nav-button { 
+  background-color: #333;
+  color: white;
+  border: 1px solid #555;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+.profile-page-header .header-nav-button:hover {
+  background-color: #444;
+}
+
+
+.profile-page-main {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Para que el formulario no se centre verticalmente si es muy largo */
+  padding: 40px 20px; 
+  box-sizing: border-box;
+  overflow-y: auto; /* Scroll si el contenido excede la altura */
+}
+
+.profile-form-container {
+  background-color: #1c1c1c;
+  padding: 35px 45px; 
+  border-radius: 10px;
+  width: 100%;
+  max-width: 950px;   /* <<< ANCHO MODIFICADO >>> */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.profile-form-container .form-title {
+  text-align: center;
+  font-size: 2em; /* Coincidir con otros títulos de formulario */
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 35px;
+  color: #ffffff;
+}
+
+.profile-form-container .form-group {
+  margin-bottom: 20px; /* Espacio entre grupos de formulario */
+}
+
+.profile-form-container .form-group label {
+  display: block;
+  font-size: 0.95em; /* Coincidir con otros labels */
+  margin-bottom: 8px;
+  color: #e0e0e0;
+}
+
+.profile-form-container .form-group input[type="text"],
+.profile-form-container .form-group input[type="email"],
+.profile-form-container .form-group input[type="password"],
+.profile-form-container .form-group input[type="date"],
+.profile-form-container .form-group textarea {
+  width: 100%;
+  padding: 12px 15px; /* Padding interno de los inputs */
+  background-color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 1em;
+  color: #333333;
+  font-family: inherit; /* Heredar fuente del body */
+}
+
+.profile-form-container .form-group input:focus,
+.profile-form-container .form-group textarea:focus {
+  outline: 2px solid #8a2be2; /* Color de foco */
+}
+
+.profile-form-container .form-group textarea {
+  resize: vertical; 
+  min-height: 100px; /* Altura mínima para el textarea */
+}
+
+.profile-form-container .radio-group {
+  display: flex;
+  gap: 25px; /* Espacio entre opciones de radio */
+  margin-top: 8px;
+  flex-wrap: wrap; /* Para que se adapten en pantallas pequeñas */
+}
+
+.profile-form-container .radio-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.95em;
+  color: #e0e0e0;
+  cursor: pointer;
+}
+
+.profile-form-container .radio-label input[type="radio"] {
+  margin-right: 8px;
+  accent-color: #8a2be2; /* Color del círculo del radio button (navegadores modernos) */
+  /* Para estilos más personalizados de radio, se necesitaría más CSS */
+  width: 16px; /* Tamaño del radio button */
+  height: 16px;
+}
+
+.profile-form-container .file-input-group.profile-pic-group {
+  margin-top: 25px;
+  margin-bottom: 30px;
+  padding: 15px; 
+  border: 1px dashed #555; /* Borde punteado para la zona de subida de imagen */
+  border-radius: 5px;
+  text-align: center; /* Para centrar el label si no hay imagen */
+}
+
+.profile-form-container .file-input-label.profile-pic-label {
+  display: flex; 
+  align-items: center;
+  justify-content: center; /* Centra el contenido del label (texto e icono/imagen) */
+  font-size: 0.95em;
+  color: #e0e0e0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.profile-form-container .file-input-label.profile-pic-label:hover {
+  color: #ffffff;
+}
+
+.profile-form-container .profile-pic-preview {
+  width: 40px; 
+  height: 40px;
+  border-radius: 50%; 
+  object-fit: cover; 
+  margin-left: 15px; 
+  border: 1px solid #555;
+}
+
+.profile-form-container .file-name-display { 
+  display: block; /* Para que ocupe su propia línea debajo del label si es necesario */
+  margin-top: 10px;
+  font-size: 0.85em;
+  color: #a0a0a0;
+  text-align: center; /* Centrar el nombre del archivo */
+}
+
+.profile-form-container .submit-button.profile-submit-button {
+  width: auto;
+  padding: 12px 35px; /* Padding del botón de guardar */
+  background-color: #e0e0e0;
+  color: #000000;
+  border: none;
+  border-radius: 25px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  display: block;
+  margin: 30px auto 10px auto;
+  text-transform: uppercase;
+  transition: background-color 0.2s ease;
+}
+
+.profile-form-container .submit-button.profile-submit-button:hover {
+  background-color: #c7c7c7;
+}
