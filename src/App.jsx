@@ -51,6 +51,10 @@ function App() {
   const [songs, setSongs] = useState(initialSongsData); 
   const [loadingSongs, setLoadingSongs] = useState(false);
   const [selectedSongForDetail, setSelectedSongForDetail] = useState(null);
+  const [registeredUsers, setRegisteredUsers] = useState([
+    // Puedes añadir un usuario de prueba por defecto aquí si el login lo necesita
+    // { email: "test@test.com", password: "password", username: "testuser", name: "Usuario Test (Default)" }
+  ]);
 
   useEffect(() => {
     if (activeOverlay) {
@@ -85,14 +89,15 @@ function App() {
     setSelectedSongForDetail(null);
   };
 
-  const handleLoginSuccess = (userDataSimulated) => {
+  const handleLoginSuccess = (userData) => {
     setIsLoggedIn(true);
-    setCurrentUser(userDataSimulated || initialUserProfileData);
+    setCurrentUser(userData);
     closeOverlay();
   };
-  const handleRegisterSuccess = () => {
-    alert('¡Registro exitoso! Por favor, inicia sesión.');
-    setSelectedSongForDetail(null); 
+  const handleRegisterSuccess = (newUserData) => {
+    console.log("Nuevo usuario para registrar (simulación):", newUserData);
+    setRegisteredUsers(prevUsers => [...prevUsers, newUserData]);
+    alert('¡Registro exitoso! Por favor, inicia sesión con tus nuevas credenciales.');
     setActiveOverlay('login');
   };
   const handleLogout = () => {
@@ -103,9 +108,9 @@ function App() {
   const handleUploadSuccess = (newSongData) => {
     const songToAdd = {
         ...newSongData,
-        id: Date.now(), // Asegurar un ID único para la simulación
-        duration: newSongData.duration || "3:30", // Duración por defecto
-        audioUrl: newSongData.audioUrl || `https://example.com/audio/${Date.now()}.mp3` // URL simulada
+        id: Date.now(), 
+        duration: newSongData.duration || "3:30", 
+        audioUrl: newSongData.audioUrl || `https://example.com/audio/${Date.now()}.mp3`
     };
     setSongs(prevSongs => [songToAdd, ...prevSongs]);
     alert(`¡"${newSongData.title}" ha sido añadida (simulación)!`);
@@ -125,6 +130,7 @@ function App() {
                               onLoginSuccess={handleLoginSuccess} 
                               onNavigateToRegister={() => setActiveOverlay('register')} 
                               onClose={closeOverlay} 
+                              registeredUsers={registeredUsers}
                            />;
         break;
       case 'register':

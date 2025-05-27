@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import logoImage from "../Imagenes/logo.png";
-// No importamos './Header.css' aquí porque los estilos están en App.css
 
 const Header = ({ 
   onLoginClick, 
@@ -83,5 +82,4 @@ const Header = ({
     </header>
   );
 };
-
 export default Header;
