@@ -4,7 +4,6 @@ import './App.css';
 import Header from './components/Header';
 import CategoryCard from './components/CategoryCard';
 import SongPlayer from './components/SongPlayer';
-// !!! AJUSTA ESTAS RUTAS SI TU ESTRUCTURA ES DIFERENTE !!!
 import LoginPage from './components/LoginPage'; 
 import RegisterPage from './components/RegisterPage'; 
 import UploadPage from './components/UploadPage'; 
@@ -32,39 +31,65 @@ const initialCategoriesData = [
   { id: 11, title: "Podcasts", imageUrl: card11Img, size: "wide" },
 ];
 
-const initialSongsData = [
-  { id: 1, albumArt: card1Img, title: "Canción Ejemplo 1", artist: "Artista Demo", duration: "4:20", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", initialLikes: 15, comments: [{id: 101, user:{name: "Fanatico1"}, text:"Me encanta!"}] },
-  { id: 2, albumArt: card3Img, title: "Canción Ejemplo 2", artist: "Otro Artista", duration: "3:50", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", initialLikes: 22 },
-  { id: 3, albumArt: card5Img, title: "Canción Ejemplo 3", artist: "Artista Demo C", duration: "5:10", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", initialLikes: 8 },
-  { id: 4, albumArt: card7Img, title: "Canción Ejemplo 4", artist: "Artista Demo D", duration: "2:55", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", initialLikes: 30 },
-];
-
-const initialUserProfileData = {
-  username: 'sampler_user', email: 'user@sampler.com', name: 'Sampler', lastName: 'Fan',
-  dob: '2000-01-01', gender: 'other', aboutMe: 'Me encanta Sampler.', profilePicUrl: null
-};
+// URL base de tu API PHP (ajusta esto a tu configuración real)
+const API_BASE_URL = 'http://localhost/sampler-api'; // Ejemplo: si tu API está en localhost/sampler-api/
 
 function App() {
   const [activeOverlay, setActiveOverlay] = useState(null); 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [songs, setSongs] = useState(initialSongsData); 
-  const [loadingSongs, setLoadingSongs] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null); // Guardará datos del usuario desde la API
+  const [songs, setSongs] = useState([]); 
+  const [loadingSongs, setLoadingSongs] = useState(true);
   const [selectedSongForDetail, setSelectedSongForDetail] = useState(null);
-  const [registeredUsers, setRegisteredUsers] = useState([
-    // Puedes añadir un usuario de prueba por defecto aquí si el login lo necesita
-    // { email: "test@test.com", password: "password", username: "testuser", name: "Usuario Test (Default)" }
-  ]);
+
+  // Función para verificar el estado de la sesión al cargar la app
+  const checkLoginStatus = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/status.php`, { credentials: 'include' }); // 'include' para enviar cookies
+      if (response.ok) {
+        const data = await response.json();
+        if (data.loggedIn && data.user) {
+          setIsLoggedIn(true);
+          setCurrentUser(data.user);
+        } else {
+          setIsLoggedIn(false);
+          setCurrentUser(null);
+        }
+      } else {
+        setIsLoggedIn(false);
+        setCurrentUser(null);
+      }
+    } catch (error) {
+      console.error("Error verificando estado de login:", error);
+      setIsLoggedIn(false);
+      setCurrentUser(null);
+    }
+  };
 
   useEffect(() => {
-    if (activeOverlay) {
-      document.body.classList.add('overlay-active');
-    } else {
-      document.body.classList.remove('overlay-active');
-    }
-    return () => {
-      document.body.classList.remove('overlay-active');
+    checkLoginStatus(); // Verificar al montar
+
+    // Cargar canciones
+    const fetchSongs = async () => {
+      setLoadingSongs(true);
+      try {
+        const response = await fetch(`${API_BASE_URL}/songs/list.php`); // Asumiendo endpoint para listar canciones
+        if (!response.ok) throw new Error('Error al cargar canciones');
+        const fetchedSongs = await response.json();
+        setSongs(fetchedSongs);
+      } catch (error) {
+        console.error("Error cargando canciones:", error);
+        setSongs([]);
+      }
+      setLoadingSongs(false);
     };
+    fetchSongs();
+  }, []); // Cargar solo una vez
+
+  useEffect(() => {
+    if (activeOverlay) document.body.classList.add('overlay-active');
+    else document.body.classList.remove('overlay-active');
+    return () => document.body.classList.remove('overlay-active');
   }, [activeOverlay]);
 
   const gridCategoriesInOrder = initialCategoriesData.map(c => ({...c, size: c.size || ""})).filter(Boolean);
@@ -83,7 +108,6 @@ function App() {
     setSelectedSongForDetail(song);
     setActiveOverlay('songDetail');
   };
-  
   const closeOverlay = () => {
     setActiveOverlay(null);
     setSelectedSongForDetail(null);
@@ -94,31 +118,28 @@ function App() {
     setCurrentUser(userData);
     closeOverlay();
   };
-  const handleRegisterSuccess = (newUserData) => {
-    console.log("Nuevo usuario para registrar (simulación):", newUserData);
-    setRegisteredUsers(prevUsers => [...prevUsers, newUserData]);
-    alert('¡Registro exitoso! Por favor, inicia sesión con tus nuevas credenciales.');
+  const handleRegisterSuccess = () => {
+    alert('¡Registro exitoso! Por favor, inicia sesión.');
     setActiveOverlay('login');
   };
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch(`${API_BASE_URL}/auth/logout.php`, { method: 'POST', credentials: 'include' });
+    } catch (error) {
+      console.error("Error en logout:", error);
+    }
     setIsLoggedIn(false);
     setCurrentUser(null);
     closeOverlay(); 
   };
-  const handleUploadSuccess = (newSongData) => {
-    const songToAdd = {
-        ...newSongData,
-        id: Date.now(), 
-        duration: newSongData.duration || "3:30", 
-        audioUrl: newSongData.audioUrl || `https://example.com/audio/${Date.now()}.mp3`
-    };
-    setSongs(prevSongs => [songToAdd, ...prevSongs]);
-    alert(`¡"${newSongData.title}" ha sido añadida (simulación)!`);
+  const handleUploadSuccess = async (newSongDataFromApi) => { // Asume que la API devuelve la canción creada
+    setSongs(prevSongs => [newSongDataFromApi, ...prevSongs]);
+    alert(`¡"${newSongDataFromApi.title}" ha sido subida con éxito!`);
     closeOverlay(); 
   };
-  const handleProfileUpdateSuccess = (updatedProfileData) => {
-    alert('¡Perfil actualizado con éxito (simulación)!');
-    setCurrentUser(prev => ({ ...prev, ...updatedProfileData, profilePicFile: undefined })); 
+  const handleProfileUpdateSuccess = (updatedUserData) => {
+    alert('¡Perfil actualizado con éxito!');
+    setCurrentUser(updatedUserData); 
     closeOverlay();
   };
 
@@ -130,7 +151,7 @@ function App() {
                               onLoginSuccess={handleLoginSuccess} 
                               onNavigateToRegister={() => setActiveOverlay('register')} 
                               onClose={closeOverlay} 
-                              registeredUsers={registeredUsers}
+                              apiBaseUrl={API_BASE_URL}
                            />;
         break;
       case 'register':
@@ -138,12 +159,14 @@ function App() {
                               onRegisterSuccess={handleRegisterSuccess} 
                               onNavigateToLogin={() => setActiveOverlay('login')} 
                               onClose={closeOverlay}
+                              apiBaseUrl={API_BASE_URL}
                            />;
         break;
       case 'upload':
         OverlayComponentToRender = <UploadPage 
                               onUploadSuccess={handleUploadSuccess} 
-                              onClose={closeOverlay} 
+                              onClose={closeOverlay}
+                              apiBaseUrl={API_BASE_URL} 
                            />;
         break;
       case 'profile':
@@ -151,6 +174,7 @@ function App() {
                               initialUserData={currentUser} 
                               onProfileUpdateSuccess={handleProfileUpdateSuccess} 
                               onClose={closeOverlay}
+                              apiBaseUrl={API_BASE_URL}
                            />;
         break;
       case 'songDetail':
@@ -158,6 +182,7 @@ function App() {
           OverlayComponentToRender = <SongDetailPage 
                                       song={selectedSongForDetail} 
                                       onClose={closeOverlay} 
+                                      // Podrías pasar API_BASE_URL si necesita hacer fetch de comentarios, etc.
                                     />;
         }
         break;
@@ -177,12 +202,11 @@ function App() {
         onLogoutClick={handleLogout}
         currentUser={currentUser} 
       />
-      
       <div className="app-content-wrapper">
         <h2 className="welcome-title">Bienvenido a <span className="highlight">Sampler</span></h2>
         <div className="categories-grid">
           {gridCategoriesInOrder.map(category => (
-            <CategoryCard key={category.id} title={category.title} imageUrl={category.imageUrl} size={category.size} />
+            <CategoryCard key={category.id} title={category.title} imageUrl={category.imageUrl} size={category.size || ""} />
           ))}
         </div>
         <div className="song-list">
@@ -190,14 +214,13 @@ function App() {
           {!loadingSongs && songs.map(song => (
             <SongPlayer 
               key={song.id} 
-              songData={song}
+              songData={song} // song debe tener albumArtUrl y audioUrl de tu API PHP
               onPlayClick={() => openSongDetailOverlay(song)} 
             />
           ))}
           {!loadingSongs && songs.length === 0 && <p>No hay canciones disponibles.</p>}
         </div>
       </div>
-
       {OverlayComponentToRender && (
         <div className="overlay-backdrop" onClick={closeOverlay}> 
           <div className="overlay-content-wrapper" onClick={(e) => e.stopPropagation()}> 

@@ -1,33 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import './ProfilePage.css'; // Asegúrate de que este archivo CSS existe en la misma carpeta
+import './ProfilePage.css'; 
 
-// Icono de perfil placeholder
+// --- SVG ICON COMPONENT ---
 const ProfileIconPlaceholder = () => (
   <svg
-    width="24"
-    height="24"
+    width="32" // Tamaño del icono de perfil en el input de archivo
+    height="32"
     viewBox="0 0 24 24"
-    fill="currentColor"
-    style={{ verticalAlign: 'middle', marginRight: '8px' }}
-    color="#A9A9A9" // Un gris claro para el placeholder
+    fill="currentColor" 
+    style={{ verticalAlign: 'middle', marginLeft: '10px', color: '#777' }} // color del placeholder
   >
     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
     <path d="M0 0h24v24H0z" fill="none"></path>
   </svg>
 );
+// --- FIN SVG ICON COMPONENT ---
 
-function ProfilePage({ initialUserData, onProfileUpdateSuccess, onNavigateToMain }) {
+function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose, apiBaseUrl }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [dob, setDob] = useState(''); // Date of Birth
+  const [dob, setDob] = useState('');
   const [gender, setGender] = useState('');
   const [aboutMe, setAboutMe] = useState('');
   const [profilePicFile, setProfilePicFile] = useState(null);
   const [profilePicName, setProfilePicName] = useState('');
   const [profilePicPreview, setProfilePicPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (initialUserData) {
@@ -35,56 +37,77 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onNavigateToMain
       setEmail(initialUserData.email || '');
       setName(initialUserData.name || '');
       setLastName(initialUserData.lastName || '');
-      setDob(initialUserData.dob || '');
+      setDob(initialUserData.dob ? new Date(initialUserData.dob).toISOString().split('T')[0] : '');
       setGender(initialUserData.gender || '');
       setAboutMe(initialUserData.aboutMe || '');
       setProfilePicPreview(initialUserData.profilePicUrl || null); 
+      setProfilePicName(''); // Resetear nombre de archivo al cargar datos iniciales
+      setProfilePicFile(null); // Resetear archivo al cargar datos iniciales
     }
   }, [initialUserData]);
 
   const handleProfilePicChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setProfilePicFile(file);
+      setProfilePicFile(file); 
       setProfilePicName(file.name);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePicPreview(reader.result);
-      };
+      reader.onloadend = () => setProfilePicPreview(reader.result);
       reader.readAsDataURL(file);
+    } else {
+      setProfilePicFile(null);
+      setProfilePicName('');
+      // Mantener la preview de initialUserData si el usuario cancela la selección
+      setProfilePicPreview(initialUserData?.profilePicUrl || null);
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const profileData = { username, email, name, lastName, dob, gender, aboutMe, profilePicFile };
-    if (password) {
-      profileData.newPassword = password; 
+    setError(''); 
+    setLoading(true);
+    
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('email', email);
+    if (name) formData.append('name', name);
+    if (lastName) formData.append('lastName', lastName);
+    if (dob) formData.append('dob', dob);
+    if (gender) formData.append('gender', gender);
+    if (aboutMe) formData.append('aboutMe', aboutMe);
+    if (password) formData.append('password', password);
+    if (profilePicFile) formData.append('profilePic', profilePicFile);
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/users/update_profile.php`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Error al actualizar el perfil');
+      }
+      if (onProfileUpdateSuccess && data.user) {
+        onProfileUpdateSuccess(data.user);
+      }
+    } catch (err) {
+      console.error("Error actualizando perfil:", err);
+      setError(err.message);
     }
-    console.log('Guardando perfil:', profileData);
-    alert('Simulación: ¡Información guardada con éxito!');
-    if (onProfileUpdateSuccess) {
-      onProfileUpdateSuccess(profileData);
-    }
+    setLoading(false);
   };
 
   return (
-    <div className="profile-page">
-      <header className="profile-page-header"> {/* Header específico para esta página */}
-        <div className="logo-container"> {/* Si quieres un logo aquí */}
-          {/* <img src={logoImage} alt="Logo" className="logo-image-page" />  */}
-          <span className="logo-text-page">Sampler</span> {/* O texto */}
-        </div>
-        <h1 className="welcome-message-page">Información de Usuario</h1> {/* Título específico */}
-        {typeof onNavigateToMain === 'function' && (
-          <button onClick={onNavigateToMain} className="header-nav-button">Volver</button>
-        )}
+    <div className="profile-page-overlay-content">
+      <button onClick={onClose} className="overlay-close-button" aria-label="Cerrar">×</button>
+      <header className="profile-header-modal">
+        <span className="logo-text-modal">Sampler</span>
+        <h1 className="welcome-message-modal">Tu Perfil</h1>
       </header>
-
-      <main className="profile-page-main">
-        <div className="profile-form-container">
-          <h2 className="form-title">Información personal</h2>
-          <form onSubmit={handleSubmit}>
+      <div className="profile-form-container">
+        {error && <p className="form-error-message">{error}</p>}
+        <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="username-profile">Usuario</label>
               <input type="text" id="username-profile" value={username} onChange={(e) => setUsername(e.target.value)} required />
@@ -94,7 +117,7 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onNavigateToMain
               <input type="email" id="email-profile" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <div className="form-group">
-              <label htmlFor="password-profile">Contraseña</label>
+              <label htmlFor="password-profile">Nueva Contraseña</label>
               <input type="password" id="password-profile" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Dejar en blanco para no cambiar" />
             </div>
             <div className="form-group">
@@ -135,12 +158,13 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onNavigateToMain
             
             <div className="file-input-group profile-pic-group">
               <label htmlFor="profile-pic-input" className="file-input-label profile-pic-label">
-                Seleccione un archivo .png, .jpg
-                {profilePicPreview ? (
-                  <img src={profilePicPreview} alt="Vista previa de perfil" className="profile-pic-preview" />
-                ) : (
-                  <ProfileIconPlaceholder />
-                )}
+                {profilePicPreview ? 
+                    <img src={profilePicPreview} alt="Vista previa de perfil" className="profile-pic-preview" /> : 
+                    <ProfileIconPlaceholder />
+                }
+                <span style={{marginLeft: '10px'}}>
+                    {profilePicFile ? profilePicName : (initialUserData?.profilePicUrl ? "Cambiar foto" : "Seleccionar foto de perfil (.png, .jpg)")}
+                </span>
               </label>
               <input
                 type="file"
@@ -149,17 +173,14 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onNavigateToMain
                 onChange={handleProfilePicChange}
                 style={{ display: 'none' }}
               />
-              {profilePicName && !profilePicPreview && <span className="file-name-display">{profilePicName}</span>}
             </div>
 
-            <button type="submit" className="submit-button profile-submit-button">
-              GUARDAR
+            <button type="submit" className="submit-button profile-submit-button" disabled={loading}>
+              {loading ? 'Guardando...' : 'GUARDAR CAMBIOS'}
             </button>
           </form>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }
-
 export default ProfilePage;
