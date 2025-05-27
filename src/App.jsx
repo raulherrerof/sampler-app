@@ -1,147 +1,205 @@
 import React, { useState, useEffect } from 'react';
-import './App.css'; // Contiene los estilos del Header y globales
+import './App.css'; 
 
-import Header from './components/Header'; // Asegúrate que la ruta es correcta para Header.js
-import CategoryCard from './components/CategoryCard'; // Asume que está en src/components/CategoryCard.jsx
-import SongPlayer from './components/SongPlayer';   // Asume que está en src/components/SongPlayer.jsx
-import LoginPage from './components/LoginPage';
-import RegisterPage from './components/RegisterPage';
-import UploadPage from './components/UploadPage';
-import ProfilePage from './components/ProfilePage';
+import Header from './components/Header';
+import CategoryCard from './components/CategoryCard';
+import SongPlayer from './components/SongPlayer';
+// !!! AJUSTA ESTAS RUTAS SI TU ESTRUCTURA ES DIFERENTE !!!
+import LoginPage from './components/LoginPage'; 
+import RegisterPage from './components/RegisterPage'; 
+import UploadPage from './components/UploadPage'; 
+import ProfilePage from './components/ProfilePage'; 
+import SongDetailPage from './components/SongDetailPage'; 
 
-import card1 from './Imagenes/1.jpg'; 
-import card2 from './Imagenes/2.png';
-import card3 from './Imagenes/3.png';
-import card4 from './Imagenes/4.png';
-import card5 from './Imagenes/5.png';
-import card6 from './Imagenes/6.png';
-import card7 from './Imagenes/7.png';
-import card8 from './Imagenes/8.png';
-import card9 from './Imagenes/9.png';
-import card10 from './Imagenes/10.png';
-import card11 from './Imagenes/11.png';
+import card1Img from './Imagenes/1.jpg'; 
+import card2Img from './Imagenes/2.png';
+import card3Img from './Imagenes/3.png';
+import card4Img from './Imagenes/4.png';
+import card5Img from './Imagenes/5.png';
+import card6Img from './Imagenes/6.png';
+import card7Img from './Imagenes/7.png';
+import card8Img from './Imagenes/8.png';
+import card9Img from './Imagenes/9.png';
+import card10Img from './Imagenes/10.png';
+import card11Img from './Imagenes/11.png';
 
-const categoriesData = [
-  { id: 1, title: "Tendencias", imageUrl: card1, size: "" },
-  { id: 2, title: "Top en España", imageUrl: card2, size: "" },
-  { id: 3, title: "Del momento", imageUrl: card3, size: "" },
-  { id: 4, title: "Recomendadas", imageUrl: card4, size: "" },
-  { id: 5, title: "Álbum del momento", imageUrl: card5, size: "tall" },
-  { id: 6, title: "Artistas del momento", imageUrl: card6, size: "wide" },
-  { id: 7, title: "Para ti", imageUrl: card7, size: "" },
-  { id: 8, title: "Random", imageUrl: card8, size: "" },
-  { id: 9, title: "Géneros", imageUrl: card9, size: "" },
-  { id: 10, title: "Nuevos", imageUrl: card10, size: "" },
-  { id: 11, title: "Podcasts", imageUrl: card11, size: "wide" },
+const initialCategoriesData = [
+  { id: 1, title: "Tendencias", imageUrl: card1Img }, { id: 2, title: "Top en España", imageUrl: card2Img },
+  { id: 3, title: "Del momento", imageUrl: card3Img }, { id: 4, title: "Recomendadas", imageUrl: card4Img },
+  { id: 5, title: "Álbum del momento", imageUrl: card5Img, size: "tall" }, { id: 6, title: "Artistas del momento", imageUrl: card6Img, size: "wide" },
+  { id: 7, title: "Para ti", imageUrl: card7Img }, { id: 8, title: "Random", imageUrl: card8Img },
+  { id: 9, title: "Géneros", imageUrl: card9Img }, { id: 10, title: "Nuevos", imageUrl: card10Img },
+  { id: 11, title: "Podcasts", imageUrl: card11Img, size: "wide" },
 ];
 
-const songsData = [
-  { id: 1, albumArt: card1, title: "Canción", artist: "Nombre del artista", duration: "4:20" },
-  { id: 2, albumArt: card3, title: "Canción", artist: "Nombre del artista", duration: "4:20" },
-  { id: 3, albumArt: card5, title: "Canción", artist: "Nombre del artista", duration: "4:20" },
-  { id: 4, albumArt: card7, title: "Canción", artist: "Nombre del artista", duration: "4:20" },
+const initialSongsData = [
+  { id: 1, albumArt: card1Img, title: "Canción Ejemplo 1", artist: "Artista Demo", duration: "4:20", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", initialLikes: 15, comments: [{id: 101, user:{name: "Fanatico1"}, text:"Me encanta!"}] },
+  { id: 2, albumArt: card3Img, title: "Canción Ejemplo 2", artist: "Otro Artista", duration: "3:50", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", initialLikes: 22 },
+  { id: 3, albumArt: card5Img, title: "Canción Ejemplo 3", artist: "Artista Demo C", duration: "5:10", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", initialLikes: 8 },
+  { id: 4, albumArt: card7Img, title: "Canción Ejemplo 4", artist: "Artista Demo D", duration: "2:55", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", initialLikes: 30 },
 ];
 
 const initialUserProfileData = {
-  username: 'sampler_user',
-  email: 'user@sampler.com',
-  name: 'Sampler',
-  lastName: 'Fan',
-  dob: '2000-01-01',
-  gender: 'other',
-  aboutMe: 'Me encanta descubrir nueva música en Sampler.',
-  profilePicUrl: null
+  username: 'sampler_user', email: 'user@sampler.com', name: 'Sampler', lastName: 'Fan',
+  dob: '2000-01-01', gender: 'other', aboutMe: 'Me encanta Sampler.', profilePicUrl: null
 };
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('main');
+  const [activeOverlay, setActiveOverlay] = useState(null); 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [songs, setSongs] = useState(initialSongsData); 
+  const [loadingSongs, setLoadingSongs] = useState(false);
+  const [selectedSongForDetail, setSelectedSongForDetail] = useState(null);
 
-  const gridCategoriesInOrder = [
-    "Tendencias", "Top en España", "Del momento", "Recomendadas",
-    "Artistas del momento", "Para ti",
-    "Álbum del momento", "Géneros", "Nuevos", "Random", "Podcasts"
-  ]
-    .map(title => categoriesData.find(c => c.title === title))
-    .filter(Boolean);
+  useEffect(() => {
+    if (activeOverlay) {
+      document.body.classList.add('overlay-active');
+    } else {
+      document.body.classList.remove('overlay-active');
+    }
+    return () => {
+      document.body.classList.remove('overlay-active');
+    };
+  }, [activeOverlay]);
 
-  const navigateToLogin = () => setCurrentPage('login');
-  const navigateToRegister = () => setCurrentPage('register');
-  const navigateToUpload = () => {
-    if (isLoggedIn) setCurrentPage('upload');
-    else setCurrentPage('login');
+  const gridCategoriesInOrder = initialCategoriesData.map(c => ({...c, size: c.size || ""})).filter(Boolean);
+
+  const openLoginOverlay = () => { setSelectedSongForDetail(null); setActiveOverlay('login'); };
+  const openRegisterOverlay = () => { setSelectedSongForDetail(null); setActiveOverlay('register'); };
+  const openUploadOverlay = () => {
+    if (isLoggedIn) { setSelectedSongForDetail(null); setActiveOverlay('upload'); }
+    else openLoginOverlay();
   };
-  const navigateToProfile = () => {
-    if (isLoggedIn) setCurrentPage('profile');
-    else setCurrentPage('login');
+  const openProfileOverlay = () => {
+    if (isLoggedIn) { setSelectedSongForDetail(null); setActiveOverlay('profile'); }
+    else openLoginOverlay();
   };
-  const navigateToMain = () => setCurrentPage('main');
+  const openSongDetailOverlay = (song) => {
+    setSelectedSongForDetail(song);
+    setActiveOverlay('songDetail');
+  };
+  
+  const closeOverlay = () => {
+    setActiveOverlay(null);
+    setSelectedSongForDetail(null);
+  };
 
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = (userDataSimulated) => {
     setIsLoggedIn(true);
-    setCurrentUser(initialUserProfileData);
-    setCurrentPage('main');
+    setCurrentUser(userDataSimulated || initialUserProfileData);
+    closeOverlay();
   };
-  const handleRegisterSuccess = (userData) => {
+  const handleRegisterSuccess = () => {
     alert('¡Registro exitoso! Por favor, inicia sesión.');
-    setCurrentPage('login');
+    setSelectedSongForDetail(null); 
+    setActiveOverlay('login');
   };
   const handleLogout = () => {
     setIsLoggedIn(false);
     setCurrentUser(null);
-    setCurrentPage('main');
+    closeOverlay(); 
   };
-  const handleUploadSuccess = (uploadData) => {
-    alert(`¡"${uploadData.title}" subido con éxito (simulación)!`);
-    setCurrentPage('main');
+  const handleUploadSuccess = (newSongData) => {
+    const songToAdd = {
+        ...newSongData,
+        id: Date.now(), // Asegurar un ID único para la simulación
+        duration: newSongData.duration || "3:30", // Duración por defecto
+        audioUrl: newSongData.audioUrl || `https://example.com/audio/${Date.now()}.mp3` // URL simulada
+    };
+    setSongs(prevSongs => [songToAdd, ...prevSongs]);
+    alert(`¡"${newSongData.title}" ha sido añadida (simulación)!`);
+    closeOverlay(); 
   };
   const handleProfileUpdateSuccess = (updatedProfileData) => {
     alert('¡Perfil actualizado con éxito (simulación)!');
     setCurrentUser(prev => ({ ...prev, ...updatedProfileData, profilePicFile: undefined })); 
-    setCurrentPage('main');
+    closeOverlay();
   };
 
-  if (currentPage === 'login') {
-    return <LoginPage onLoginSuccess={handleLoginSuccess} onNavigateToRegister={navigateToRegister} />;
-  }
-  if (currentPage === 'register') {
-    return <RegisterPage onRegisterSuccess={handleRegisterSuccess} onNavigateToLogin={navigateToLogin} />;
-  }
-  if (currentPage === 'upload') {
-    return <UploadPage onUploadSuccess={handleUploadSuccess} onNavigateToMain={navigateToMain} />;
-  }
-  if (currentPage === 'profile') {
-    return <ProfilePage 
-              initialUserData={currentUser} 
-              onProfileUpdateSuccess={handleProfileUpdateSuccess} 
-              onNavigateToMain={navigateToMain} 
-            />;
+  let OverlayComponentToRender = null;
+  if (activeOverlay) {
+    switch (activeOverlay) {
+      case 'login':
+        OverlayComponentToRender = <LoginPage 
+                              onLoginSuccess={handleLoginSuccess} 
+                              onNavigateToRegister={() => setActiveOverlay('register')} 
+                              onClose={closeOverlay} 
+                           />;
+        break;
+      case 'register':
+        OverlayComponentToRender = <RegisterPage 
+                              onRegisterSuccess={handleRegisterSuccess} 
+                              onNavigateToLogin={() => setActiveOverlay('login')} 
+                              onClose={closeOverlay}
+                           />;
+        break;
+      case 'upload':
+        OverlayComponentToRender = <UploadPage 
+                              onUploadSuccess={handleUploadSuccess} 
+                              onClose={closeOverlay} 
+                           />;
+        break;
+      case 'profile':
+        OverlayComponentToRender = <ProfilePage 
+                              initialUserData={currentUser} 
+                              onProfileUpdateSuccess={handleProfileUpdateSuccess} 
+                              onClose={closeOverlay}
+                           />;
+        break;
+      case 'songDetail':
+        if (selectedSongForDetail) {
+          OverlayComponentToRender = <SongDetailPage 
+                                      song={selectedSongForDetail} 
+                                      onClose={closeOverlay} 
+                                    />;
+        }
+        break;
+      default:
+        OverlayComponentToRender = null;
+    }
   }
 
   return (
-    <div className="app-container">
+    <div className="app-main-container">
       <Header 
-        onLoginClick={navigateToLogin}
-        onRegisterClick={navigateToRegister} 
-        onUploadClick={navigateToUpload}
-        onProfileClick={navigateToProfile}
+        onLoginClick={openLoginOverlay}
+        onRegisterClick={openRegisterOverlay} 
+        onUploadClick={openUploadOverlay}
+        onProfileClick={openProfileOverlay}
         isLoggedIn={isLoggedIn}
         onLogoutClick={handleLogout}
+        currentUser={currentUser} 
       />
-      <h2 className="welcome-title">Bienvenido a <span className="highlight">Sampler</span></h2>
-      <div className="categories-grid">
-        {gridCategoriesInOrder.map(category => (
-          <CategoryCard key={category.id} title={category.title} imageUrl={category.imageUrl} size={category.size} />
-        ))}
+      
+      <div className="app-content-wrapper">
+        <h2 className="welcome-title">Bienvenido a <span className="highlight">Sampler</span></h2>
+        <div className="categories-grid">
+          {gridCategoriesInOrder.map(category => (
+            <CategoryCard key={category.id} title={category.title} imageUrl={category.imageUrl} size={category.size} />
+          ))}
+        </div>
+        <div className="song-list">
+          {loadingSongs && <p>Cargando canciones...</p>}
+          {!loadingSongs && songs.map(song => (
+            <SongPlayer 
+              key={song.id} 
+              songData={song}
+              onPlayClick={() => openSongDetailOverlay(song)} 
+            />
+          ))}
+          {!loadingSongs && songs.length === 0 && <p>No hay canciones disponibles.</p>}
+        </div>
       </div>
-      <div className="song-list">
-        {songsData.map(song => (
-          <SongPlayer key={song.id} albumArt={song.albumArt} title={song.title} artist={song.artist} duration={song.duration} />
-        ))}
-      </div>
+
+      {OverlayComponentToRender && (
+        <div className="overlay-backdrop" onClick={closeOverlay}> 
+          <div className="overlay-content-wrapper" onClick={(e) => e.stopPropagation()}> 
+            {OverlayComponentToRender}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
 export default App;

@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import logoImage from "../Imagenes/logo.png"; // Asegúrate que esta ruta es correcta
-
+import logoImage from "../Imagenes/logo.png";
 // No importamos './Header.css' aquí porque los estilos están en App.css
-// Si tenías una importación a un Header.css específico, elimínala o coméntala.
 
 const Header = ({ 
   onLoginClick, 
@@ -10,7 +8,8 @@ const Header = ({
   onUploadClick, 
   onProfileClick, 
   isLoggedIn, 
-  onLogoutClick 
+  onLogoutClick,
+  currentUser 
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -39,7 +38,7 @@ const Header = ({
   };
 
   return (
-    <header className="header"> {/* Esta clase usa los estilos de App.css */}
+    <header className="header"> 
       <div className="logo">
         <img src={logoImage} alt="Logo Sampler" className="logo-image" />
       </div>
@@ -59,6 +58,7 @@ const Header = ({
             <div className="dropdown-menu">
               {isLoggedIn ? (
                 <>
+                  {currentUser && <span className="dropdown-username">{currentUser.name || currentUser.username || 'Usuario'}</span>}
                   <button onClick={() => handleDropdownItemClick(onProfileClick)} className="dropdown-item">
                     Mi Perfil
                   </button>

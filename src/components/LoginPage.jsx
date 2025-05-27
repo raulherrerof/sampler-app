@@ -1,91 +1,104 @@
 import React, { useState } from 'react';
-import './LoginPage.css';
+import './LoginPage.css'; // Asegúrate que este archivo CSS existe en la misma carpeta
 
-function LoginPage({ onLoginSuccess, onNavigateToRegister }) {
-  const [username, setUsername] = useState('');
+function LoginPage({ onLoginSuccess, onNavigateToRegister, onClose }) { 
+  const [email, setEmail] = useState(''); // Usamos email para el login, como es más común
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  console.log("[LoginPage.jsx] Renderizando. Props recibidas:", { onLoginSuccess, onNavigateToRegister });
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("[LoginPage.jsx] handleSubmit. Usuario:", username, "Contraseña:", password);
+    setError('');
+    setLoading(true);
 
-    if (username.trim() !== '' && password.trim() !== '') {
-      if (typeof onLoginSuccess === 'function') {
-        console.log("[LoginPage.jsx] Llamando a onLoginSuccess...");
-        onLoginSuccess();
+    // --- SIMULACIÓN DE LOGIN ---
+    // En una aplicación real, aquí llamarías a tu backend/API
+    // Por ejemplo:
+    // try {
+    //   const response = await fetch('TU_API_URL/login', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ email, password })
+    //   });
+    //   const data = await response.json();
+    //   if (!response.ok) throw new Error(data.message || 'Error al iniciar sesión');
+    //   if (onLoginSuccess) onLoginSuccess(data.user, data.token); // Asumiendo que el backend devuelve user y token
+    // } catch (err) {
+    //   setError(err.message);
+    // }
+    // setLoading(false);
+
+    // Simulación actual:
+    setTimeout(() => {
+      if (email === "test@test.com" && password === "password") {
+        if (onLoginSuccess) {
+          // Pasamos un objeto de usuario simulado y un token falso
+          onLoginSuccess({ email: email, name: "Usuario de Prueba", username: "testuser" }, "fake_jwt_token_12345");
+        }
+        // onClose(); // App.jsx se encarga de llamar a closeOverlay en handleLoginSuccess
       } else {
-        console.error("[LoginPage.jsx] onLoginSuccess NO es una función o no está definida:", onLoginSuccess);
+        setError("Credenciales incorrectas. Intenta con test@test.com y password.");
       }
-    } else {
-      alert('Por favor, ingresa tu usuario y contraseña.');
-    }
+      setLoading(false);
+    }, 1000); // Simula una demora de red
   };
-
-  const handleNavigateToRegisterClick = () => {
-    console.log("[LoginPage.jsx] Botón 'Regístrate' clickeado.");
-    if (typeof onNavigateToRegister === 'function') {
-      console.log("[LoginPage.jsx] Llamando a onNavigateToRegister...");
-      onNavigateToRegister();
-    } else {
-      console.error("[LoginPage.jsx] onNavigateToRegister NO es una función o no está definida:", onNavigateToRegister);
-    }
-  };
-
-  
 
   return (
-    <div className="login-page">
-      <header className="login-header">
-        <div className="logo-container">
-          <span className="logo-text">Sampler</span>
-        </div>
-        <h1 className="welcome-message">Bienvenido a Sampler</h1>
+    // Esta es la clase principal para el contenido DENTRO del overlay.
+    // Su CSS NO debe hacer que ocupe toda la pantalla.
+    <div className="login-page-overlay-content"> 
+      <button onClick={onClose} className="overlay-close-button" aria-label="Cerrar">×</button>
+      
+      <header className="login-header-modal"> 
+        <span className="logo-text-modal">Sampler</span>
+        <h1 className="welcome-message-modal">Iniciar Sesión</h1>
       </header>
 
-      <main className="login-main">
-        <div className="login-form-container">
-          <h2 className="form-title">Iniciar sesión</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="username-login">Usuario</label>
-              <input
-                type="text"
-                id="username-login"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                autoComplete="username"
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password-login">Contraseña</label>
-              <input
-                type="password"
-                id="password-login"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-              />
-            </div>
-            <button type="submit" className="submit-button">
-              CONTINUAR
-            </button>
-          </form>
-          <p className="signup-link">
-            ¿Aún no tienes cuenta?{' '}
-            <button 
-              type="button" 
-              onClick={handleNavigateToRegisterClick} // Usamos la nueva función wrapper
-              className="link-button"
-            >
-              Regístrate
-            </button>
-          </p>
-        </div>
-      </main>
+      <div className="login-form-container"> {/* Este contenedor define el ancho del formulario */}
+        {error && <p className="form-error-message">{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="email-login">Correo Electrónico</label>
+            <input 
+              type="email" 
+              id="email-login" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
+              autoComplete="email" 
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password-login">Contraseña</label>
+            <input 
+              type="password" 
+              id="password-login" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
+              autoComplete="current-password" 
+            />
+          </div>
+          <button 
+            type="submit" 
+            className="submit-button" 
+            disabled={loading}
+          >
+            {loading ? 'Ingresando...' : 'CONTINUAR'}
+          </button>
+        </form>
+        <p className="signup-link">
+          ¿Aún no tienes cuenta?{' '}
+          <button 
+            type="button" 
+            onClick={onNavigateToRegister} 
+            className="link-button"
+          >
+            Regístrate
+          </button>
+        </p>
+      </div>
     </div>
   );
 }

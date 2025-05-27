@@ -1,63 +1,71 @@
-/* Estilos para la página LoginPage */
+/* src/components/LoginPage/LoginPage.css */
 
-.login-page {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh; /* Asegura que ocupa al menos toda la altura de la pantalla */
-  box-sizing: border-box;
-  background-color: #000000; /* Fondo negro general si no lo hereda de body */
-  color: #ffffff; /* Texto blanco por defecto */
-}
-
-.login-header {
-  display: flex;
-  justify-content: space-between; /* O ajusta según prefieras */
-  align-items: center;
-  padding: 20px 40px;
-  border-bottom: 1px solid #ffffff;
-  width: 100%;
+/* Contenedor principal del contenido del modal de login */
+.login-page-overlay-content {
+  padding: 20px 25px; /* Padding interno para el contenido del modal */
+  width: 100%; /* Para que se ajuste al .overlay-content-wrapper */
   box-sizing: border-box;
 }
 
-.login-header .logo-container .logo-text {
-  font-family: 'Pacifico', cursive; /* Ejemplo de fuente script, necesitas importarla */
-  font-size: 2.8em; /* Ajusta el tamaño según la imagen */
-  color: #ffffff;
-}
-
-.login-header .welcome-message {
-  font-family: 'Dancing Script', cursive; /* Ejemplo de fuente script, necesitas importarla */
-  font-size: 2em; /* Ajusta el tamaño */
-  color: #ffffff;
-  margin: 0;
-  font-weight: normal; /* Las fuentes script suelen tener su propio peso */
-}
-
-.login-main {
-  flex-grow: 1; /* Hace que el main ocupe el espacio restante */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 40px 20px; /* Espacio alrededor del formulario */
-  box-sizing: border-box;
-}
-
-.login-form-container {
-  background-color: #1c1c1c; /* Gris oscuro para el contenedor del formulario */
-  padding: 30px 40px;
-  border-radius: 10px;
-  width: 100%;
-  max-width: 450px; /* Ancho máximo del formulario */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.login-form-container .form-title {
+/* Header específico DENTRO del modal de login */
+.login-header-modal { 
   text-align: center;
-  font-size: 1.8em;
-  font-weight: bold;
-  margin-top: 0;
-  margin-bottom: 30px;
-  color: #ffffff;
+  padding-bottom: 15px;
+  margin-bottom: 25px; /* Más espacio antes del formulario */
+  /* border-bottom: 1px solid #2a2a2a;  Opcional: separador sutil */
+}
+
+.logo-text-modal {
+  font-family: 'Pacifico', cursive; /* O la fuente de tu logo principal */
+  font-size: 2.8em; /* Tamaño del logo en el modal */
+  /* Replicar gradiente si lo deseas */
+  background: linear-gradient(to right, #ff00ff, #8a2be2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block; /* Para que el gradiente se aplique bien */
+}
+
+.welcome-message-modal { 
+  font-family: 'Dancing Script', cursive; /* O la fuente que uses */
+  font-size: 1.6em; 
+  margin-top: 10px;
+  color: #e0e0e0;
+  font-weight: normal;
+}
+
+/* Contenedor del formulario en sí, define el ancho */
+.login-form-container { 
+  background-color: transparent; /* El fondo principal lo da .overlay-content-wrapper en App.css */
+  padding: 0; /* El padding general ya está en .login-page-overlay-content o .overlay-content-wrapper */
+  width: 100%; 
+  max-width: 420px;   /* <<< ANCHO MÁXIMO DEL FORMULARIO DE LOGIN >>> */
+  margin: 0 auto; /* Centra el formulario si .login-page-overlay-content es más ancho */
+  box-shadow: none; /* La sombra está en .overlay-content-wrapper */
+  border-radius: 0; /* Los bordes redondeados están en .overlay-content-wrapper */
+}
+
+/* El título del formulario puede ser el .welcome-message-modal o un h2 separado */
+.login-form-container .form-title {
+  /* Si decides usar este en lugar del .welcome-message-modal */
+  /* text-align: center; */
+  /* font-size: 1.8em; */
+  /* font-weight: bold; */
+  /* margin-top: 0; */
+  /* margin-bottom: 30px; */
+  /* color: #ffffff; */
+  display: none; /* Oculto porque ya usamos el header del modal */
+}
+
+.form-error-message {
+  color: #ff6b6b; /* Un rojo para errores */
+  background-color: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 0.9em;
 }
 
 .login-form-container .form-group {
@@ -68,67 +76,84 @@
   display: block;
   font-size: 0.9em;
   margin-bottom: 8px;
-  color: #e0e0e0; /* Un gris un poco más claro para las etiquetas */
+  color: #e0e0e0;
+  font-weight: 500; /* Un poco más de peso */
 }
 
 .login-form-container .form-group input[type="text"],
+.login-form-container .form-group input[type="email"], 
 .login-form-container .form-group input[type="password"] {
   width: 100%;
   padding: 12px 15px;
   background-color: #ffffff;
-  border: none; /* Sin borde visible como en la imagen */
-  border-radius: 5px; /* Bordes ligeramente redondeados */
+  border: 1px solid #444; /* Borde sutil para los inputs */
+  border-radius: 5px;
   box-sizing: border-box;
   font-size: 1em;
-  color: #333333; /* Color del texto dentro del input */
+  color: #222222; /* Texto oscuro dentro del input */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.login-form-container .form-group input[type="text"]:focus,
-.login-form-container .form-group input[type="password"]:focus {
-  outline: 2px solid #6200ea; /* O el color de acento que prefieras para el foco */
+.login-form-container .form-group input:focus {
+  outline: none;
+  border-color: #8a2be2; /* Color del borde al enfocar */
+  box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.3); /* Resplandor sutil */
 }
 
 .login-form-container .submit-button {
-  width: auto; /* Para que se ajuste al texto */
-  padding: 12px 30px;
-  background-color: #e0e0e0; /* Gris claro del botón */
-  color: #000000; /* Texto negro del botón */
+  width: 100%; /* Que ocupe todo el ancho del .login-form-container */
+  padding: 12px 20px;
+  background-color: #8a2be2; /* Color principal de la marca */
+  color: #ffffff;
   border: none;
-  border-radius: 25px; /* Botón bien redondeado */
+  border-radius: 25px; /* Más redondeado */
   font-size: 1em;
   font-weight: bold;
   cursor: pointer;
-  display: block; /* Para poder centrarlo con margin auto */
-  margin: 30px auto 0 auto; /* Centrar el botón y añadir margen superior */
+  display: block;
+  margin: 30px auto 0 auto;
   text-transform: uppercase;
-  transition: background-color 0.2s ease;
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.login-form-container .submit-button:hover:not(:disabled) {
+  background-color: #7324bf; /* Más oscuro al pasar el ratón */
+}
+.login-form-container .submit-button:active:not(:disabled) {
+  transform: translateY(1px); /* Efecto de clic */
+}
+.login-form-container .submit-button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
 }
 
-.login-form-container .submit-button:hover {
-  background-color: #c7c7c7; /* Un poco más oscuro al pasar el ratón */
-}
 
-.login-form-container .signup-link { /* Estilos para el párrafo que contiene el enlace/botón de registro */
+.login-form-container .signup-link {
   text-align: center;
-  margin-top: 25px;
+  margin-top: 30px; /* Más espacio */
   font-size: 0.9em;
-  color: #b0b0b0; /* Color del texto "¿Aún no tienes cuenta?" */
+  color: #b0b0b0;
 }
-
-.login-form-container .signup-link .link-button { /* Estilos para el botón "Regístrate" */
-  background: none;
-  border: none;
-  color: #ffffff; /* Color del texto "Regístrate" (blanco) */
+.login-form-container .signup-link .link-button {
+  background: none; 
+  border: none; 
+  color: #8a2be2; /* Color de enlace que coincida con el tema */
   text-decoration: underline;
-  font-weight: bold;
-  cursor: pointer;
-  padding: 0; /* Quita padding por defecto de los botones */
-  font-size: inherit; /* Hereda el tamaño de fuente del párrafo .signup-link */
-  font-family: inherit; /* Hereda la fuente del párrafo .signup-link */
-  vertical-align: baseline; /* Ayuda a alinear con el texto circundante si es necesario */
+  font-weight: bold; 
+  cursor: pointer; 
+  padding: 0; 
+  font-size: inherit; 
+  font-family: inherit;
+}
+.login-form-container .signup-link .link-button:hover {
+  text-decoration: none;
+  color: #a040d0; /* Un poco más claro o diferente al pasar el ratón */
 }
 
-.login-form-container .signup-link .link-button:hover {
-  text-decoration: none; /* Quita el subrayado al pasar el ratón, como un enlace típico */
-  /* Puedes añadir otro efecto si quieres, ej: color: #dddddd; */
+/* El botón de cerrar overlay (X) ya está estilizado en App.css,
+   pero si necesitas anularlo o hacer algo específico para este modal: */
+/*
+.login-page-overlay-content .overlay-close-button {
+  color: #ccc;
 }
+*/
