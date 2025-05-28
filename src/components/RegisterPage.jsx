@@ -23,7 +23,7 @@ function RegisterPage({ onRegisterSuccess, onNavigateToLogin, onClose, apiBaseUr
     }
     setLoading(true);
     try {
-      const response = await fetch(`${apiBaseUrl}/auth/register.php`, { // Endpoint PHP
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/register.php`, { // Endpoint PHP
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password }), // Tu API PHP recibirá esto

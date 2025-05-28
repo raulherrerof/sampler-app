@@ -32,7 +32,7 @@ const initialCategoriesData = [
 ];
 
 // URL base de tu API PHP (ajusta esto a tu configuración real)
-const API_BASE_URL = 'http://localhost/sampler-api'; // Ejemplo: si tu API está en localhost/sampler-api/
+
 
 function App() {
   const [activeOverlay, setActiveOverlay] = useState(null); 
@@ -45,7 +45,7 @@ function App() {
   // Función para verificar el estado de la sesión al cargar la app
   const checkLoginStatus = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/status.php`, { credentials: 'include' }); // 'include' para enviar cookies
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/status.php`, { credentials: 'include' }); // 'include' para enviar cookies
       if (response.ok) {
         const data = await response.json();
         if (data.loggedIn && data.user) {
@@ -73,7 +73,7 @@ function App() {
     const fetchSongs = async () => {
       setLoadingSongs(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/songs/list.php`); // Asumiendo endpoint para listar canciones
+        const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/songs/list.php`); // Asumiendo endpoint para listar canciones
         if (!response.ok) throw new Error('Error al cargar canciones');
         const fetchedSongs = await response.json();
         setSongs(fetchedSongs);
@@ -124,7 +124,7 @@ function App() {
   };
   const handleLogout = async () => {
     try {
-      await fetch(`${API_BASE_URL}/auth/logout.php`, { method: 'POST', credentials: 'include' });
+      await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/logout.php`, { method: 'POST', credentials: 'include' });
     } catch (error) {
       console.error("Error en logout:", error);
     }
@@ -151,7 +151,7 @@ function App() {
                               onLoginSuccess={handleLoginSuccess} 
                               onNavigateToRegister={() => setActiveOverlay('register')} 
                               onClose={closeOverlay} 
-                              apiBaseUrl={API_BASE_URL}
+                              apiBaseUrl={process.env.REACT_APP_API_BASE_URL}
                            />;
         break;
       case 'register':
@@ -159,14 +159,14 @@ function App() {
                               onRegisterSuccess={handleRegisterSuccess} 
                               onNavigateToLogin={() => setActiveOverlay('login')} 
                               onClose={closeOverlay}
-                              apiBaseUrl={API_BASE_URL}
+                              apiBaseUrl={process.env.REACT_APP_API_BASE_URL}
                            />;
         break;
       case 'upload':
         OverlayComponentToRender = <UploadPage 
                               onUploadSuccess={handleUploadSuccess} 
                               onClose={closeOverlay}
-                              apiBaseUrl={API_BASE_URL} 
+                              apiBaseUrl={process.env.REACT_APP_API_BASE_URL} 
                            />;
         break;
       case 'profile':
@@ -174,7 +174,7 @@ function App() {
                               initialUserData={currentUser} 
                               onProfileUpdateSuccess={handleProfileUpdateSuccess} 
                               onClose={closeOverlay}
-                              apiBaseUrl={API_BASE_URL}
+                              apiBaseUrl={process.env.REACT_APP_API_BASE_URL}
                            />;
         break;
       case 'songDetail':
@@ -182,7 +182,7 @@ function App() {
           OverlayComponentToRender = <SongDetailPage 
                                       song={selectedSongForDetail} 
                                       onClose={closeOverlay} 
-                                      // Podrías pasar API_BASE_URL si necesita hacer fetch de comentarios, etc.
+                                      // Podrías pasar process.env.REACT_APP_API_BASE_URL si necesita hacer fetch de comentarios, etc.
                                     />;
         }
         break;

@@ -72,7 +72,7 @@ function UploadPage({ onUploadSuccess, onClose, apiBaseUrl }) { // Renombrado on
     formData.append('audioFile', audioFile);
 
     try {
-      const response = await fetch(`${apiBaseUrl}/songs/upload.php`, {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/upload_audio.php`, {
         method: 'POST',
         body: formData,
         credentials: 'include', 

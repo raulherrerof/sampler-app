@@ -12,7 +12,7 @@ function LoginPage({ onLoginSuccess, onNavigateToRegister, onClose, apiBaseUrl }
     setError('');
     setLoading(true);
     try {
-      const response = await fetch(`${apiBaseUrl}/auth/login.php`, { // Endpoint PHP
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/login.php`, { // Endpoint PHP
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

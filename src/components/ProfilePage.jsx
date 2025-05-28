@@ -79,7 +79,7 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose, apiBase
     if (profilePicFile) formData.append('profilePic', profilePicFile);
 
     try {
-      const response = await fetch(`${apiBaseUrl}/users/update_profile.php`, {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/users/update_profile.php`, {
         method: 'POST',
         body: formData,
         credentials: 'include',
