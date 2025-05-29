@@ -1,22 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './ProfilePage.css'; 
 
-// --- SVG ICON COMPONENT ---
 const ProfileIconPlaceholder = () => (
-  <svg
-    width="32" // Tamaño del icono de perfil en el input de archivo
-    height="32"
-    viewBox="0 0 24 24"
-    fill="currentColor" 
-    style={{ verticalAlign: 'middle', marginLeft: '10px', color: '#777' }} // color del placeholder
-  >
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style={{ verticalAlign: 'middle', marginLeft: '10px', color: '#777' }}>
     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
     <path d="M0 0h24v24H0z" fill="none"></path>
   </svg>
 );
-// --- FIN SVG ICON COMPONENT ---
 
-function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose, apiBaseUrl }) {
+function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,6 +23,8 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose, apiBase
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const API_URL = process.env.REACT_APP_API_BASE_URL || '';
+
   useEffect(() => {
     if (initialUserData) {
       setUsername(initialUserData.username || '');
@@ -41,8 +35,8 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose, apiBase
       setGender(initialUserData.gender || '');
       setAboutMe(initialUserData.aboutMe || '');
       setProfilePicPreview(initialUserData.profilePicUrl || null); 
-      setProfilePicName(''); // Resetear nombre de archivo al cargar datos iniciales
-      setProfilePicFile(null); // Resetear archivo al cargar datos iniciales
+      setProfilePicName(''); 
+      setProfilePicFile(null); 
     }
   }, [initialUserData]);
 
@@ -57,7 +51,6 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose, apiBase
     } else {
       setProfilePicFile(null);
       setProfilePicName('');
-      // Mantener la preview de initialUserData si el usuario cancela la selección
       setProfilePicPreview(initialUserData?.profilePicUrl || null);
     }
   };
@@ -75,21 +68,23 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose, apiBase
     if (dob) formData.append('dob', dob);
     if (gender) formData.append('gender', gender);
     if (aboutMe) formData.append('aboutMe', aboutMe);
-    if (password) formData.append('password', password);
-    if (profilePicFile) formData.append('profilePic', profilePicFile);
+    if (password) formData.append('password', password); 
+    if (profilePicFile) formData.append('profilePic', profilePicFile); 
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/users/update_profile.php`, {
+      const response = await fetch(`${API_URL}/api/users/update_profile.php`, {
         method: 'POST',
         body: formData,
-        credentials: 'include',
+        credentials: 'include', 
       });
       const data = await response.json();
       if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Error al actualizar el perfil');
+        throw new Error(data.message || data.error || 'Error al actualizar el perfil');
       }
       if (onProfileUpdateSuccess && data.user) {
-        onProfileUpdateSuccess(data.user);
+        onProfileUpdateSuccess(data.user); 
+      } else {
+        throw new Error("Respuesta inválida del servidor tras actualizar perfil.");
       }
     } catch (err) {
       console.error("Error actualizando perfil:", err);
@@ -106,7 +101,7 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose, apiBase
         <h1 className="welcome-message-modal">Tu Perfil</h1>
       </header>
       <div className="profile-form-container">
-        {error && <p className="form-error-message">{error}</p>}
+        {error && <p className="form-error-message" style={{color: 'red', textAlign: 'center'}}>{error}</p>}
         <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="username-profile">Usuario</label>
@@ -132,30 +127,18 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose, apiBase
               <label htmlFor="dob-profile">Fecha de nacimiento</label>
               <input type="date" id="dob-profile" value={dob} onChange={(e) => setDob(e.target.value)} />
             </div>
-
             <div className="form-group">
               <label>Sexo</label>
               <div className="radio-group">
-                <label htmlFor="gender-female" className="radio-label">
-                  <input type="radio" id="gender-female" name="gender" value="female" checked={gender === 'female'} onChange={(e) => setGender(e.target.value)} />
-                  Mujer
-                </label>
-                <label htmlFor="gender-male" className="radio-label">
-                  <input type="radio" id="gender-male" name="gender" value="male" checked={gender === 'male'} onChange={(e) => setGender(e.target.value)} />
-                  Hombre
-                </label>
-                <label htmlFor="gender-other" className="radio-label">
-                  <input type="radio" id="gender-other" name="gender" value="other" checked={gender === 'other'} onChange={(e) => setGender(e.target.value)} />
-                  Prefiero no responder
-                </label>
+                <label htmlFor="gender-female" className="radio-label"><input type="radio" id="gender-female" name="gender" value="female" checked={gender === 'female'} onChange={(e) => setGender(e.target.value)} />Mujer</label>
+                <label htmlFor="gender-male" className="radio-label"><input type="radio" id="gender-male" name="gender" value="male" checked={gender === 'male'} onChange={(e) => setGender(e.target.value)} />Hombre</label>
+                <label htmlFor="gender-other" className="radio-label"><input type="radio" id="gender-other" name="gender" value="other" checked={gender === 'other'} onChange={(e) => setGender(e.target.value)} />Prefiero no responder</label>
               </div>
             </div>
-
             <div className="form-group">
               <label htmlFor="aboutme-profile">Sobre ti</label>
               <textarea id="aboutme-profile" value={aboutMe} onChange={(e) => setAboutMe(e.target.value)} rows="4"></textarea>
             </div>
-            
             <div className="file-input-group profile-pic-group">
               <label htmlFor="profile-pic-input" className="file-input-label profile-pic-label">
                 {profilePicPreview ? 
@@ -163,18 +146,11 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose, apiBase
                     <ProfileIconPlaceholder />
                 }
                 <span style={{marginLeft: '10px'}}>
-                    {profilePicFile ? profilePicName : (initialUserData?.profilePicUrl ? "Cambiar foto" : "Seleccionar foto de perfil (.png, .jpg)")}
+                    {profilePicFile ? profilePicName : (initialUserData?.profilePicUrl && !profilePicFile ? "Cambiar foto" : "Seleccionar foto (.png, .jpg)")}
                 </span>
               </label>
-              <input
-                type="file"
-                id="profile-pic-input"
-                accept="image/png, image/jpeg"
-                onChange={handleProfilePicChange}
-                style={{ display: 'none' }}
-              />
+              <input type="file" id="profile-pic-input" accept="image/png, image/jpeg" onChange={handleProfilePicChange} style={{ display: 'none' }}/>
             </div>
-
             <button type="submit" className="submit-button profile-submit-button" disabled={loading}>
               {loading ? 'Guardando...' : 'GUARDAR CAMBIOS'}
             </button>

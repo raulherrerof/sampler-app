@@ -31,24 +31,24 @@ const initialCategoriesData = [
   { id: 11, title: "Podcasts", imageUrl: card11Img, size: "wide" },
 ];
 
-// URL base de tu API PHP (ajusta esto a tu configuración real)
-
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+console.log("API Base URL:", API_BASE_URL); 
 
 function App() {
   const [activeOverlay, setActiveOverlay] = useState(null); 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null); // Guardará datos del usuario desde la API
+  const [currentUser, setCurrentUser] = useState(null);
   const [songs, setSongs] = useState([]); 
   const [loadingSongs, setLoadingSongs] = useState(true);
   const [selectedSongForDetail, setSelectedSongForDetail] = useState(null);
 
-  // Función para verificar el estado de la sesión al cargar la app
   const checkLoginStatus = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/status.php`, { credentials: 'include' }); // 'include' para enviar cookies
+   
+      const response = await fetch(`${API_BASE_URL}/api/verificar_sesion.php`, { credentials: 'include' }); 
       if (response.ok) {
         const data = await response.json();
-        if (data.loggedIn && data.user) {
+        if (data.isLoggedIn && data.user) {
           setIsLoggedIn(true);
           setCurrentUser(data.user);
         } else {
@@ -67,16 +67,15 @@ function App() {
   };
 
   useEffect(() => {
-    checkLoginStatus(); // Verificar al montar
+    checkLoginStatus(); 
 
-    // Cargar canciones
     const fetchSongs = async () => {
       setLoadingSongs(true);
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/songs/list.php`); // Asumiendo endpoint para listar canciones
+        const response = await fetch(`${API_BASE_URL}/api/songs.php`); 
         if (!response.ok) throw new Error('Error al cargar canciones');
         const fetchedSongs = await response.json();
-        setSongs(fetchedSongs);
+        setSongs(fetchedSongs.songs || fetchedSongs); 
       } catch (error) {
         console.error("Error cargando canciones:", error);
         setSongs([]);
@@ -84,7 +83,7 @@ function App() {
       setLoadingSongs(false);
     };
     fetchSongs();
-  }, []); // Cargar solo una vez
+  }, []); 
 
   useEffect(() => {
     if (activeOverlay) document.body.classList.add('overlay-active');
@@ -124,7 +123,7 @@ function App() {
   };
   const handleLogout = async () => {
     try {
-      await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/logout.php`, { method: 'POST', credentials: 'include' });
+      await fetch(`${API_BASE_URL}/api/logout.php`, { method: 'POST', credentials: 'include' });
     } catch (error) {
       console.error("Error en logout:", error);
     }
@@ -132,7 +131,7 @@ function App() {
     setCurrentUser(null);
     closeOverlay(); 
   };
-  const handleUploadSuccess = async (newSongDataFromApi) => { // Asume que la API devuelve la canción creada
+  const handleUploadSuccess = async (newSongDataFromApi) => { 
     setSongs(prevSongs => [newSongDataFromApi, ...prevSongs]);
     alert(`¡"${newSongDataFromApi.title}" ha sido subida con éxito!`);
     closeOverlay(); 
@@ -151,7 +150,6 @@ function App() {
                               onLoginSuccess={handleLoginSuccess} 
                               onNavigateToRegister={() => setActiveOverlay('register')} 
                               onClose={closeOverlay} 
-                              apiBaseUrl={process.env.REACT_APP_API_BASE_URL}
                            />;
         break;
       case 'register':
@@ -159,14 +157,12 @@ function App() {
                               onRegisterSuccess={handleRegisterSuccess} 
                               onNavigateToLogin={() => setActiveOverlay('login')} 
                               onClose={closeOverlay}
-                              apiBaseUrl={process.env.REACT_APP_API_BASE_URL}
                            />;
         break;
       case 'upload':
         OverlayComponentToRender = <UploadPage 
                               onUploadSuccess={handleUploadSuccess} 
                               onClose={closeOverlay}
-                              apiBaseUrl={process.env.REACT_APP_API_BASE_URL} 
                            />;
         break;
       case 'profile':
@@ -174,7 +170,6 @@ function App() {
                               initialUserData={currentUser} 
                               onProfileUpdateSuccess={handleProfileUpdateSuccess} 
                               onClose={closeOverlay}
-                              apiBaseUrl={process.env.REACT_APP_API_BASE_URL}
                            />;
         break;
       case 'songDetail':
@@ -182,7 +177,6 @@ function App() {
           OverlayComponentToRender = <SongDetailPage 
                                       song={selectedSongForDetail} 
                                       onClose={closeOverlay} 
-                                      // Podrías pasar process.env.REACT_APP_API_BASE_URL si necesita hacer fetch de comentarios, etc.
                                     />;
         }
         break;
@@ -214,7 +208,7 @@ function App() {
           {!loadingSongs && songs.map(song => (
             <SongPlayer 
               key={song.id} 
-              songData={song} // song debe tener albumArtUrl y audioUrl de tu API PHP
+              songData={song} 
               onPlayClick={() => openSongDetailOverlay(song)} 
             />
           ))}

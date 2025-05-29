@@ -1,18 +1,17 @@
-/* src/components/RegisterPage/RegisterPage.css */
 .register-page-overlay-content { padding: 20px 25px; width: 100%; box-sizing: border-box; }
 .register-header-modal { text-align: center; padding-bottom: 15px; margin-bottom: 25px; }
-/* Reutiliza .logo-text-modal y .welcome-message-modal de App.css o defínelos aquí si son diferentes */
+
 
 .register-form-container { 
   background-color: transparent; padding: 0; width: 100%; 
-  max-width: 480px; /* Ancho del contenido del modal de registro */
+  max-width: 480px; 
   margin: 0 auto; box-shadow: none; border-radius: 0;
 }
-.form-error-message { /* Mismos estilos que en LoginPage.css */
+.form-error-message {
   color: #ff6b6b; background-color: rgba(255, 107, 107, 0.1); border: 1px solid rgba(255, 107, 107, 0.3);
   padding: 10px; border-radius: 4px; text-align: center; margin-bottom: 20px; font-size: 0.9em;
 }
-.register-form-container .form-group { margin-bottom: 18px; } /* Reducido un poco */
+.register-form-container .form-group { margin-bottom: 18px; } 
 .register-form-container .form-group label { display: block; font-size: 0.9em; margin-bottom: 7px; color: #e0e0e0; font-weight: 500; }
 .register-form-container .form-group input[type="text"],
 .register-form-container .form-group input[type="email"], 
@@ -22,7 +21,7 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .register-form-container .form-group input:focus { outline: none; border-color: #8a2be2; box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.3); }
-.register-form-container .submit-button { /* Mismos estilos que en LoginPage.css */
+.register-form-container .submit-button { 
   width: 100%; padding: 12px 20px; background-color: #8a2be2; color: #ffffff;
   border: none; border-radius: 25px; font-size: 1em; font-weight: bold;
   cursor: pointer; display: block; margin: 30px auto 0 auto; text-transform: uppercase;
@@ -31,7 +30,7 @@
 .register-form-container .submit-button:hover:not(:disabled) { background-color: #7324bf; }
 .register-form-container .submit-button:active:not(:disabled) { transform: translateY(1px); }
 .register-form-container .submit-button:disabled { background-color: #555; cursor: not-allowed; }
-.register-form-container .login-link-footer { /* Mismos estilos que en LoginPage.css */
+.register-form-container .login-link-footer { 
   text-align: center; margin-top: 25px; font-size: 0.9em; color: #b0b0b0;
 }
 .register-form-container .login-link-footer .link-button {

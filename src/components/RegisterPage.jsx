@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 import './RegisterPage.css'; 
 
-function RegisterPage({ onRegisterSuccess, onNavigateToLogin, onClose, apiBaseUrl }) {
+function RegisterPage({ onRegisterSuccess, onNavigateToLogin, onClose }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+ 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const API_URL = process.env.REACT_APP_API_BASE_URL || '';
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
-    if (!username || !email || !password || !confirmPassword) {
-      setError('Por favor, completa todos los campos.'); return;
+   
+    if (!username || !email || !password || !confirmPassword ) {
+      setError('Por favor, completa todos los campos requeridos.'); return;
     }
     if (password.length < 6) {
         setError('La contraseña debe tener al menos 6 caracteres.'); return;
@@ -23,14 +27,17 @@ function RegisterPage({ onRegisterSuccess, onNavigateToLogin, onClose, apiBaseUr
     }
     setLoading(true);
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/register.php`, { // Endpoint PHP
+      const response = await fetch(`${API_URL}/api/register.php`, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password }), // Tu API PHP recibirá esto
+      
+        body: JSON.stringify({ username, email, password, name: username }), 
+       
       });
       const data = await response.json();
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Error al registrar usuario');
+     
+      if (!response.ok) { 
+        throw new Error(data.error || data.message || 'Error al registrar usuario');
       }
       if (onRegisterSuccess) {
         onRegisterSuccess(); 
@@ -50,12 +57,13 @@ function RegisterPage({ onRegisterSuccess, onNavigateToLogin, onClose, apiBaseUr
         <h1 className="welcome-message-modal">Crear Cuenta</h1>
       </header>
       <div className="register-form-container">
-        {error && <p className="form-error-message">{error}</p>}
+        {error && <p className="form-error-message" style={{color: 'red', textAlign: 'center'}}>{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="username-register">Usuario</label>
             <input type="text" id="username-register" value={username} onChange={(e) => setUsername(e.target.value)} required autoComplete="username"/>
           </div>
+          
           <div className="form-group">
             <label htmlFor="email-register">Correo Electrónico</label>
             <input type="email" id="email-register" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email"/>

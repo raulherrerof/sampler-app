@@ -1,15 +1,14 @@
-/* src/components/SongDetailPage/SongDetailPage.css */
 
 .song-detail-page-overlay-content {
-  padding: 20px 30px; /* Padding interno del modal */
-  max-width: 900px; /* Ancho máximo del contenido del modal */
-  margin: auto; /* Centrar si el overlay-content-wrapper es más ancho */
+  padding: 20px 30px; 
+  max-width: 900px; 
+  margin: auto; 
   color: #e0e0e0;
-  background-color: #121212; /* Fondo ligeramente diferente al overlay-content-wrapper si se quiere */
-  border-radius: 8px; /* Si el overlay-content-wrapper no tiene, para el contenido interno */
+  background-color: #121212; 
+  border-radius: 8px; 
 }
 
-/* Botón de cerrar (ya debería estar en App.css, pero por si acaso) */
+
 .overlay-close-button {
   position: absolute;
   top: 15px;
@@ -28,13 +27,13 @@
   flex-direction: column;
   align-items: center;
   gap: 30px;
-  margin-top: 20px; /* Espacio si hay un header dentro del modal */
+  margin-top: 20px; 
   margin-bottom: 40px;
 }
 
 .song-cover-art-large-container {
   width: 100%;
-  max-width: 300px; /* Tamaño de la portada */
+  max-width: 300px; 
   aspect-ratio: 1 / 1;
   margin-bottom: 20px;
 }
@@ -43,16 +42,16 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 12px; /* Bordes redondeados para la portada */
+  border-radius: 12px; 
   box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 
 .player-controls-container {
-  background-color: #181818; /* Fondo del reproductor */
+  background-color: #181818; 
   border-radius: 10px;
   padding: 20px;
   width: 100%;
-  max-width: 700px; /* Ancho del reproductor */
+  max-width: 700px; 
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -81,14 +80,14 @@
 .player-actions {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Distribuye los elementos */
+  justify-content: space-between; 
   gap: 15px;
 }
 
 .like-button {
   background: none;
   border: none;
-  color: #b3b3b3; /* Color del corazón por defecto */
+  color: #b3b3b3; 
   cursor: pointer;
   padding: 5px;
   display: flex;
@@ -96,7 +95,7 @@
   align-items: center;
 }
 .like-button.liked svg {
-  fill: #8a2be2; /* Color del corazón cuando está "likeado" */
+  fill: #8a2be2; 
   stroke: #8a2be2;
 }
 .like-button:hover svg {
@@ -109,7 +108,7 @@
 }
 
 .play-pause-button-detail {
-  background-color: #8a2be2; /* Púrpura */
+  background-color: #8a2be2; 
   color: white;
   border: none;
   border-radius: 50%;
@@ -127,13 +126,13 @@
 
 .waveform-placeholder-detail {
   flex-grow: 1;
-  height: 50px; /* Altura del waveform/barra de progreso */
-  background-color: #282828; /* Fondo de la barra de progreso */
+  height: 50px; 
+  background-color: #282828; 
   border-radius: 4px;
   position: relative;
   cursor: pointer;
-  display: flex; /* Para las barras de simulación */
-  align-items: flex-end; /* Barras desde abajo */
+  display: flex;
+  align-items: flex-end; 
   overflow: hidden;
 }
 
@@ -142,12 +141,12 @@
   left: 0;
   top: 0;
   height: 100%;
-  background-color: #8a2be2; /* Color de la barra de progreso */
+  background-color: #8a2be2; 
   border-radius: 4px;
 }
 
-.waveform-bar-detail-item { /* Para simulación visual */
-  background-color: rgba(138, 43, 226, 0.6); /* Púrpura semi-transparente */
+.waveform-bar-detail-item { 
+  background-color: rgba(138, 43, 226, 0.6); 
   width: 3px; 
   margin-right: 2px; 
   border-radius: 1px; 
@@ -158,15 +157,14 @@
 .time-display {
   font-size: 0.9em;
   color: #b3b3b3;
-  min-width: 80px; /* 0:00 / 0:00 */
+  min-width: 80px; 
   text-align: right;
 }
 
-/* Comments Section */
 .comments-section {
   margin-top: 40px;
   width: 100%;
-  max-width: 700px; /* Mismo ancho que el reproductor para consistencia */
+  max-width: 700px; 
 }
 
 .comments-header {
@@ -207,7 +205,7 @@
 .comment-item {
   display: flex;
   gap: 15px;
-  background-color: #181818; /* Fondo para cada comentario */
+  background-color: #181818; 
   padding: 15px;
   border-radius: 8px;
 }
@@ -230,7 +228,7 @@
 
 .comment-user-name {
   font-weight: bold;
-  color: #8a2be2; /* Púrpura para el nombre de usuario */
+  color: #8a2be2; 
   font-size: 0.9em;
   display: block;
   margin-bottom: 5px;
@@ -241,5 +239,5 @@
   line-height: 1.5;
   color: #d0d0d0;
   margin: 0;
-  word-break: break-word; /* Para que los comentarios largos no rompan el layout */
+  word-break: break-word; 
 }

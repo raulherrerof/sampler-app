@@ -1,10 +1,7 @@
-// src/pages/HomePage.js
 import React from 'react';
-import CategoryCard from '../components/CategoryCard'; // Ajusta la ruta si es necesario
-import SongPlayer from '../components/SongPlayer';   // Ajusta la ruta si es necesario
+import CategoryCard from '../components/CategoryCard'; 
+import SongPlayer from '../components/SongPlayer';   
 
-// Los datos pueden pasarse como props o importarse aquí si son estáticos y solo para HomePage
-// Por simplicidad, los pasaremos como props desde App.js por ahora.
 
 const HomePage = ({ categoriesData, songsData }) => {
   // Lógica para ordenar las categorías si es específica de HomePage
@@ -18,7 +15,7 @@ const HomePage = ({ categoriesData, songsData }) => {
     .filter(Boolean); // filter(Boolean) elimina cualquier undefined si algún título no se encuentra
 
   return (
-    <> {/* Usamos un Fragmento React <>...</> ya que Routes espera un solo elemento hijo */}
+    <> 
       <h2 className="welcome-title">Bienvenido a <span className="highlight">Sampler</span></h2>
       <div className="categories-grid">
         {gridCategoriesInOrder.map(category => (

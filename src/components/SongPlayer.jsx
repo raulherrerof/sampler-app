@@ -1,14 +1,13 @@
-// src/components/SongPlayer.jsx
 import React from 'react';
-// Asumimos que los estilos .song-player vienen de App.css
 
-const PlayIconList = () => ( // Icono diferente o más pequeño para la lista
+
+const PlayIconList = () => ( 
   <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
     <path d="M8 5v14l11-7z"></path>
   </svg>
 );
 
-// Ahora recibe 'songData' (el objeto canción completo) y 'onPlayClick'
+
 function SongPlayer({ songData, onPlayClick }) {
   if (!songData) return null;
 
@@ -24,12 +23,12 @@ function SongPlayer({ songData, onPlayClick }) {
         <span className="artist">{songData.artist || "Artista Desconocido"}</span>
       </div>
       
-      {/* Botón visual, la acción de play real está en el div principal */}
+      
       <button 
         className="play-pause-button" 
         aria-label={`Ver detalles de ${songData.title}`}
         disabled={!songData.audioUrl}
-        onClick={(e) => { e.stopPropagation(); onPlayClick(); }} // Evita doble disparo si el div ya tiene onClick
+        onClick={(e) => { e.stopPropagation(); onPlayClick(); }} 
       >
         <PlayIconList /> 
       </button>

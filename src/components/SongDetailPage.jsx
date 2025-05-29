@@ -1,8 +1,7 @@
-// src/components/SongDetailPage/SongDetailPage.jsx
 import React, { useState, useRef, useEffect } from 'react';
-import './SongDetailPage.css'; // Asegúrate de que este archivo CSS existe y tiene los estilos correctos
+import './SongDetailPage.css'; 
 
-// Iconos (puedes usar SVGs más elaborados o una librería)
+
 const PlayIconDetail = () => <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>;
 const PauseIconDetail = () => <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg>;
 const HeartIcon = ({ liked, count }) => (
@@ -26,12 +25,12 @@ function SongDetailPage({ song, onClose }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLiked, setIsLiked] = useState(false); 
-  const [likeCount, setLikeCount] = useState(song?.initialLikes || 12); // Usar initialLikes si viene con la canción
+  const [likeCount, setLikeCount] = useState(song?.initialLikes || 12); 
   const audioRef = useRef(null);
   const progressBarRef = useRef(null);
 
   useEffect(() => {
-    // Cargar datos de la canción actual si cambia
+  
     const audio = audioRef.current;
     if (audio && song?.audioUrl) {
       const setAudioData = () => {
@@ -42,7 +41,7 @@ function SongDetailPage({ song, onClose }) {
       const setAudioTime = () => setCurrentTime(audio.currentTime);
       const handleSongEnd = () => {
         setIsPlaying(false);
-        // audio.currentTime = 0; // Opcional
+       
       };
 
       audio.addEventListener('loadedmetadata', setAudioData);
@@ -50,31 +49,30 @@ function SongDetailPage({ song, onClose }) {
       audio.addEventListener('timeupdate', setAudioTime);
       audio.addEventListener('ended', handleSongEnd);
       
-      if (audio.src !== song.audioUrl) { // Solo recargar si la URL es diferente
+      if (audio.src !== song.audioUrl) { 
         audio.src = song.audioUrl;
         audio.load();
-        setIsPlaying(false); // Resetear play al cambiar canción
+        setIsPlaying(false); 
         setCurrentTime(0);
       }
-      // Opcional: intentar autoplay (puede ser bloqueado por el navegador)
-      // audio.play().catch(e => console.log("Autoplay no permitido o error inicial de reproducción", e));
+      
 
       return () => {
         audio.removeEventListener('loadedmetadata', setAudioData);
         audio.removeEventListener('durationchange', setAudioData);
         audio.removeEventListener('timeupdate', setAudioTime);
         audio.removeEventListener('ended', handleSongEnd);
-        audio.pause(); // Pausar al desmontar o cambiar canción
+        audio.pause(); 
         audio.currentTime = 0;
       };
-    } else if (audio) { // Si no hay song.audioUrl pero el audio existe, pausar y resetear
+    } else if (audio) { 
         audio.pause();
-        audio.src = ""; // Limpiar src
+        audio.src = ""; 
         setCurrentTime(0);
         setDuration(0);
         setIsPlaying(false);
     }
-  }, [song]); // Dependencia del objeto canción completo
+  }, [song]); 
 
   const togglePlayPause = () => {
     if (!song?.audioUrl || !audioRef.current) return;
@@ -94,13 +92,13 @@ function SongDetailPage({ song, onClose }) {
     const clickPositionInPercentage = clickPositionInPixels / progressBar.offsetWidth;
     const newTime = duration * clickPositionInPercentage;
     audioRef.current.currentTime = newTime;
-    setCurrentTime(newTime); // Actualizar inmediatamente para UI
+    setCurrentTime(newTime); 
   };
 
   const toggleLike = () => { 
     setIsLiked(!isLiked);
     setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
-    // Aquí iría la lógica para enviar el like/unlike al backend
+
     console.log(`Canción ${song.id} ${!isLiked ? 'likeada' : 'unlikeada'}`);
   };
   
@@ -111,7 +109,7 @@ function SongDetailPage({ song, onClose }) {
     return `${minutes}:${seconds}`;
   };
 
-  if (!song) { // Si no hay datos de canción, no mostrar nada o un placeholder
+  if (!song) { 
     return (
       <div className="song-detail-page-overlay-content">
         <button onClick={onClose} className="overlay-close-button" aria-label="Cerrar">×</button>
@@ -120,7 +118,7 @@ function SongDetailPage({ song, onClose }) {
     );
   }
   
-  const comments = song.comments || [ // Usar comentarios de la canción si existen, o simulados
+  const comments = song.comments || [ 
     { id: 1, user: { name: "Usuario1", profilePicUrl: null }, text: "¡Gran tema!" },
     { id: 2, user: { name: "Usuario2", profilePicUrl: null }, text: "Me encanta esta melodía." },
   ];
@@ -149,13 +147,13 @@ function SongDetailPage({ song, onClose }) {
                     </button>
                     <div className="waveform-placeholder-detail" ref={progressBarRef} onClick={handleProgressClick}>
                         <div className="progress-bar-detail" style={{ width: `${(currentTime / duration) * 100 || 0}%` }}></div>
-                        {[...Array(50)].map((_, i) => ( // Simulación de waveform visual
+                        {[...Array(50)].map((_, i) => ( 
                             <div key={i} className="waveform-bar-detail-item" style={{ height: `${Math.random() * 70 + 20}%` }}></div>
                         ))}
                     </div>
                     <span className="time-display">{formatTime(currentTime)} / {formatTime(duration)}</span>
                 </div>
-                <audio ref={audioRef} preload="metadata"></audio> {/* src se establece en useEffect */}
+                <audio ref={audioRef} preload="metadata"></audio> 
             </div>
         </div>
 
