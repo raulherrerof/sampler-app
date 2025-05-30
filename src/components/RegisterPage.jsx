@@ -31,7 +31,11 @@ function RegisterPage({ onRegisterSuccess, onNavigateToLogin, onClose }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       
-        body: JSON.stringify({ username, email, password, name: username }), 
+        body: JSON.stringify({
+          username: username,   // Cambiado de 'usuario' a 'username'
+          password: password,   // Cambiado de 'contrasena' a 'password'
+          email: email, // Cambiado de 'correo' a 'email'
+      }),
        
       });
       const data = await response.json();
@@ -48,6 +52,8 @@ function RegisterPage({ onRegisterSuccess, onNavigateToLogin, onClose }) {
     }
     setLoading(false);
   };
+
+  
 
   return (
     <div className="register-page-overlay-content">
