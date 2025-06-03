@@ -1,6 +1,5 @@
 body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; background-color: #0a0a0a; color: #ffffff; }
 body.overlay-active { overflow: hidden; }
-.app-main-container { }
 .app-content-wrapper { max-width: 1450px; margin: 0 auto; padding: 0 40px 30px 40px; box-sizing: border-box; }
 .header { display: flex; justify-content: space-between; align-items: center; padding: 25px 40px; background-color: #000; border-bottom: 1px solid #333; color: white; position: sticky; top: 0; z-index: 900; }
 .logo { font-family: 'Brush Script MT', 'Brush Script Std', 'Sofia', cursive; font-size: 3.2em; font-weight: bold; background: linear-gradient(to right, #ff00ff, #8a2be2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: flex; align-items: center; }
@@ -74,3 +73,4 @@ body.overlay-active { overflow: hidden; }
     color: #e0e0e0;
     font-weight: normal;
 }
+
