@@ -1,7 +1,8 @@
-import React from 'react';
+// src/components/SongPlayer.jsx
+import React from 'react'; // Ya no necesita useState, useRef, useEffect
 
-// Iconos (puedes tener Play/Pause dinámico aquí también)
-const PlayIconList = () => (
+// Iconos
+const PlayIconList = () => ( 
   <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
     <path d="M8 5v14l11-7z"></path>
   </svg>
@@ -11,7 +12,7 @@ const PauseIconList = () => (
     <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>
   </svg>
 );
-const DetailIcon = () => ( // Un icono para "ver detalles"
+const DetailIcon = () => ( 
   <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" stroke="currentColor" strokeWidth="1">
     <circle cx="12" cy="12" r="10"></circle>
     <line x1="12" y1="8" x2="12" y2="12"></line>
@@ -19,9 +20,11 @@ const DetailIcon = () => ( // Un icono para "ver detalles"
   </svg>
 );
 
-// Función de utilidad para formatear la duración
 const formatDuration = (totalSeconds) => {
-  if (totalSeconds === null || totalSeconds === undefined || isNaN(totalSeconds) || totalSeconds <= 0) {
+  if (typeof totalSeconds === 'string' && totalSeconds.includes(':')) {
+    return totalSeconds;
+  }
+  if (totalSeconds === null || totalSeconds === undefined || isNaN(totalSeconds) || totalSeconds <= 0 || !isFinite(totalSeconds) ) {
     return "0:00";
   }
   const minutes = Math.floor(totalSeconds / 60);
@@ -29,61 +32,67 @@ const formatDuration = (totalSeconds) => {
   return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 };
 
+function SongPlayer({ songData, onPlayClick, onDetailClick, isCurrentlyPlaying }) {
+  if (!songData) {
+    return null; 
+  }
 
-function SongPlayer({ songData, onPlayClick, onDetailClick, isCurrentlyPlaying }) { // Nuevas props
-  if (!songData) return null;
-
-  const handleMainClick = () => {
-    if (songData.audioUrl) {
-      onPlayClick(); // Llama a la función de App.jsx para reproducir/pausar
+  const handlePlayButtonClick = (e) => {
+    e.stopPropagation(); 
+    if (onPlayClick && songData.audioUrl) { 
+      onPlayClick(); 
+    } else if (!songData.audioUrl) {
+      alert("Audio no disponible para esta canción.");
     }
   };
-
-  const handleDetailClick = (e) => {
-    e.stopPropagation(); // Evitar que se active handleMainClick
+  
+  const handleDetailButtonClick = (e) => {
+    e.stopPropagation();
     if (onDetailClick) {
-      onDetailClick(); // Llama a la función de App.jsx para abrir detalles
+      onDetailClick();
+    }
+  };
+  
+  const handleCardAreaClick = () => {
+    if (onDetailClick) { // Priorizar abrir detalles si se hace clic en la tarjeta
+      onDetailClick();
+    } else if (onPlayClick && songData.audioUrl) { // Si no hay para detalles, que reproduzca
+      onPlayClick();
     }
   };
 
   return (
     <div 
-      className={`song-player ${isCurrentlyPlaying ? 'playing' : ''}`} 
-      onClick={handleMainClick} // Clic en el área principal reproduce
-      style={{cursor: songData.audioUrl ? 'pointer' : 'default'}}
-      title={isCurrentlyPlaying ? `Reproduciendo: ${songData.title}` : `Reproducir ${songData.title}`}
+      className={`song-player ${isCurrentlyPlaying ? 'playing-in-list' : ''}`}
+      onClick={handleCardAreaClick} 
+      style={{cursor: (onDetailClick || (onPlayClick && songData.audioUrl)) ? 'pointer' : 'default'}}
+      title={isCurrentlyPlaying ? `Reproduciendo: ${songData.title}` : (onDetailClick ? `Ver detalles de ${songData.title}` : `Reproducir ${songData.title}`)}
     >
       <img
         src={songData.albumArtUrl || songData.albumArt || 'https://via.placeholder.com/55?text=Art'}
         alt={`Portada de ${songData.title}`}
         className="song-album-art"
-        // onClick={handleDetailClick} // Opcional: clic en la imagen también abre detalles
       />
-      <div className="song-info" /*onClick={handleDetailClick} // Opcional: clic en info también abre detalles*/>
+      <div className="song-info">
         <span className="title">{songData.title || "Título Desconocido"}</span>
         <span className="artist">{songData.artist || "Artista Desconocido"}</span>
       </div>
 
-      {/* Botón de Play/Pause en la lista */}
       <button
-        className="play-pause-button-list" // Clase diferente para estilo específico
+        className="play-pause-button-list" 
         aria-label={isCurrentlyPlaying ? `Pausar ${songData.title}` : `Reproducir ${songData.title}`}
         disabled={!songData.audioUrl}
-        onClick={(e) => { 
-          e.stopPropagation(); // Evita que se active el onClick del div principal
-          onPlayClick(); 
-        }}
+        onClick={handlePlayButtonClick} // Este es el botón específico de play/pause de la lista
       >
         {isCurrentlyPlaying ? <PauseIconList /> : <PlayIconList />}
       </button>
 
       <span className="song-duration">{formatDuration(songData.duration)}</span>
       
-      {/* Botón para ver detalles (opcional) */}
-      {onDetailClick && (
+      {onDetailClick && ( // Mostrar botón de detalle solo si se pasa la función
           <button 
             className="detail-button-list" 
-            onClick={handleDetailClick}
+            onClick={handleDetailButtonClick}
             aria-label={`Ver detalles de ${songData.title}`}
             title="Ver detalles"
           >
@@ -91,13 +100,12 @@ function SongPlayer({ songData, onPlayClick, onDetailClick, isCurrentlyPlaying }
           </button>
       )}
 
-      {/* Waveform (sigue siendo un placeholder visual) */}
       <div className="waveform-placeholder-list">
         {[...Array(20)].map((_, i) => (
           <div
             key={i}
             className="waveform-bar"
-            style={{ height: `${Math.floor(Math.random() * (isCurrentlyPlaying ? 60: 30)) + (isCurrentlyPlaying ? 25 : 15)}%` }} // Animación simple
+            style={{ height: `${Math.floor(Math.random() * (isCurrentlyPlaying ? 60: 30)) + (isCurrentlyPlaying ? 25 : 15)}%` }}
           ></div>
         ))}
       </div>
