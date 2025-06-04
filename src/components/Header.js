@@ -8,7 +8,9 @@ const Header = ({
   onProfileClick, 
   isLoggedIn, 
   onLogoutClick,
-  currentUser 
+  currentUser,
+  searchTerm, // <<< NUEVA PROP
+  onSearchTermChange // <<< NUEVA PROP
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -43,8 +45,15 @@ const Header = ({
       </div>
       <div className="search-bar-container">
         <span className="search-icon">🔍</span>
-        <input type="text" className="search-bar" placeholder="Buscar en Sampler..." />
-        <span className="mic-icon">🎤</span>
+        {/* --- MODIFICACIONES EN EL INPUT DE BÚSQUEDA --- */}
+        <input 
+          type="text" 
+          className="search-bar" 
+          placeholder="Buscar en Sampler..." 
+          value={searchTerm} // Vinculado al estado de App.jsx
+          onChange={(e) => onSearchTermChange(e.target.value)} // Llama a la función de App.jsx
+        />
+        <span className="mic-icon">🎤</span> {/* Considera la funcionalidad de este icono más adelante */}
       </div>
       <div className="header-icons">
         <button onClick={onUploadClick} className="icon-button" aria-label="Subir archivo">⬆</button> 
@@ -57,7 +66,8 @@ const Header = ({
             <div className="dropdown-menu">
               {isLoggedIn ? (
                 <>
-                  {currentUser && <span className="dropdown-username">{currentUser.name || currentUser.username || 'Usuario'}</span>}
+                  {/* Asegúrate que currentUser tenga 'name' o 'usuario' */}
+                  {currentUser && <span className="dropdown-username">{currentUser.name || currentUser.usuario || 'Usuario'}</span>}
                   <button onClick={() => handleDropdownItemClick(onProfileClick)} className="dropdown-item">
                     Mi Perfil
                   </button>

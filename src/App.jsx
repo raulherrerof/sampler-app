@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import './App.css';
 
 // Tus Componentes
@@ -43,13 +43,26 @@ function App() {
   const [songs, setSongs] = useState([]);
   const [loadingSongs, setLoadingSongs] = useState(true);
   const [selectedSongForDetail, setSelectedSongForDetail] = useState(null);
-
+  const [searchTerm, setSearchTerm] = useState(''); 
   const [currentPlayingSong, setCurrentPlayingSong] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [durationTotal, setDurationTotal] = useState(0);
   const [volume, setVolume] = useState(0.75);
   const audioRef = useRef(null);
+
+   const filteredSongs = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return songs; // Si no hay término de búsqueda, devuelve todas las canciones
+    }
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    return songs.filter(song =>
+      (song.title && song.title.toLowerCase().includes(lowerCaseSearchTerm)) ||
+      (song.artist && song.artist.toLowerCase().includes(lowerCaseSearchTerm))
+      // Puedes añadir más campos para la búsqueda si lo deseas, ej:
+      // (song.genre && song.genre.toLowerCase().includes(lowerCaseSearchTerm))
+    );
+  }, [songs, searchTerm]); // El filtrado se rehace si 'songs' o 'searchTerm' cambian
 
   const checkLoginStatus = useCallback(async () => {
     try {
@@ -382,14 +395,16 @@ function App() {
     <div className="app-main-container">
       <audio ref={audioRef} preload="metadata" />
       <Header
-        onLoginClick={openLoginOverlay}
-        onRegisterClick={openRegisterOverlay}
-        onUploadClick={openUploadOverlay}
-        onProfileClick={openProfileOverlay}
-        isLoggedIn={isLoggedIn}
-        onLogoutClick={handleLogout}
-        currentUser={currentUser}
-      />
+      onLoginClick={openLoginOverlay}
+      onRegisterClick={openRegisterOverlay}
+      onUploadClick={openUploadOverlay}
+      onProfileClick={openProfileOverlay}
+      isLoggedIn={isLoggedIn}
+      onLogoutClick={handleLogout}
+      currentUser={currentUser}
+      searchTerm={searchTerm} // *** PASAR searchTerm ***
+      onSearchTermChange={setSearchTerm} // *** PASAR setSearchTerm (o una función que lo llame) ***
+    />
       <div className={`app-content-wrapper ${currentPlayingSong ? 'with-player-bar' : ''}`}>
         <h2 className="welcome-title">Bienvenido a <span className="highlight">Sampler</span></h2>
         <div className="categories-grid">
@@ -399,7 +414,7 @@ function App() {
         </div>
         <div className="song-list">
           {loadingSongs && <p>Cargando canciones...</p>}
-          {!loadingSongs && songs.map(song => (
+          {!loadingSongs && filteredSongs.length > 0 && filteredSongs.map(song => (
             <SongPlayer
               key={song.id}
               songData={song}
@@ -408,7 +423,12 @@ function App() {
               isCurrentlyPlaying={currentPlayingSong?.id === song.id && isPlaying}
             />
           ))}
-          {!loadingSongs && songs.length === 0 && <p>No hay canciones disponibles.</p>}
+          {!loadingSongs && filteredSongs.length === 0 && searchTerm.trim() !== '' && (
+            <p>No se encontraron resultados para "{searchTerm}".</p>
+          )}
+          {!loadingSongs && songs.length === 0 && searchTerm.trim() === '' && (
+            <p>No hay canciones disponibles. ¡Sube la tuya!</p>
+          )}
         </div>
       </div>
       {currentPlayingSong && (
