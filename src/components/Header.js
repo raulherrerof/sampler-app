@@ -67,7 +67,7 @@ const Header = ({
               {isLoggedIn ? (
                 <>
                   {/* Asegúrate que currentUser tenga 'name' o 'usuario' */}
-                  {currentUser && <span className="dropdown-username">{currentUser.name || currentUser.usuario || 'Usuario'}</span>}
+                  {currentUser && <span className="dropdown-username">{currentUser.name || currentUser.username || 'Usuario'}</span>}
                   <button onClick={() => handleDropdownItemClick(onProfileClick)} className="dropdown-item">
                     Mi Perfil
                   </button>
