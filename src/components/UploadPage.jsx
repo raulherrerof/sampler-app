@@ -62,7 +62,6 @@ function UploadPage({ onUploadSuccess, onClose }) {
     formData.append('audioFile', audioFile); 
 
     try {
-      
       const response = await fetch(`${API_URL}/api/upload_audio.php`, {
         method: 'POST',
         body: formData,

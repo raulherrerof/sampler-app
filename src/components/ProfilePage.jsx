@@ -72,10 +72,10 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
     if (profilePicFile) formData.append('profilePic', profilePicFile); 
 
     try {
-      const response = await fetch(`${API_URL}/api/users/update_profile.php`, {
+      const response = await fetch(`${API_URL}/api/update_profile.php`, {
         method: 'POST',
         body: formData,
-        credentials: 'include', 
+        credentials: 'include',
       });
       const data = await response.json();
       if (!response.ok || !data.success) {
