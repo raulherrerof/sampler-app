@@ -1,199 +1,239 @@
-.profile-page {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  box-sizing: border-box;
-  background-color: #000000;
-  color: #ffffff;
+/* ProfilePage.css */
+
+/* Contenedor principal del contenido del overlay de perfil */
+/* Esta clase ya la tienes en el JSX: <div className="profile-page-overlay-content"> */
+/* Los estilos base para esta "ventana" (max-width, margin: auto, background, border-radius, shadow)
+   deberían venir de .overlay-content-wrapper en tu App.css si quieres consistencia.
+   Si quieres que ProfilePage sea ligeramente diferente, puedes definir esos estilos aquí.
+   Por ahora, asumiré que .overlay-content-wrapper de App.css le da el aspecto de ventana.
+   Si no, puedes añadir aquí:
+*/
+/*
+.profile-page-overlay-content {
+  padding: 25px 30px;
+  max-width: 700px;  // Ajusta el ancho máximo para el perfil
+  margin: auto;
+  color: #e0e0e0;
+  background-color: #121212; // Fondo del modal
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  position: relative; // Para el botón de cerrar
 }
+*/
 
+/* El .overlay-close-button ya está estilizado en App.css, no es necesario aquí
+   a menos que quieras un estilo específico para este modal. */
 
-.profile-page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 30px; 
-  border-bottom: 1px solid #333;
-  width: 100%;
-  box-sizing: border-box;
-}
+/* Encabezado del modal de perfil (ya lo tienes en el JSX) */
+/* Las clases .profile-header-modal, .logo-text-modal, .welcome-message-modal
+   ya están definidas en tu App.css y deberían aplicarse. */
 
-.profile-page-header .logo-container { 
-  display: flex;
-  align-items: center;
-}
-
-.profile-page-header .logo-text-page { 
-  font-family: 'Pacifico', cursive; 
-  font-size: 2.5em;
-  color: #ffffff; 
-}
-
-
-.profile-page-header .welcome-message-page { 
-  font-family: 'Dancing Script', cursive; 
-  font-size: 2em;
-  color: #ffffff;
-  margin: 0;
-  font-weight: normal;
-}
-
-.profile-page-header .header-nav-button { 
-  background-color: #333;
-  color: white;
-  border: 1px solid #555;
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 0.9em;
-}
-.profile-page-header .header-nav-button:hover {
-  background-color: #444;
-}
-
-
-.profile-page-main {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start; 
-  padding: 40px 20px; 
-  box-sizing: border-box;
-  overflow-y: auto; 
-}
-
+/* Contenedor del formulario de perfil */
 .profile-form-container {
-  background-color: #1c1c1c;
-  padding: 35px 45px; 
-  border-radius: 10px;
   width: 100%;
-  max-width: 950px;  
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  /* padding: 35px 45px; Ya no es necesario si .profile-page-overlay-content tiene padding */
+  box-sizing: border-box;
 }
 
-.profile-form-container .form-title {
+.profile-form-container .form-error-message {
+  color: #ff4d4d; /* Un rojo más brillante para errores */
+  background-color: rgba(255, 77, 77, 0.1);
+  border: 1px solid rgba(255, 77, 77, 0.3);
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin-bottom: 20px;
   text-align: center;
-  font-size: 2em; 
-  font-weight: bold;
-  margin-top: 0;
-  margin-bottom: 35px;
-  color: #ffffff;
+  font-size: 0.9em;
 }
 
 .profile-form-container .form-group {
-  margin-bottom: 20px; 
+  margin-bottom: 18px; /* Espacio entre grupos de campos */
 }
 
-.profile-form-container .form-group label {
+.profile-form-container .form-group label:not(.radio-label):not(.profile-pic-label) { /* Excluir labels de radio y file input del estilo general */
   display: block;
-  font-size: 0.95em; 
-  margin-bottom: 8px;
-  color: #e0e0e0;
+  font-size: 0.9em;
+  font-weight: 500; /* Ligeramente más grueso */
+  margin-bottom: 7px;
+  color: #b3b3b3; /* Un gris más claro para labels */
 }
 
+/* Estilos para inputs de texto, email, password, date y textarea */
 .profile-form-container .form-group input[type="text"],
 .profile-form-container .form-group input[type="email"],
 .profile-form-container .form-group input[type="password"],
 .profile-form-container .form-group input[type="date"],
 .profile-form-container .form-group textarea {
   width: 100%;
-  padding: 12px 15px; 
-  background-color: #ffffff;
-  border: none;
-  border-radius: 5px;
+  padding: 10px 14px;
+  background-color: #2c2c2c; /* Fondo oscuro para inputs */
+  border: 1px solid #4a4a4a; /* Borde sutil */
+  border-radius: 6px;
   box-sizing: border-box;
-  font-size: 1em;
-  color: #333333;
-  font-family: inherit; 
+  font-size: 0.95em;
+  color: #e0e0e0; /* Color del texto del input */
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-form-container .form-group input::placeholder,
+.profile-form-container .form-group textarea::placeholder {
+  color: #777;
 }
 
 .profile-form-container .form-group input:focus,
 .profile-form-container .form-group textarea:focus {
-  outline: 2px solid #8a2be2; 
+  outline: none;
+  border-color: #8a2be2; /* Tu color de acento */
+  box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.25); /* Sombra de foco */
 }
 
 .profile-form-container .form-group textarea {
-  resize: vertical; 
-  min-height: 100px; 
+  resize: vertical;
+  min-height: 80px; /* Altura mínima para "Sobre ti" */
 }
 
+/* Grupo de Radio Buttons para Género */
 .profile-form-container .radio-group {
   display: flex;
-  gap: 25px; 
-  margin-top: 8px;
-  flex-wrap: wrap; 
+  gap: 20px; /* Espacio entre opciones de radio */
+  margin-top: 5px;
+  flex-wrap: wrap;
 }
 
 .profile-form-container .radio-label {
   display: flex;
   align-items: center;
-  font-size: 0.95em;
-  color: #e0e0e0;
+  font-size: 0.9em;
+  color: #c0c0c0;
   cursor: pointer;
 }
 
 .profile-form-container .radio-label input[type="radio"] {
   margin-right: 8px;
-  accent-color: #8a2be2; 
-  width: 16px;
-  height: 16px;
+  accent-color: #8a2be2; /* Color del check del radio button */
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
 }
 
-.profile-form-container .file-input-group.profile-pic-group {
+/* Grupo para la Foto de Perfil */
+.profile-form-container .form-group.profile-pic-group {
   margin-top: 25px;
-  margin-bottom: 30px;
-  padding: 15px; 
-  border: 1px dashed #555; 
-  border-radius: 5px;
-  text-align: center; 
+  margin-bottom: 25px;
+  /* border: 1px dashed #444; */ /* Borde discontinuo sutil */
+  /* border-radius: 8px; */
+  /* padding: 20px; */
+  /* display: flex; */ /* Alinea elementos dentro si es necesario */
+  /* flex-direction: column; */
+  /* align-items: center; */
 }
 
 .profile-form-container .file-input-label.profile-pic-label {
-  display: flex; 
+  display: flex;
   align-items: center;
-  justify-content: center; 
+  justify-content: flex-start; /* Alinear a la izquierda */
   font-size: 0.95em;
-  color: #e0e0e0;
+  color: #b3b3b3;
   cursor: pointer;
-  transition: color 0.2s ease;
+  padding: 10px;
+  border: 1px solid #4a4a4a;
+  border-radius: 6px;
+  background-color: #2c2c2c;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
+
 .profile-form-container .file-input-label.profile-pic-label:hover {
-  color: #ffffff;
+  background-color: #383838;
+  border-color: #5a5a5a;
 }
 
 .profile-form-container .profile-pic-preview {
-  width: 40px; 
+  width: 40px;
   height: 40px;
-  border-radius: 50%; 
-  object-fit: cover; 
-  margin-left: 15px; 
+  border-radius: 50%;
+  object-fit: cover;
+  /* margin-left: 0; Quitado, el gap del flex lo maneja si es necesario o el span lo envuelve */
   border: 1px solid #555;
+  margin-right: 12px; /* Espacio entre la preview y el texto */
+}
+.profile-form-container .file-input-label.profile-pic-label svg { /* Estilo para el placeholder SVG */
+  width: 40px;
+  height: 40px;
+  margin-right: 12px;
+  fill: #777;
 }
 
-.profile-form-container .file-name-display { 
-  display: block; 
-  margin-top: 10px;
-  font-size: 0.85em;
-  color: #a0a0a0;
-  text-align: center; 
+.profile-form-container .file-input-text {
+  color: #c0c0c0;
+  font-size: 0.9em;
 }
 
+/* Botón de Enviar Formulario */
 .profile-form-container .submit-button.profile-submit-button {
-  width: auto;
-  padding: 12px 35px; 
-  background-color: #e0e0e0;
-  color: #000000;
+  width: auto; /* Para que no ocupe todo el ancho por defecto */
+  min-width: 180px; /* Ancho mínimo */
+  padding: 11px 30px;
+  background-color: #8a2be2; /* Tu color de acento */
+  color: #ffffff;
   border: none;
-  border-radius: 25px;
-  font-size: 1em;
-  font-weight: bold;
+  border-radius: 25px; /* Más redondeado */
+  font-size: 0.95em;
+  font-weight: 600;
   cursor: pointer;
-  display: block;
-  margin: 30px auto 10px auto;
+  display: block; /* Para poder usar margin: auto */
+  margin: 30px auto 10px auto; /* Centrar el botón */
   text-transform: uppercase;
-  transition: background-color 0.2s ease;
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.profile-form-container .submit-button.profile-submit-button:hover {
-  background-color: #c7c7c7;
+.profile-form-container .submit-button.profile-submit-button:hover:not(:disabled) {
+  background-color: #7324bf; /* Más oscuro al pasar el mouse */
+  transform: translateY(-1px);
+}
+.profile-form-container .submit-button.profile-submit-button:active:not(:disabled) {
+  transform: translateY(0px);
+}
+
+.profile-form-container .submit-button.profile-submit-button:disabled {
+  background-color: #4a4a4a;
+  color: #888;
+  cursor: not-allowed;
+}
+
+
+/* Media Queries para ProfilePage (opcional, ajusta según necesidad) */
+@media (max-width: 768px) {
+  /* Si .profile-page-overlay-content hereda de .overlay-content-wrapper,
+     los ajustes de media query de App.css ya se aplican.
+     Puedes añadir más específicos si es necesario. */
+  .profile-form-container {
+    /* padding: 25px 20px; */ /* Menos padding en tabletas */
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-form-container {
+    /* padding: 20px 15px; */ /* Aún menos padding en móviles */
+  }
+  .profile-form-container .radio-group {
+    flex-direction: column; /* Apilar radios en móviles */
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .profile-form-container .submit-button.profile-submit-button {
+    width: 100%; /* Botón a ancho completo */
+    padding: 12px 20px;
+  }
+  .profile-form-container .file-input-label.profile-pic-label {
+    flex-direction: column; /* Apilar imagen y texto en el input de archivo */
+    align-items: center;
+    text-align: center;
+  }
+  .profile-form-container .profile-pic-preview,
+  .profile-form-container .file-input-label.profile-pic-label svg {
+    margin-right: 0;
+    margin-bottom: 10px; /* Espacio debajo de la imagen/placeholder */
+  }
 }

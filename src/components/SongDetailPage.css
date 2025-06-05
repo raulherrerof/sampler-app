@@ -1,14 +1,18 @@
+/* SongDetailPage.css */
 
+/* --- Contenedor Principal del Overlay --- */
 .song-detail-page-overlay-content {
-  padding: 20px 30px; 
-  max-width: 900px; 
-  margin: auto; 
+  padding: 25px 30px;
+  max-width: 800px;
+  margin: auto;
   color: #e0e0e0;
-  background-color: #121212; 
-  border-radius: 8px; 
+  background-color: #121212;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  position: relative;
 }
 
-
+/* Botón de Cerrar */
 .overlay-close-button {
   position: absolute;
   top: 15px;
@@ -18,121 +22,171 @@
   color: #aaa;
   font-size: 2.2em;
   cursor: pointer;
-  z-index: 10;
+  z-index: 1001;
+  line-height: 1;
+  padding: 5px;
 }
 .overlay-close-button:hover { color: #fff; }
 
-.song-detail-main-content {
+/* --- SECCIÓN SUPERIOR: IMAGEN + INFO BÁSICA --- */
+.song-detail-upper-section {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-  margin-top: 20px; 
-  margin-bottom: 40px;
+  align-items: flex-start;
+  gap: 25px;
+  margin-bottom: 25px;
 }
 
+/* Contenedor de la Portada */
 .song-cover-art-large-container {
   width: 100%;
-  max-width: 300px; 
+  max-width: 250px;
   aspect-ratio: 1 / 1;
-  margin-bottom: 20px;
+  flex-shrink: 0;
 }
 
 .song-cover-art-large {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 12px; 
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-}
-
-.player-controls-container {
-  background-color: #181818; 
   border-radius: 10px;
-  padding: 20px;
-  width: 100%;
-  max-width: 700px; 
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
 }
 
-.song-info-detail {
-  text-align: center;
-  margin-bottom: 10px;
+/* Columna para Info Básica (Título, Artista) a la derecha de la imagen */
+.song-info-basic-column {
+  display: flex; /* Puede ser flex o block */
+  flex-direction: column;
+  justify-content: center; /* Centra el text-limiter-wrapper verticalmente */
+  flex-grow: 1;
+  padding-top: 10px; /* O ajusta según la alineación visual deseada */
+  min-width: 0; /* ESENCIAL para que este item flex pueda encogerse */
+  /* overflow: hidden; Ya no es necesario aquí, el wrapper lo maneja */
+}
+
+/* NUEVO: Contenedor que limitará y truncará el texto */
+.text-limiter-wrapper {
+  width: 100%; /* Toma el ancho que .song-info-basic-column le provee */
+  overflow: hidden; /* CRUCIAL: Este es el que cortará el texto desbordado de sus hijos */
+  /* Si los hijos de texto no llenan verticalmente, puedes añadir para centrar: */
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* justify-content: center; */
+  /* height: 100%; (si .song-info-basic-column tiene altura o quieres que este wrapper la llene) */
 }
 
 .title-detail-page {
   display: block;
-  font-size: 1.8em;
+  font-size: 2.2em;
   font-weight: bold;
   color: #ffffff;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  line-height: 1.2;
+
+  /* --- Propiedades de truncamiento (aplicadas al texto dentro del wrapper) --- */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%; /* Que intente ocupar el ancho del wrapper */
+  box-sizing: border-box;
 }
 
 .artist-detail-page {
   display: block;
-  font-size: 1.1em;
+  font-size: 1.3em;
   color: #b3b3b3;
+
+  /* --- Propiedades de truncamiento --- */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%; /* Que intente ocupar el ancho del wrapper */
+  box-sizing: border-box;
 }
 
+/* --- SECCIÓN INFERIOR: CONTROLES DEL REPRODUCTOR --- */
+.player-controls-bottom-section {
+  background-color: #181818;
+  border-radius: 10px;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ... (El resto del CSS para .player-actions y .comments-section permanece igual que en la versión anterior) ... */
 .player-actions {
   display: flex;
   align-items: center;
-  justify-content: space-between; 
   gap: 15px;
+  width: 100%;
 }
 
 .like-button {
   background: none;
   border: none;
-  color: #b3b3b3; 
+  color: #b3b3b3;
   cursor: pointer;
   padding: 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex-shrink: 0;
 }
 .like-button.liked svg {
-  fill: #8a2be2; 
+  fill: #8a2be2;
   stroke: #8a2be2;
 }
-.like-button:hover svg {
-  color: #fff;
+.like-button:not(.liked):hover svg {
   stroke: #fff;
 }
+.like-button svg {
+  transition: fill 0.2s ease, stroke 0.2s ease;
+}
 .like-count {
-  font-size: 0.8em;
-  margin-top: 2px;
+  font-size: 0.85em;
+  margin-top: 3px;
+  color: #b3b3b3;
+}
+.like-button.liked .like-count {
+  color: #8a2be2;
 }
 
 .play-pause-button-detail {
-  background-color: #8a2be2; 
+  background-color: #8a2be2;
   color: white;
   border: none;
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+.play-pause-button-detail svg {
+    width: 24px;
+    height: 24px;
 }
 .play-pause-button-detail:hover {
   background-color: #7324bf;
 }
+.play-pause-button-detail:disabled {
+  background-color: #404040;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
 
 .waveform-placeholder-detail {
   flex-grow: 1;
-  height: 50px; 
-  background-color: #282828; 
-  border-radius: 4px;
+  height: 45px;
+  background-color: #282828;
+  border-radius: 5px;
   position: relative;
   cursor: pointer;
   display: flex;
-  align-items: flex-end; 
+  align-items: flex-end;
+  padding: 0 3px;
   overflow: hidden;
 }
 
@@ -141,30 +195,33 @@
   left: 0;
   top: 0;
   height: 100%;
-  background-color: #8a2be2; 
-  border-radius: 4px;
+  background-color: #8a2be2;
+  border-radius: 5px;
+  opacity: 0.8;
+  z-index: 1;
 }
 
-.waveform-bar-detail-item { 
-  background-color: rgba(138, 43, 226, 0.6); 
-  width: 3px; 
-  margin-right: 2px; 
-  border-radius: 1px; 
+.waveform-bar-detail-item {
+  background-color: #535353;
+  width: 2px;
+  margin-right: 2px;
+  border-radius: 1px;
   flex-shrink: 0;
+  z-index: 0;
 }
-
 
 .time-display {
   font-size: 0.9em;
   color: #b3b3b3;
-  min-width: 80px; 
+  min-width: 75px;
   text-align: right;
+  flex-shrink: 0;
 }
 
+/* --- Sección de Comentarios --- */
 .comments-section {
-  margin-top: 40px;
+  margin-top: 35px;
   width: 100%;
-  max-width: 700px; 
 }
 
 .comments-header {
@@ -173,72 +230,242 @@
   align-items: center;
   margin-bottom: 20px;
   border-bottom: 1px solid #333;
-  padding-bottom: 10px;
+  padding-bottom: 12px;
 }
 
 .comments-header h3 {
   margin: 0;
-  font-size: 1.4em;
+  font-size: 1.5em;
   color: #fff;
+  font-weight: 600;
 }
 
-.add-comment-button {
-  background-color: #e0e0e0;
-  color: #000;
+.add-comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.comment-input-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.comment-user-avatar.current-user-avatar svg,
+.comment-user-avatar.current-user-avatar img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-top: 2px;
+}
+
+.add-comment-form textarea {
+  flex-grow: 1;
+  background-color: #2c2c2c;
+  color: #e0e0e0;
+  border: 1px solid #4a4a4a;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 0.95em;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 44px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.add-comment-form textarea:focus {
+  border-color: #8a2be2;
+  box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.25);
+}
+
+.add-comment-form textarea::placeholder {
+  color: #888;
+}
+
+.submit-comment-button {
+  background-color: #8a2be2;
+  color: white;
   border: none;
-  padding: 8px 15px;
+  padding: 10px 18px;
   border-radius: 20px;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
   font-size: 0.9em;
+  align-self: flex-end;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+  min-width: 110px;
+  text-align: center;
 }
-.add-comment-button:hover {
-  background-color: #c7c7c7;
+
+.submit-comment-button:hover:not(:disabled) {
+  background-color: #7324bf;
+}
+
+.submit-comment-button:disabled {
+  background-color: #4a4a4a;
+  color: #888;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.login-to-comment-prompt {
+  text-align: center;
+  color: #b3b3b3;
+  margin: 20px 0 25px 0;
+  font-size: 0.95em;
+}
+
+.login-to-comment-prompt a {
+  color: #8a2be2;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.login-to-comment-prompt a:hover {
+  color: #a052d8;
+  border-bottom-color: #a052d8;
 }
 
 .comments-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
 .comment-item {
   display: flex;
-  gap: 15px;
-  background-color: #181818; 
-  padding: 15px;
+  gap: 12px;
+  background-color: #1a1a1a;
+  padding: 14px;
   border-radius: 8px;
 }
-
-.comment-user-avatar svg {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+.comment-item.optimistic {
+  opacity: 0.7;
 }
+
+.comment-user-avatar svg,
 .comment-user-avatar img {
   width: 32px;
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
+  flex-shrink: 0;
 }
 
 .comment-content {
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .comment-user-name {
-  font-weight: bold;
-  color: #8a2be2; 
+  font-weight: 600;
+  color: #c0c0c0;
   font-size: 0.9em;
-  display: block;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
 
 .comment-text {
   font-size: 0.95em;
-  line-height: 1.5;
-  color: #d0d0d0;
+  line-height: 1.55;
+  color: #dcdcdc;
   margin: 0;
-  word-break: break-word; 
+  word-break: break-word;
 }
 
+.no-comments-prompt {
+    text-align: center;
+    color: #777;
+    padding: 20px 0;
+    font-style: italic;
+}
+
+/* --- Media Queries para Responsividad --- */
+@media (max-width: 767px) {
+  .song-detail-upper-section {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .song-cover-art-large-container {
+    max-width: 280px;
+  }
+
+  .song-info-basic-column {
+    text-align: center;
+    padding-top: 0;
+    width: 100%;
+  }
+
+  .title-detail-page {
+    font-size: 1.8em;
+  }
+
+  .artist-detail-page {
+    font-size: 1.1em;
+  }
+
+  .player-controls-bottom-section {
+    margin-top: 20px;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 600px) {
+  .song-detail-page-overlay-content {
+    padding: 20px 15px;
+  }
+  .player-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  .waveform-placeholder-detail {
+    width: 100%;
+    order: 1;
+    height: 40px;
+  }
+  .time-display {
+    width: 100%;
+    text-align: center;
+    order: 2;
+    margin-top: 5px;
+  }
+  .like-button, .play-pause-button-detail {
+    order: 0;
+  }
+
+  .comments-header h3 {
+    font-size: 1.3em;
+  }
+  .add-comment-form {
+    gap: 10px;
+  }
+  .add-comment-form textarea {
+    font-size: 0.9em;
+    padding: 8px 10px;
+    min-height: 40px;
+  }
+  .submit-comment-button {
+    font-size: 0.85em;
+    padding: 9px 15px;
+    width: 100%;
+    align-self: stretch;
+  }
+  .comment-input-row {
+    gap: 8px;
+  }
+  .comment-user-avatar.current-user-avatar svg,
+  .comment-user-avatar.current-user-avatar img {
+    width: 32px;
+    height: 32px;
+  }
+}

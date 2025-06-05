@@ -37,13 +37,11 @@ const Header = ({
         <img src={logoImage} alt="Logo Sampler" className="logo-image" />
       </div>
       <div className="search-bar-container">
-        <span className="search-icon">🔍</span>
         <input 
           type="text" className="search-bar" placeholder="Buscar en Sampler..." 
           value={searchTerm} 
           onChange={(e) => onSearchTermChange(e.target.value)} 
         />
-        <span className="mic-icon">🎤</span>
       </div>
       <div className="header-icons">
         <button onClick={onUploadClick} className="icon-button" aria-label="Subir archivo">⬆</button> 

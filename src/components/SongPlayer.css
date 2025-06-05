@@ -1,0 +1,25 @@
+/* En App.css o donde tengas los estilos de .song-player */
+
+.detail-button-list {
+  background: none; /* O el color que desees */
+  border: none;
+  color: #b3b3b3; /* Color del icono */
+  cursor: pointer;
+  padding: 5px; /* Ajusta el padding para centrar el icono si es necesario */
+  display: flex; /* Para centrar el SVG dentro del botón */
+  align-items: center;
+  justify-content: center;
+  /* Otros estilos que puedas tener para el botón */
+  /* Si quieres darle un tamaño fijo al botón para mejor alineación: */
+  /* width: 28px; */ /* Ejemplo, igual al play-pause-button-list si tienen misma altura */
+  /* height: 28px; */ /* Ejemplo */
+  /* border-radius: 50%; */ /* Si lo quieres circular */
+}
+
+.detail-button-list:hover {
+  color: #ffffff; /* Color al pasar el mouse */
+}
+
+.detail-button-list svg {
+  display: block; /* A veces ayuda a evitar espacio extra debajo del SVG */
+}

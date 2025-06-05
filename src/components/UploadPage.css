@@ -1,141 +1,194 @@
-.upload-page {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  box-sizing: border-box;
-  background-color: #000000;
-  color: #ffffff;
-}
+/* UploadPage.css */
 
-.upload-page-header { 
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 40px;
-  border-bottom: 1px solid #ffffff;
-  width: 100%;
-  box-sizing: border-box;
+/* Contenedor principal del contenido del overlay de subida.
+   Asumimos que su 'ventana' (max-width, padding general, etc.)
+   viene de .overlay-content-wrapper en App.css o se define aquí.
+   Si se define aquí, asegúrate de incluir box-sizing: border-box.
+*/
+/*
+.upload-page-overlay-content {
+  padding: 25px 30px;
+  max-width: 650px;
+  margin: auto;
+  color: #e0e0e0;
+  background-color: #121212;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  position: relative;
+  box-sizing: border-box; // <--- Si defines padding/width aquí
 }
+*/
 
-.upload-page-header .logo-container .logo-text {
-  font-family: 'Pacifico', cursive;
-  font-size: 2.8em;
-  color: #ffffff;
-}
+/* El .overlay-close-button, .upload-header-modal, .logo-text-modal, .welcome-message-modal
+   se asumen estilizados en App.css */
 
-.upload-page-header .welcome-message {
-  font-family: 'Dancing Script', cursive;
-  font-size: 2em;
-  color: #ffffff;
-  margin: 0;
-  font-weight: normal;
-}
-
-.upload-page-main {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start; 
-  padding: 40px 20px;
-  box-sizing: border-box;
-  overflow-y: auto; 
-}
-
+/* Contenedor del formulario de subida */
 .upload-form-container {
-  background-color: #1c1c1c;
-  padding: 30px 40px;
-  border-radius: 10px;
   width: 100%;
-  max-width: 600px; 
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  margin-top: 10px; /* Pequeño espacio después del header del modal */
+  box-sizing: border-box; /* Importante si este contenedor tuviera padding propio */
 }
 
-.upload-form-container .form-title {
+.upload-form-container .form-error-message {
+  color: #ff4d4d;
+  background-color: rgba(255, 77, 77, 0.1);
+  border: 1px solid rgba(255, 77, 77, 0.3);
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin-bottom: 20px;
   text-align: center;
-  font-size: 1.8em;
-  font-weight: bold;
-  margin-top: 0;
-  margin-bottom: 30px;
-  color: #ffffff;
+  font-size: 0.9em;
+  box-sizing: border-box;
 }
 
 .upload-form-container .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
-.upload-form-container .form-group label {
+.upload-form-container .form-group label:not(.file-input-label) {
   display: block;
   font-size: 0.9em;
-  margin-bottom: 8px;
-  color: #e0e0e0;
+  font-weight: 500;
+  margin-bottom: 7px;
+  color: #b3b3b3;
 }
 
+/* Estilos para inputs de texto */
 .upload-form-container .form-group input[type="text"] {
   width: 100%;
-  padding: 12px 15px;
-  background-color: #ffffff;
-  border: none;
-  border-radius: 5px;
-  box-sizing: border-box;
-  font-size: 1em;
-  color: #333333;
+  padding: 10px 14px;
+  background-color: #2c2c2c;
+  border: 1px solid #4a4a4a;
+  border-radius: 6px;
+  font-size: 0.95em;
+  color: #e0e0e0;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box; /* <<< ESENCIAL aquí si no es global */
+}
+
+.upload-form-container .form-group input::placeholder {
+  color: #777;
 }
 
 .upload-form-container .form-group input:focus {
-  outline: 2px solid #6200ea; 
+  outline: none;
+  border-color: #8a2be2;
+  box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.25);
 }
 
+/* Separador visual */
 .upload-form-container .form-separator {
   border: none;
-  border-top: 1px solid #444444; 
-  margin: 30px 0;
+  border-top: 1px solid #383838;
+  margin: 25px 0;
 }
 
-.upload-form-container .file-input-group {
-  margin-bottom: 25px;
-  padding: 15px;
-  border: 1px dashed #555555; 
-  border-radius: 5px;
-  text-align: center; 
+/* Contenedor para cada input de archivo */
+.upload-form-container .form-group.file-input-container {
+  margin-bottom: 20px;
 }
 
+/* Label que actúa como botón para seleccionar archivo */
 .upload-form-container .file-input-label {
-  display: inline-block; 
-  padding: 10px 15px;
-  font-size: 1em;
-  color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 0.95em;
+  color: #b3b3b3;
+  background-color: #2c2c2c;
+  border: 1px dashed #5a5a5a;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  text-align: center;
+  box-sizing: border-box; /* <<< ESENCIAL aquí si no es global */
 }
 
 .upload-form-container .file-input-label:hover {
+  background-color: #383838;
+  border-color: #777;
   color: #ffffff;
 }
 
+.upload-form-container .file-input-label svg {
+  /* El estilo ya se aplica inline, pero puedes sobrescribirlo */
+}
+
+/* Vista previa de la imagen de portada */
+.upload-form-container .upload-preview-image {
+  display: block;
+  max-width: 150px;
+  max-height: 150px;
+  margin: 10px auto 5px auto;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #4a4a4a;
+}
+
+/* Nombre del archivo seleccionado */
 .upload-form-container .file-name-display {
   display: block;
-  margin-top: 10px;
-  font-size: 0.85em;
-  color: #a0a0a0;
+  margin-top: 8px;
+  font-size: 0.8em;
+  color: #888;
+  text-align: center;
+  /* --- Para manejar nombres de archivo largos --- */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%; /* Para que el ellipsis funcione dentro de este span */
+  /* padding: 0 5px; (opcional) */
+  box-sizing: border-box; /* Si le añades padding o border */
 }
 
-.upload-form-container .submit-button.upload-submit-button { 
+/* Botón de Enviar Formulario */
+.upload-form-container .submit-button.upload-submit-button {
   width: auto;
-  padding: 12px 40px; 
-  background-color: #e0e0e0;
-  color: #000000;
+  min-width: 180px;
+  padding: 11px 30px;
+  background-color: #8a2be2;
+  color: #ffffff;
   border: none;
   border-radius: 25px;
-  font-size: 1em;
-  font-weight: bold;
+  font-size: 0.95em;
+  font-weight: 600;
   cursor: pointer;
   display: block;
-  margin: 40px auto 10px auto; 
+  margin: 30px auto 10px auto;
   text-transform: uppercase;
-  transition: background-color 0.2s ease;
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-sizing: border-box; /* Si el padding lo hiciera desbordar de alguna manera (poco probable aquí) */
 }
 
-.upload-form-container .submit-button.upload-submit-button:hover {
-  background-color: #c7c7c7;
+.upload-form-container .submit-button.upload-submit-button:hover:not(:disabled) {
+  background-color: #7324bf;
+  transform: translateY(-1px);
+}
+.upload-form-container .submit-button.upload-submit-button:active:not(:disabled) {
+  transform: translateY(0px);
 }
 
+.upload-form-container .submit-button.upload-submit-button:disabled {
+  background-color: #4a4a4a;
+  color: #888;
+  cursor: not-allowed;
+}
+
+/* Media Queries para UploadPage */
+@media (max-width: 600px) {
+  .upload-form-container .submit-button.upload-submit-button {
+    width: 100%; /* Botón a ancho completo en móviles */
+  }
+  .upload-form-container .file-input-label {
+    font-size: 0.9em;
+    padding: 10px;
+  }
+  .upload-form-container .upload-preview-image {
+    max-width: 120px;
+    max-height: 120px;
+  }
+}

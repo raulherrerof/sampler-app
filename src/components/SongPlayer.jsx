@@ -1,6 +1,6 @@
 // src/components/SongPlayer.jsx
 import React from 'react'; // Ya no necesita useState, useRef, useEffect
-
+import './SongPlayer.css'; // Asegúrate de que este archivo CSS se llame así
 // Iconos
 const PlayIconList = () => ( 
   <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
@@ -12,11 +12,15 @@ const PauseIconList = () => (
     <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>
   </svg>
 );
-const DetailIcon = () => ( 
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" stroke="currentColor" strokeWidth="1">
-    <circle cx="12" cy="12" r="10"></circle>
-    <line x1="12" y1="8" x2="12" y2="12"></line>
-    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+const DetailIcon = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" stroke="currentColor" strokeWidth="0.5"> {/* Ajusta strokeWidth si es necesario */}
+    <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"></path>
+    {/* Alternativa más simple de burbuja de chat:
+    <path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18zM18 14H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"></path>
+    */}
+    {/* Otra alternativa aún más simple (solo la burbuja):
+    <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path>
+    */}
   </svg>
 );
 
