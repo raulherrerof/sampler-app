@@ -35,11 +35,12 @@ const initialCategoriesData = [
 ];
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+// console.log("API Base URL en App.jsx:", API_BASE_URL); 
 
 function App() {
   const [activeOverlay, setActiveOverlay] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null); // Estado para info del usuario
   const [songs, setSongs] = useState([]);
   const [loadingSongs, setLoadingSongs] = useState(true);
   const [selectedSongForDetail, setSelectedSongForDetail] = useState(null);
@@ -53,16 +54,14 @@ function App() {
 
    const filteredSongs = useMemo(() => {
     if (!searchTerm.trim()) {
-      return songs; // Si no hay término de búsqueda, devuelve todas las canciones
+      return songs;
     }
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
     return songs.filter(song =>
       (song.title && song.title.toLowerCase().includes(lowerCaseSearchTerm)) ||
       (song.artist && song.artist.toLowerCase().includes(lowerCaseSearchTerm))
-      // Puedes añadir más campos para la búsqueda si lo deseas, ej:
-      // (song.genre && song.genre.toLowerCase().includes(lowerCaseSearchTerm))
     );
-  }, [songs, searchTerm]); // El filtrado se rehace si 'songs' o 'searchTerm' cambian
+  }, [songs, searchTerm]);
 
   const checkLoginStatus = useCallback(async () => {
     try {
@@ -71,7 +70,9 @@ function App() {
         const data = await response.json();
         if (data.isLoggedIn && data.user) {
           setIsLoggedIn(true);
-          setCurrentUser(data.user);
+          // Asegúrate que data.user de verificar_sesion.php incluye profilePicUrl COMPLETA y los demás campos que Header y ProfilePage esperan
+          setCurrentUser(data.user); 
+          // console.log("App.jsx - checkLoginStatus - currentUser seteado:", data.user);
         } else {
           setIsLoggedIn(false);
           setCurrentUser(null);
@@ -85,7 +86,7 @@ function App() {
       setIsLoggedIn(false);
       setCurrentUser(null);
     }
-  }, []);
+  }, []); // API_BASE_URL se usa directamente
 
   const fetchSongs = useCallback(async () => {
     setLoadingSongs(true);
@@ -97,20 +98,18 @@ function App() {
         throw new Error('Error al cargar canciones');
       }
       const fetchedSongs = await response.json();
-      // Asegurarse de que la API devuelve el array 'comments' para cada canción
-      // y que es un array. Si no, inicializarlo como array vacío.
-      const songsWithCommentsEnsured = fetchedSongs.map(song => ({
+      const songsWithCommentsEnsured = (Array.isArray(fetchedSongs) ? fetchedSongs : []).map(song => ({
         ...song,
         comments: Array.isArray(song.comments) ? song.comments : []
       }));
-      setSongs(Array.isArray(songsWithCommentsEnsured) ? songsWithCommentsEnsured : []);
-      console.log("Canciones cargadas/actualizadas:", songsWithCommentsEnsured);
+      setSongs(songsWithCommentsEnsured);
+      // console.log("Canciones cargadas/actualizadas:", songsWithCommentsEnsured);
     } catch (error) {
       console.error("Error en fetchSongs:", error.message);
       setSongs([]);
     }
     setLoadingSongs(false);
-  }, []);
+  }, []); // API_BASE_URL se usa directamente
 
   useEffect(() => {
     checkLoginStatus();
@@ -144,7 +143,7 @@ function App() {
     const songWithFullData = songs.find(s => s.id === song.id) || song;
     setSelectedSongForDetail({
         ...songWithFullData,
-        comments: Array.isArray(songWithFullData.comments) ? songWithFullData.comments : [] // Asegurar que comments es un array
+        comments: Array.isArray(songWithFullData.comments) ? songWithFullData.comments : []
     });
     setActiveOverlay('songDetail');
   };
@@ -152,9 +151,10 @@ function App() {
     setActiveOverlay(null);
   };
 
-  const handleLoginSuccess = (userData) => {
+  const handleLoginSuccess = (userData) => { // userData debe venir de la API con profilePicUrl completa
     setIsLoggedIn(true);
-    setCurrentUser(userData);
+    setCurrentUser(userData); 
+    // console.log("App.jsx - handleLoginSuccess - currentUser seteado:", userData);
     closeOverlay();
     fetchSongs();
   };
@@ -187,13 +187,16 @@ function App() {
     alert(`¡"${newSongWithCommentsEnsured.title}" ha sido subida con éxito!`);
     closeOverlay();
   };
-  const handleProfileUpdateSuccess = (updatedUserData) => {
+  
+  const handleProfileUpdateSuccess = (updatedUserData) => { // updatedUserData debe venir de la API con profilePicUrl completa
     alert('¡Perfil actualizado con éxito!');
-    setCurrentUser(updatedUserData);
+    setCurrentUser(updatedUserData); // ESTO ES CLAVE: Actualizar currentUser con los datos del servidor
+    console.log("App.jsx - handleProfileUpdateSuccess - currentUser actualizado:", updatedUserData);
     closeOverlay();
   };
 
   const handleSongLikeUpdate = useCallback((songId, newUserHasLiked, newLikeCount) => {
+    // console.log(`App.jsx: Actualizando likes para songId ${songId} - userHasLiked: ${newUserHasLiked}, likeCount: ${newLikeCount}`);
     setSongs(prevSongs =>
       prevSongs.map(s =>
         s.id === songId
@@ -202,56 +205,35 @@ function App() {
       )
     );
     if (currentPlayingSong && currentPlayingSong.id === songId) {
-      setCurrentPlayingSong(prev => ({
-        ...prev,
-        userHasLiked: newUserHasLiked,
-        likeCount: newLikeCount,
-      }));
+      setCurrentPlayingSong(prev => ({ ...prev, userHasLiked: newUserHasLiked, likeCount: newLikeCount, }));
     }
     if (selectedSongForDetail && selectedSongForDetail.id === songId) {
-        setSelectedSongForDetail(prev => ({
-            ...prev,
-            userHasLiked: newUserHasLiked,
-            likeCount: newLikeCount,
-        }));
+        setSelectedSongForDetail(prev => ({ ...prev, userHasLiked: newUserHasLiked, likeCount: newLikeCount, }));
     }
   }, [currentPlayingSong, selectedSongForDetail]);
 
-  // --- *** NUEVA FUNCIÓN PARA MANEJAR COMENTARIOS AÑADIDOS *** ---
   const handleSongCommentAdded = useCallback((songId, newComment) => {
-    console.log(`App.jsx: Nuevo comentario añadido a songId ${songId}`, newComment);
-    
+    // console.log(`App.jsx: Nuevo comentario añadido a songId ${songId}`, newComment);
     setSongs(prevSongs =>
       prevSongs.map(s =>
         s.id === songId
-          ? { ...s, comments: [newComment, ...(s.comments || [])] } // Añadir al principio
+          ? { ...s, comments: [newComment, ...(Array.isArray(s.comments) ? s.comments : [])] } 
           : s
       )
     );
-
     if (selectedSongForDetail && selectedSongForDetail.id === songId) {
-      setSelectedSongForDetail(prev => ({
-        ...prev,
-        comments: [newComment, ...(prev.comments || [])] // Añadir al principio
-      }));
+      setSelectedSongForDetail(prev => ({ ...prev, comments: [newComment, ...(Array.isArray(prev.comments) ? prev.comments : [])] }));
     }
-  }, [selectedSongForDetail]); // Dependencia
+  }, [selectedSongForDetail]);
 
   const handlePlaySong = useCallback((song) => {
-    if (!song || !song.audioUrl) {
-      console.warn("Intento de reproducir canción sin audioUrl:", song);
-      return;
-    }
+    if (!song || !song.audioUrl) { console.warn("Intento de reproducir canción sin audioUrl:", song); return; }
     const songToPlay = songs.find(s => s.id === song.id) || song;
     if (currentPlayingSong && currentPlayingSong.id === songToPlay.id) {
       setIsPlaying(prevIsPlaying => !prevIsPlaying);
     } else {
-      setCurrentPlayingSong(songToPlay);
-      setIsPlaying(true);
-      if (audioRef.current) {
-          audioRef.current.currentTime = 0;
-          setCurrentTime(0);
-      }
+      setCurrentPlayingSong(songToPlay); setIsPlaying(true);
+      if (audioRef.current) { audioRef.current.currentTime = 0; setCurrentTime(0); }
     }
   }, [currentPlayingSong, songs]);
 
@@ -260,86 +242,53 @@ function App() {
     setIsPlaying(prevIsPlaying => !prevIsPlaying);
   }, [currentPlayingSong]);
 
-  const playNextSong = useCallback(() => {
+  const playNextSong = useCallback(() => { /* tu lógica sin cambios */ 
     if (songs.length === 0) return;
     const currentIndex = songs.findIndex(s => s.id === currentPlayingSong?.id);
     let nextIndex = 0;
-    if (currentIndex !== -1) {
-        nextIndex = (currentIndex + 1) % songs.length;
-    }
-    if (songs[nextIndex]) {
-        handlePlaySong(songs[nextIndex]);
-    }
+    if (currentIndex !== -1) { nextIndex = (currentIndex + 1) % songs.length; }
+    if (songs[nextIndex]) { handlePlaySong(songs[nextIndex]); }
   }, [songs, currentPlayingSong, handlePlaySong]);
 
-  const playPreviousSong = useCallback(() => {
+  const playPreviousSong = useCallback(() => { /* tu lógica sin cambios */ 
     if (songs.length === 0) return;
     const currentIndex = songs.findIndex(s => s.id === currentPlayingSong?.id);
     let prevIndex = songs.length -1;
-    if (currentIndex !== -1) {
-        prevIndex = (currentIndex - 1 + songs.length) % songs.length;
-    }
-    if (songs[prevIndex]) {
-        handlePlaySong(songs[prevIndex]);
-    }
+    if (currentIndex !== -1) { prevIndex = (currentIndex - 1 + songs.length) % songs.length; }
+    if (songs[prevIndex]) { handlePlaySong(songs[prevIndex]); }
   }, [songs, currentPlayingSong, handlePlaySong]);
 
-  const handleSeek = useCallback((seekTime) => {
-    if (audioRef.current && !isNaN(seekTime)) {
-      audioRef.current.currentTime = seekTime;
-      setCurrentTime(seekTime);
-    }
+  const handleSeek = useCallback((seekTime) => { /* tu lógica sin cambios */ 
+    if (audioRef.current && !isNaN(seekTime)) { audioRef.current.currentTime = seekTime; setCurrentTime(seekTime); }
   }, []);
 
-  const handleVolumeChange = useCallback((newVolume) => {
-    if (audioRef.current && !isNaN(newVolume)) {
-      const clampedVolume = Math.max(0, Math.min(1, newVolume));
-      audioRef.current.volume = clampedVolume;
-      setVolume(clampedVolume);
-    }
+  const handleVolumeChange = useCallback((newVolume) => { /* tu lógica sin cambios */ 
+    if (audioRef.current && !isNaN(newVolume)) { const clampedVolume = Math.max(0, Math.min(1, newVolume)); audioRef.current.volume = clampedVolume; setVolume(clampedVolume); }
   }, []);
 
-  useEffect(() => {
+  useEffect(() => { /* tu useEffect para audio.src y play/pause, sin cambios */ 
     const audio = audioRef.current;
     if (audio) {
       if (currentPlayingSong && currentPlayingSong.audioUrl) {
-        if (audio.src !== currentPlayingSong.audioUrl) {
-          audio.src = currentPlayingSong.audioUrl;
-        }
-        if (isPlaying) {
-          const playPromise = audio.play();
-          if (playPromise !== undefined) {
-            playPromise.catch(error => {
-              console.warn("Play() fue rechazado:", error);
-              setIsPlaying(false);
-            });
-          }
-        } else {
-          audio.pause();
-        }
-      } else {
-        audio.pause();
-      }
+        if (audio.src !== currentPlayingSong.audioUrl) { audio.src = currentPlayingSong.audioUrl; }
+        if (isPlaying) { const playPromise = audio.play(); if (playPromise !== undefined) { playPromise.catch(error => { console.warn("Play() fue rechazado:", error); setIsPlaying(false); }); }
+        } else { audio.pause(); }
+      } else { audio.pause(); /* Opcional: audio.src = ""; */ }
     }
   }, [currentPlayingSong, isPlaying]);
 
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-    }
+  useEffect(() => { /* tu useEffect para audio.volume, sin cambios */ 
+    if (audioRef.current) { audioRef.current.volume = volume; }
   }, [volume]);
 
-  useEffect(() => {
+  useEffect(() => { /* tu useEffect para listeners de audio, sin cambios necesarios aquí para el problema actual */ 
     const audio = audioRef.current;
     if (!audio) return;
-    const onLoadedMetadata = () => {
-        if (!isNaN(audio.duration) && audio.duration !== Infinity) { setDurationTotal(audio.duration); } 
-        else { setDurationTotal(0); }
-    };
+    const onLoadedMetadata = () => { if (!isNaN(audio.duration) && audio.duration !== Infinity) { setDurationTotal(audio.duration); } else { setDurationTotal(0); } };
     const onTimeUpdate = () => setCurrentTime(audio.currentTime);
     const onEnded = () => playNextSong();
-    const onPlayEvent = () => setIsPlaying(true);
-    const onPauseEvent = () => setIsPlaying(false);
+    const onPlayEvent = () => { if(!isPlaying) setIsPlaying(true);};
+    const onPauseEvent = () => { if(isPlaying) setIsPlaying(false);};
     const onVolumeChangeInternal = () => setVolume(audio.volume);
     audio.addEventListener('loadedmetadata', onLoadedMetadata);
     audio.addEventListener('timeupdate', onTimeUpdate);
@@ -355,7 +304,7 @@ function App() {
       audio.removeEventListener('pause', onPauseEvent);
       audio.removeEventListener('volumechange', onVolumeChangeInternal);
     };
-  }, [playNextSong]);
+  }, [playNextSong, isPlaying]); // isPlaying añadido aquí es correcto para la sincronización
 
   let OverlayComponentToRender = null;
   if (activeOverlay) {
@@ -370,19 +319,17 @@ function App() {
         OverlayComponentToRender = <UploadPage onUploadSuccess={handleUploadSuccess} onClose={closeOverlay} />;
         break;
       case 'profile':
+        // Asegúrate que currentUser se pasa como initialUserData
         OverlayComponentToRender = <ProfilePage initialUserData={currentUser} onProfileUpdateSuccess={handleProfileUpdateSuccess} onClose={closeOverlay} />;
         break;
       case 'songDetail':
         if (selectedSongForDetail) {
           OverlayComponentToRender = <SongDetailPage
-                                      song={selectedSongForDetail}
-                                      onClose={closeOverlay}
-                                      currentUser={currentUser}
-                                      onLikeUpdate={handleSongLikeUpdate}
-                                      onCommentAdded={handleSongCommentAdded}
+                                      song={selectedSongForDetail} onClose={closeOverlay} currentUser={currentUser}
+                                      onLikeUpdate={handleSongLikeUpdate} onCommentAdded={handleSongCommentAdded}
                                       isGlobalPlaying={isPlaying && currentPlayingSong?.id === selectedSongForDetail.id}
                                       onGlobalPlayPause={() => handlePlaySong(selectedSongForDetail)}
-                                      currentPlayingSong={currentPlayingSong} // *** AÑADIR ESTA PROP ***
+                                      currentPlayingSong={currentPlayingSong}
                                     />;
         }
         break;
@@ -395,16 +342,12 @@ function App() {
     <div className="app-main-container">
       <audio ref={audioRef} preload="metadata" />
       <Header
-      onLoginClick={openLoginOverlay}
-      onRegisterClick={openRegisterOverlay}
-      onUploadClick={openUploadOverlay}
-      onProfileClick={openProfileOverlay}
-      isLoggedIn={isLoggedIn}
-      onLogoutClick={handleLogout}
-      currentUser={currentUser}
-      searchTerm={searchTerm} // *** PASAR searchTerm ***
-      onSearchTermChange={setSearchTerm} // *** PASAR setSearchTerm (o una función que lo llame) ***
-    />
+        onLoginClick={openLoginOverlay} onRegisterClick={openRegisterOverlay}
+        onUploadClick={openUploadOverlay} onProfileClick={openProfileOverlay}
+        isLoggedIn={isLoggedIn} onLogoutClick={handleLogout} 
+        currentUser={currentUser} // Se pasa currentUser al Header
+        searchTerm={searchTerm} onSearchTermChange={setSearchTerm}
+      />
       <div className={`app-content-wrapper ${currentPlayingSong ? 'with-player-bar' : ''}`}>
         <h2 className="welcome-title">Bienvenido a <span className="highlight">Sampler</span></h2>
         <div className="categories-grid">
@@ -416,8 +359,7 @@ function App() {
           {loadingSongs && <p>Cargando canciones...</p>}
           {!loadingSongs && filteredSongs.length > 0 && filteredSongs.map(song => (
             <SongPlayer
-              key={song.id}
-              songData={song}
+              key={song.id} songData={song}
               onPlayClick={() => handlePlaySong(song)}
               onDetailClick={() => openSongDetailOverlay(song)}
               isCurrentlyPlaying={currentPlayingSong?.id === song.id && isPlaying}
@@ -427,21 +369,15 @@ function App() {
             <p>No se encontraron resultados para "{searchTerm}".</p>
           )}
           {!loadingSongs && songs.length === 0 && searchTerm.trim() === '' && (
-            <p>No hay canciones disponibles. ¡Sube la tuya!</p>
+            <p>No hay canciones disponibles.</p>
           )}
         </div>
       </div>
       {currentPlayingSong && (
         <PlayerBar
-          song={currentPlayingSong}
-          isPlaying={isPlaying}
-          currentTime={currentTime}
-          duration={durationTotal}
-          onPlayPause={togglePlayPause}
-          onNext={playNextSong}
-          onPrev={playPreviousSong}
-          onSeek={handleSeek}
-          volume={volume}
+          song={currentPlayingSong} isPlaying={isPlaying} currentTime={currentTime}
+          duration={durationTotal} onPlayPause={togglePlayPause} onNext={playNextSong}
+          onPrev={playPreviousSong} onSeek={handleSeek} volume={volume}
           onVolumeChange={handleVolumeChange}
         />
       )}

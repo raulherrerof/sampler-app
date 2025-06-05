@@ -1,3 +1,5 @@
+/* src/App.css */
+
 body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; background-color: #0a0a0a; color: #ffffff; }
 body.overlay-active { overflow: hidden; }
 .app-content-wrapper { max-width: 1450px; margin: 0 auto; padding: 0 40px 30px 40px; box-sizing: border-box; }
@@ -10,12 +12,52 @@ body.overlay-active { overflow: hidden; }
 .search-icon, .mic-icon { position: absolute; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 1.35em; }
 .search-icon { left: 20px; } .mic-icon { right: 20px; cursor: pointer; }
 .header-icons { display: flex; align-items: center; gap: 22px; }
-.icon-button { background-color: #8a2be2; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; font-size: 1.8em; cursor: pointer; transition: background-color 0.2s ease; }
+
+.icon-button { 
+  background-color: #8a2be2; 
+  color: white; 
+  border: none; 
+  border-radius: 50%; 
+  width: 50px; 
+  height: 50px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  font-size: 1.8em; 
+  cursor: pointer; 
+  transition: background-color 0.2s ease;
+  padding: 0; /* <<<--- CAMBIO/NUEVO: Quitar padding para que la imagen pueda llenar */
+  overflow: hidden; /* <<<--- CAMBIO/NUEVO: Para recortar la imagen si es más grande que el botón */
+}
 .icon-button:hover { background-color: #7324bf; }
+
+/* Estilo específico si el botón de perfil necesita ser diferente, pero .icon-button ya es circular */
+/* .icon-button.profile-icon-button { */
+  /* padding: 0;  Ya está en .icon-button */
+  /* overflow: hidden; Ya está en .icon-button */
+/* } */
+
+.header-profile-pic { /* <<<--- NUEVA CLASE PARA LA IMAGEN <img> DE PERFIL ---<<< */
+  width: 100%;         
+  height: 100%;        
+  object-fit: cover;   /* Escala manteniendo aspect ratio, recorta si es necesario */
+  border-radius: 50%;  /* Hace la imagen circular (ya que el botón es circular) */
+  display: block;      
+}
+
 .header-button { background-color: #333; color: white; border: 1px solid #555; padding: 10px 18px; border-radius: 5px; cursor: pointer; font-size: 1em; margin-left: 10px; }
 .header-button:hover { background-color: #444; }
 .profile-dropdown-container { position: relative; display: inline-block; }
-.dropdown-username { padding: 10px 20px; color: #bbb; font-size: 0.9em; display: block; border-bottom: 1px solid #333; margin-bottom: 5px; }
+.dropdown-username { 
+  padding: 10px 20px; 
+  color: #bbb; font-size: 0.9em; 
+  display: block; border-bottom: 1px solid #333; 
+  margin-bottom: 5px; 
+  text-align: center; /* <<<--- AÑADIDO para centrar el nombre de usuario */
+  white-space: nowrap; /* <<<--- AÑADIDO para evitar saltos de línea */
+  overflow: hidden; /* <<<--- AÑADIDO para cortar texto largo */
+  text-overflow: ellipsis; /* <<<--- AÑADIDO para mostrar '...' si el texto es muy largo */
+}
 .dropdown-menu { position: absolute; top: calc(100% + 12px); right: 0; background-color: #1e1e1e; border: 1px solid #444; border-radius: 6px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4); z-index: 1050; min-width: 210px; padding: 8px 0; }
 .dropdown-item { display: block; width: 100%; padding: 12px 20px; text-align: left; background: none; border: none; color: #e0e0e0; font-size: 1em; cursor: pointer; white-space: nowrap; }
 .dropdown-item:hover { background-color: #333; color: #ffffff; }
@@ -44,16 +86,15 @@ body.overlay-active { overflow: hidden; }
 .overlay-close-button:hover { color: #fff; }
 .login-header-modal, .register-header-modal, .upload-header-modal, .profile-header-modal { text-align: center; padding-bottom: 15px; margin-bottom: 20px; }
 .logo-text-modal { font-family: 'Pacifico', cursive; font-size: 2.2em; color: #fff; background: linear-gradient(to right, #ff00ff, #8a2be2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: inline-block; }
-.welcome-message-modal { font-family: 'Dancing Script', cursive; font-size: 1.6em; margin-top: 8px; color: #e0e0e0; }
+.welcome-message-modal { font-family: 'Dancing Script', cursive; font-size: 1.6em; margin-top: 8px; color: #e0e0e0; font-weight: normal; }
 @media (max-width: 992px) { .app-content-wrapper { padding: 0 30px 20px 30px; } .header { padding: 20px 30px; } .categories-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; } .category-card.wide { grid-column: span 2; } .search-bar-container { margin: 0 20px; max-width: 500px; } }
 @media (max-width: 768px) { .app-content-wrapper { padding: 0 20px 10px 20px; } .header { flex-direction: column; gap: 15px; align-items: stretch; padding: 20px; } .search-bar-container { margin: 10px 0; order: 1; width: 100%; max-width: none; } .header-icons { justify-content: space-around; width: 100%; order: 2; gap: 15px; } .logo, .logo-image { text-align: center; margin: 0 auto 10px auto; justify-content: center; order: 0; } .logo { font-size: 2.5em; } .logo-image{ width: 120px; } .categories-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); } .category-card.wide, .category-card.tall { grid-column: span 2; } .category-card.tall{ grid-row: span 1; aspect-ratio: 3 / 4; } .song-player { flex-wrap: wrap; padding: 12px; gap: 10px; } .song-album-art { width: 50px; height: 50px; } .song-info { flex-basis: 100%; order: 1; margin-right: 0; text-align: center; } .play-pause-button { order: 2; margin: 10px auto; } .waveform { width: 100%; margin-top: 5px; margin-right: 0; min-width: auto; order: 3; } .song-duration { width: 100%; text-align: center; margin-top: 5px; order: 4; } .overlay-content-wrapper { width: 90%; max-height: 90vh; padding: 20px; } .dropdown-menu { left: auto; right: 0; } }
 @media (max-width: 480px) { .app-content-wrapper { padding: 0 15px 10px 15px; } .header { padding: 15px; } .logo { font-size: 2.2em; } .logo-image{ width: 100px; } .welcome-title { font-size: 1.8em; margin: 20px 0 25px 0; } .categories-grid { grid-template-columns: 1fr; gap: 12px; } .category-card.wide, .category-card.tall { grid-column: span 1; grid-row: span 1; aspect-ratio: 4 / 3; } .icon-button { width: 38px; height: 38px; font-size: 1.4em; } .header-icons { gap: 8px; } .dropdown-menu { min-width: 140px; } .dropdown-item { padding: 8px 12px; font-size: 0.85em; } .song-album-art { width: 40px; height: 40px; } .song-info .artist { font-size: 0.85em; } .play-pause-button { width: 32px; height: 32px; font-size: 1.1em; } .overlay-content-wrapper { width: calc(100% - 20px); margin: 10px; padding: 15px; } .overlay-close-button { top: 8px; right: 8px; font-size: 1.8em; } }
 
-
 .login-header-modal .logo-text-modal,
 .register-header-modal .logo-text-modal,
-.upload-header-modal .logo-text-page, 
-.profile-header-modal .logo-text-page { 
+.upload-header-modal .logo-text-page, /* Asumo que es .logo-text-modal también para consistencia */
+.profile-header-modal .logo-text-page { /* Asumo que es .logo-text-modal también para consistencia */
     font-family: 'Pacifico', cursive; 
     font-size: 2.5em; 
     background: linear-gradient(to right, #ff00ff, #8a2be2);
@@ -65,12 +106,11 @@ body.overlay-active { overflow: hidden; }
 
 .login-header-modal .welcome-message-modal,
 .register-header-modal .welcome-message-modal,
-.upload-header-modal .welcome-message-page, 
-.profile-header-modal .welcome-message-page { 
+.upload-header-modal .welcome-message-page, /* Asumo que es .welcome-message-modal */
+.profile-header-modal .welcome-message-page { /* Asumo que es .welcome-message-modal */
     font-family: 'Dancing Script', cursive;
     font-size: 1.8em; 
     margin-top: 8px;
     color: #e0e0e0;
     font-weight: normal;
 }
-
