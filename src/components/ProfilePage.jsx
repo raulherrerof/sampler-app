@@ -1,6 +1,6 @@
-// ProfilePage.jsx (Con campo de confirmación de contraseña)
+// ProfilePage.jsx
 import React, { useState, useEffect } from 'react';
-import './ProfilePage.css'; // Asegúrate de que este archivo se llame así y se importe
+import './ProfilePage.css';
 
 const ProfileIconPlaceholder = () => (
   <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style={{ verticalAlign: 'middle', color: '#777' }}>
@@ -13,7 +13,7 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); // NUEVO: Estado para la confirmación de la contraseña
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [lastName, setLastName] = useState('');
   const [dob, setDob] = useState('');
@@ -24,6 +24,9 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
   const [profilePicPreview, setProfilePicPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // <<< 1. ESTADO PARA EL FEEDBACK VISUAL DEL DRAG & DROP >>>
+  const [isDragging, setIsDragging] = useState(false);
 
   const API_URL = process.env.REACT_APP_API_BASE_URL || '';
 
@@ -39,39 +42,59 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
       setProfilePicPreview(initialUserData.profilePicUrl || initialUserData.profile_pic_url || null);
       setProfilePicFile(null);
       setProfilePicName('');
-      // Limpiar contraseñas al cargar
       setPassword('');
       setConfirmPassword('');
     }
   }, [initialUserData]);
 
-  const handleProfilePicChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
+  // <<< 2. FUNCIÓN GENÉRICA PARA PROCESAR LA IMAGEN >>>
+  const processProfilePic = (file) => {
+    if (file && file.type.startsWith('image/')) {
       setProfilePicFile(file);
       setProfilePicName(file.name);
       const reader = new FileReader();
       reader.onloadend = () => setProfilePicPreview(reader.result);
       reader.readAsDataURL(file);
+      setError(''); // Limpiar errores previos
     } else {
-      setProfilePicFile(null);
-      setProfilePicName('');
-      setProfilePicPreview(initialUserData?.profilePicUrl || initialUserData?.profile_pic_url || null);
+      setError('Por favor, selecciona un archivo de imagen válido.');
+    }
+  };
+
+  const handleProfilePicChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      processProfilePic(file);
+    }
+  };
+
+  // <<< 3. MANEJADORES PARA LOS EVENTOS DE DRAG & DROP >>>
+  const handleDragEvents = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setIsDragging(true);
+    } else if (e.type === 'dragleave') {
+      setIsDragging(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    handleDragEvents(e); // Previene el comportamiento por defecto
+    setIsDragging(false); // Quita el feedback visual
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      processProfilePic(e.dataTransfer.files[0]);
     }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
-
-    // MODIFICADO: Añadir validación de contraseñas
     if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden. Por favor, inténtalo de nuevo.');
-      return; // Detener el envío del formulario si no coinciden
+      setError('Las contraseñas no coinciden.');
+      return;
     }
-
     setLoading(true);
-
     const formData = new FormData();
     formData.append('username', username);
     formData.append('email', email);
@@ -80,8 +103,6 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
     if (dob) formData.append('dob', dob);
     if (gender) formData.append('gender', gender);
     if (aboutMe) formData.append('aboutMe', aboutMe);
-    // Solo se envía la contraseña si el usuario ha escrito algo en el campo.
-    // La validación anterior ya asegura que si se envía, `password` y `confirmPassword` coinciden.
     if (password) formData.append('password', password);
     if (profilePicFile) formData.append('profilePic', profilePicFile);
 
@@ -98,7 +119,6 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
       if (onProfileUpdateSuccess && data.user) {
         onProfileUpdateSuccess(data.user);
       } else {
-        console.warn("Perfil actualizado, pero no se recibió 'data.user' o 'onProfileUpdateSuccess' no está definida.");
         onClose();
       }
     } catch (err) {
@@ -117,6 +137,7 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
       <div className="profile-form-container">
         {error && <p className="form-error-message" style={{color: 'red', textAlign: 'center', marginBottom: '15px'}}>{error}</p>}
         <form onSubmit={handleSubmit}>
+            {/* ... (resto de los campos del formulario sin cambios) ... */}
             <div className="form-group">
               <label htmlFor="username-profile">Usuario</label>
               <input type="text" id="username-profile" value={username} onChange={(e) => setUsername(e.target.value)} required />
@@ -129,7 +150,6 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
               <label htmlFor="password-profile">Nueva Contraseña</label>
               <input type="password" id="password-profile" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Dejar en blanco para no cambiar" />
             </div>
-            {/* NUEVO: Campo de confirmación de contraseña */}
             <div className="form-group">
               <label htmlFor="confirm-password-profile">Confirmar Nueva Contraseña</label>
               <input type="password" id="confirm-password-profile" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Repite la contraseña" />
@@ -158,14 +178,22 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
               <label htmlFor="aboutme-profile">Sobre ti</label>
               <textarea id="aboutme-profile" value={aboutMe} onChange={(e) => setAboutMe(e.target.value)} rows="3"></textarea>
             </div>
-            <div className="form-group profile-pic-group">
+
+            {/* <<< 4. AÑADIMOS LOS EVENTOS DE DRAG & DROP AL CONTENEDOR DE LA IMAGEN >>> */}
+            <div 
+              className={`form-group profile-pic-group ${isDragging ? 'drag-over' : ''}`}
+              onDragEnter={handleDragEvents}
+              onDragLeave={handleDragEvents}
+              onDragOver={handleDragEvents}
+              onDrop={handleDrop}
+            >
               <label htmlFor="profile-pic-input" className="file-input-label profile-pic-label">
                 {profilePicPreview ?
                     <img src={profilePicPreview} alt="Vista previa de perfil" className="profile-pic-preview" /> :
                     <ProfileIconPlaceholder />
                 }
                 <span className="file-input-text">
-                    {profilePicFile ? profilePicName : (initialUserData?.profilePicUrl || initialUserData?.profile_pic_url ? "Cambiar foto" : "Seleccionar foto")}
+                    {profilePicFile ? profilePicName : (initialUserData?.profilePicUrl || initialUserData?.profile_pic_url ? "Cambiar foto" : "Arrastra o selecciona una foto")}
                 </span>
               </label>
               <input type="file" id="profile-pic-input" accept="image/png, image/jpeg, image/gif, image/webp" onChange={handleProfilePicChange} style={{ display: 'none' }}/>
