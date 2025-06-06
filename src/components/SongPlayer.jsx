@@ -1,7 +1,8 @@
 // src/components/SongPlayer.jsx
-import React from 'react'; // Ya no necesita useState, useRef, useEffect
-import './SongPlayer.css'; // Asegúrate de que este archivo CSS se llame así
-// Iconos
+import React from 'react';
+import './SongPlayer.css';
+
+// Iconos (sin cambios)
 const PlayIconList = () => ( 
   <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
     <path d="M8 5v14l11-7z"></path>
@@ -13,14 +14,8 @@ const PauseIconList = () => (
   </svg>
 );
 const DetailIcon = () => (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" stroke="currentColor" strokeWidth="0.5"> {/* Ajusta strokeWidth si es necesario */}
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" stroke="currentColor" strokeWidth="0.5">
     <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"></path>
-    {/* Alternativa más simple de burbuja de chat:
-    <path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18zM18 14H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"></path>
-    */}
-    {/* Otra alternativa aún más simple (solo la burbuja):
-    <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path>
-    */}
   </svg>
 );
 
@@ -53,12 +48,15 @@ function SongPlayer({ songData, onPlayClick, onDetailClick, isCurrentlyPlaying, 
   };
   
   const handleCardAreaClick = () => {
-    if (onDetailClick) { // Priorizar abrir detalles si se hace clic en la tarjeta
+    if (onDetailClick) {
       onDetailClick();
-    } else if (onPlayClick && songData.audioUrl) { // Si no hay para detalles, que reproduzca
+    } else if (onPlayClick && songData.audioUrl) {
       onPlayClick();
     }
   };
+
+  // Preparamos el string completo de artistas para mostrarlo
+  const displayArtists = `${songData.artist || "Artista Desconocido"}${songData.featuredArtists ? `, ${songData.featuredArtists}` : ''}`;
 
   return (
     <div 
@@ -74,21 +72,22 @@ function SongPlayer({ songData, onPlayClick, onDetailClick, isCurrentlyPlaying, 
       />
       <div className="song-info">
         <span className="title">{songData.title || "Título Desconocido"}</span>
-        <span className="artist">{songData.artist || "Artista Desconocido"}</span>
+        {/* // <<< MODIFICADO: Usamos nuestra variable `displayArtists` para mostrar la lista completa */}
+        <span className="artist" title={displayArtists}>{displayArtists}</span>
       </div>
 
       <button
         className="play-pause-button-list" 
         aria-label={isCurrentlyPlaying ? `Pausar ${songData.title}` : `Reproducir ${songData.title}`}
         disabled={!songData.audioUrl}
-        onClick={handlePlayButtonClick} // Este es el botón específico de play/pause de la lista
+        onClick={handlePlayButtonClick}
       >
         {isCurrentlyPlaying ? <PauseIconList /> : <PlayIconList />}
       </button>
 
       <span className="song-duration">{formatTime(duration)}</span>
       
-      {onDetailClick && ( // Mostrar botón de detalle solo si se pasa la función
+      {onDetailClick && (
           <button 
             className="detail-button-list" 
             onClick={handleDetailButtonClick}
