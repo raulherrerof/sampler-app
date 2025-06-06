@@ -1,8 +1,8 @@
-// App.jsx
+
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import './App.css';
 
-// Tus Componentes
+
 import Header from './components/Header';
 import CategoryCard from './components/CategoryCard';
 import SongPlayer from './components/SongPlayer';
@@ -12,8 +12,9 @@ import UploadPage from './components/UploadPage';
 import ProfilePage from './components/ProfilePage';
 import SongDetailPage from './components/SongDetailPage';
 import PlayerBar from './components/PlayerBar';
+import TendenciasPage from './components/TendenciasPage';
+import TopEspanaPage from './components/TopEspanaPage'; 
 
-// Tus Imágenes
 import card1Img from './Imagenes/1.jpg';
 import card2Img from './Imagenes/2.png';
 import card3Img from './Imagenes/3.png';
@@ -24,13 +25,13 @@ import card7Img from './Imagenes/7.png';
 import card8Img from './Imagenes/8.png';
 
 const initialCategoriesData = [
-  { id: 1, title: "Tendencias", imageUrl: card1Img }, 
+  { id: 1, title: "Tendencias", imageUrl: card1Img },
   { id: 2, title: "Top en España", imageUrl: card2Img },
-  { id: 3, title: "Del momento", imageUrl: card3Img }, 
+  { id: 3, title: "Del momento", imageUrl: card3Img },
   { id: 4, title: "Recomendadas", imageUrl: card4Img },
-  { id: 5, title: "Álbum del momento", imageUrl: card5Img, size: "tall" }, 
+  { id: 5, title: "Álbum del momento", imageUrl: card5Img, size: "tall" },
   { id: 6, title: "Artistas del momento", imageUrl: card6Img, size: "wide" },
-  { id: 7, title: "Para ti", imageUrl: card7Img }, 
+  { id: 7, title: "Para ti", imageUrl: card7Img },
   { id: 8, title: "Random", imageUrl: card8Img },
 ];
 
@@ -51,7 +52,20 @@ function App() {
   const [volume, setVolume] = useState(0.75);
   const audioRef = useRef(null);
 
-   const filteredSongs = useMemo(() => {
+  const trendingSongs = useMemo(() => {
+    return [...songs]
+      .sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0))
+      .slice(0, 5);
+  }, [songs]);
+
+  
+const topEspanaSongs = useMemo(() => {
+    return [...songs]
+      .sort((a, b) => Number(b.id) - Number(a.id)) 
+      .slice(0, 5); 
+  }, [songs]);
+
+  const filteredSongs = useMemo(() => {
     if (!searchTerm.trim()) {
       return songs;
     }
@@ -146,6 +160,17 @@ function App() {
 
   const handleGoHome = () => {
     setSearchTerm('');
+  };
+
+  const openTendenciasOverlay = () => {
+    setSelectedSongForDetail(null);
+    setActiveOverlay('tendencias');
+  };
+
+  // --- AÑADIR --- 3. Crear la función para abrir el overlay de Top España
+  const openTopEspanaOverlay = () => {
+    setSelectedSongForDetail(null);
+    setActiveOverlay('topEspana');
   };
 
   const openLoginOverlay = () => { setSelectedSongForDetail(null); setActiveOverlay('login'); };
@@ -315,6 +340,25 @@ function App() {
   let OverlayComponentToRender = null;
   if (activeOverlay) {
     switch (activeOverlay) {
+      case 'tendencias':
+        OverlayComponentToRender = <TendenciasPage
+                                    onClose={closeOverlay}
+                                    songsToDisplay={trendingSongs}
+                                    onPlaySongInTendencias={handlePlaySong}
+                                    isSongPlaying={isPlaying}
+                                    currentPlayingSongId={currentPlayingSong?.id}
+                                  />;
+        break;
+      // --- AÑADIR --- 4. Añadir el nuevo case para el overlay de Top España
+      case 'topEspana':
+        OverlayComponentToRender = <TopEspanaPage
+                                    onClose={closeOverlay}
+                                    songsToDisplay={topEspanaSongs}
+                                    onPlaySongInTendencias={handlePlaySong}
+                                    isSongPlaying={isPlaying}
+                                    currentPlayingSongId={currentPlayingSong?.id}
+                                  />;
+        break;
       case 'login':
         OverlayComponentToRender = <LoginPage onLoginSuccess={handleLoginSuccess} onNavigateToRegister={() => setActiveOverlay('register')} onClose={closeOverlay} />;
         break;
@@ -370,6 +414,12 @@ function App() {
                   title={category.title}
                   imageUrl={category.imageUrl}
                   size={category.size || ""}
+                  // --- MODIFICAR --- 5. Añadir lógica para el onClick de la nueva categoría
+                  onClick={
+                    category.id === 1 ? openTendenciasOverlay :
+                    category.id === 2 ? openTopEspanaOverlay :
+                    undefined
+                  }
                 />
               ))}
             </div>
