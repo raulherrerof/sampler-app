@@ -199,7 +199,7 @@ input[type="range"].volume-bar:active::-moz-range-thumb {
 /* Estilo para la parte activa del track */
 input[type="range"].seek-bar,
 input[type="range"].volume-bar {
-    background-image: linear-gradient(#1db954, #1db954); /* Color verde Spotify para el progreso */
+    background-image: linear-gradient(#8a2be2, #8a2be2); /* Color verde Spotify para el progreso */
     background-repeat: no-repeat;
     /* background-size se establece con JS/inline style */
 }
@@ -228,7 +228,7 @@ input[type="range"].volume-bar {
 /* Ya deberías tenerlos en App.css, pero por si acaso */
 .song-player.playing-in-list .title,
 .song-player.playing-in-list .artist {
-  color: #1db954; /* Color verde Spotify para la canción activa en la lista */
+  color: #8a2be2; /* Color verde Spotify para la canción activa en la lista */
 }
 
 .play-pause-button-list { /* Estilo específico para el botón en la lista */
@@ -275,7 +275,7 @@ input[type="range"].volume-bar {
   transition: background-color 0.1s ease-in-out, height 0.1s ease-in-out;
 }
 .song-player.playing-in-list .waveform-placeholder-list .waveform-bar {
-  background-color: #1db954; /* Color cuando está sonando */
+  background-color: #8a2be2; /* Color cuando está sonando */
 }
 
 /* Media queries para la PlayerBar (simplificado) */

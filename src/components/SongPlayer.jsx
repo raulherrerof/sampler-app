@@ -24,19 +24,14 @@ const DetailIcon = () => (
   </svg>
 );
 
-const formatDuration = (totalSeconds) => {
-  if (typeof totalSeconds === 'string' && totalSeconds.includes(':')) {
-    return totalSeconds;
-  }
-  if (totalSeconds === null || totalSeconds === undefined || isNaN(totalSeconds) || totalSeconds <= 0 || !isFinite(totalSeconds) ) {
-    return "0:00";
-  }
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = Math.floor(totalSeconds % 60);
+const formatTime = (timeInSeconds) => {
+  if (isNaN(timeInSeconds) || timeInSeconds === Infinity || timeInSeconds < 0) return "0:00";
+  const minutes = Math.floor(timeInSeconds / 60);
+  const seconds = Math.floor(timeInSeconds % 60);
   return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 };
 
-function SongPlayer({ songData, onPlayClick, onDetailClick, isCurrentlyPlaying }) {
+function SongPlayer({ songData, onPlayClick, onDetailClick, isCurrentlyPlaying, duration }) {
   if (!songData) {
     return null; 
   }
@@ -91,7 +86,7 @@ function SongPlayer({ songData, onPlayClick, onDetailClick, isCurrentlyPlaying }
         {isCurrentlyPlaying ? <PauseIconList /> : <PlayIconList />}
       </button>
 
-      <span className="song-duration">{formatDuration(songData.duration)}</span>
+      <span className="song-duration">{formatTime(duration)}</span>
       
       {onDetailClick && ( // Mostrar botón de detalle solo si se pasa la función
           <button 

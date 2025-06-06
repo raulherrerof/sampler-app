@@ -23,7 +23,6 @@ body.overlay-active {
   max-width: 1450px;
   margin: 0 auto;
   padding: 0 40px 30px 40px;
-  /* box-sizing: border-box; Ya está global */
 }
 
 /* --- Header Reducido --- */
@@ -74,7 +73,6 @@ body.overlay-active {
   background-color: #1e1e1e;
   color: #fff;
   font-size: 0.95em; /* Reducido */
-  /* box-sizing: border-box; Ya está global */
 }
 
 .search-bar::placeholder {
@@ -225,8 +223,6 @@ body.overlay-active {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
   margin-bottom: 40px;
-  /* Para estabilidad al redimensionar si es un problema: */
-  /* grid-auto-flow: row; */
 }
 
 .category-card {
@@ -297,7 +293,7 @@ body.overlay-active {
 .song-info .title {
   font-size: 0.85em;
   font-weight: normal;
-  color: #8a2be2;
+  color: #e0e0e0;
   margin: 0 0 4px 0;
   display: block;
   white-space: nowrap; /* Para truncamiento */
@@ -353,7 +349,7 @@ body.overlay-active {
   font-size: 0.95em;
   color: #aaa;
   min-width: 70px;
-  text-align: right;
+  text-align: center;
   flex-shrink: 0;
 }
 
@@ -369,8 +365,7 @@ body.overlay-active {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  padding: 20px; /* Espacio alrededor del contenido del overlay */
-  /* box-sizing: border-box; Ya está global */
+  padding: 20px;
   overflow-y: auto; /* Permite scroll si el contenido del overlay es muy alto */
 }
 
@@ -378,21 +373,14 @@ body.overlay-active {
   background-color: #1c1c1c;
   border-radius: 10px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-  width: auto; /* El ancho se adaptará al contenido hasta su max-width */
-  max-height: 95vh; /* Altura máxima para evitar que se salga de la pantalla */
+  width: auto; 
+  max-height: 95vh; 
   overflow-y: auto; /* Scroll interno si el contenido es más alto que max-height */
-  position: relative; /* Para el posicionamiento absoluto del botón de cerrar */
-  padding: 25px 30px; /* Padding interno del contenido del overlay */
-  /* box-sizing: border-box; Ya está global */
-  /* El max-width específico para cada modal (SongDetail, Profile, Upload)
-     se puede definir en sus respectivos CSS o aquí si es general.
-     Ej: max-width: 800px; (para SongDetail)
-         max-width: 700px; (para Profile)
-         max-width: 650px; (para Upload)
-     O puedes dejarlo que se ajuste al contenido hasta un límite más grande. */
+  position: relative; 
+  padding: 25px 30px; 
 }
 
-.overlay-close-button { /* Este es el botón de cerrar DENTRO de .overlay-content-wrapper */
+.overlay-close-button {
   position: absolute;
   top: 15px;
   right: 15px;
@@ -404,7 +392,7 @@ body.overlay-active {
   cursor: pointer;
   line-height: 1;
   padding: 5px;
-  z-index: 1010; /* Más alto que el contenido del overlay pero menos que otros popups si los hubiera */
+  z-index: 1010; 
 }
 .overlay-close-button:hover {
   color: #fff;
@@ -413,14 +401,14 @@ body.overlay-active {
 /* --- Estilos Comunes para Headers de Modales --- */
 .login-header-modal,
 .register-header-modal,
-.upload-header-modal, /* Clase unificada */
-.profile-header-modal { /* Clase unificada */
+.upload-header-modal,
+.profile-header-modal {
   text-align: center;
   padding-bottom: 15px;
   margin-bottom: 20px;
 }
 
-.logo-text-modal { /* Clase unificada para el logo en modales */
+.logo-text-modal {
   font-family: 'Pacifico', cursive;
   font-size: 2.2em;
   color: #fff;
@@ -428,11 +416,11 @@ body.overlay-active {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-fill-color: transparent; /* Fallback */
+  text-fill-color: transparent; 
   display: inline-block;
 }
 
-.welcome-message-modal { /* Clase unificada para el mensaje en modales */
+.welcome-message-modal { 
   font-family: 'Dancing Script', cursive;
   font-size: 1.6em;
   margin-top: 8px;
@@ -517,4 +505,36 @@ body.overlay-active {
     right: 8px;
     font-size: 1.8em;
   }
+}
+
+/* --- ESTILOS PARA LA SCROLLBAR PERSONALIZADA --- */
+
+/* Se aplica a la página entera y al contenido de los modales/overlays */
+html,
+.overlay-content-wrapper {
+  scrollbar-width: thin; /* Para Firefox */
+  scrollbar-color: #8a2be2 #181818; /* Para Firefox: pulgar y carril */
+}
+
+/* Para Chrome, Safari, Edge y otros basados en WebKit */
+html::-webkit-scrollbar,
+.overlay-content-wrapper::-webkit-scrollbar {
+  width: 10px;
+}
+
+html::-webkit-scrollbar-track,
+.overlay-content-wrapper::-webkit-scrollbar-track {
+  background: #181818; /* Color del carril */
+}
+
+html::-webkit-scrollbar-thumb,
+.overlay-content-wrapper::-webkit-scrollbar-thumb {
+  background-color: #8a2be2; /* Color del pulgar */
+  border-radius: 10px;
+  border: 2px solid #181818; /* Borde del mismo color que el carril para dar efecto de "flotación" */
+}
+
+html::-webkit-scrollbar-thumb:hover,
+.overlay-content-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: #7324bf; /* Color del pulgar al pasar el ratón */
 }

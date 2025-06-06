@@ -37,7 +37,7 @@ function SongDetailPage({
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
 
   const audioRef = useRef(null);
-  const progressBarRef = useRef(null);
+  // ELIMINADO: const progressBarRef = useRef(null);
   const API_URL = process.env.REACT_APP_API_BASE_URL || '';
 
   useEffect(() => {
@@ -131,18 +131,7 @@ function SongDetailPage({
     }
   };
 
-  const handleProgressClick = (e) => {
-    if (!song?.audioUrl || !duration || duration === 0 || duration === Infinity) return;
-    const progressBar = progressBarRef.current;
-    if (!progressBar) return;
-    const clickPositionInPixels = e.pageX - progressBar.getBoundingClientRect().left;
-    const clickPositionInPercentage = clickPositionInPixels / progressBar.offsetWidth;
-    const newTime = duration * clickPositionInPercentage;
-    if (audioRef.current) {
-      audioRef.current.currentTime = newTime;
-    }
-    setCurrentTime(newTime);
-  };
+  // ELIMINADO: const handleProgressClick = (e) => { ... };
 
   const handleToggleLike = async () => {
     if (!currentUser) { alert("Debes iniciar sesión para dar 'Me Gusta'."); return; }
@@ -256,9 +245,8 @@ function SongDetailPage({
         <div className="song-cover-art-large-container">
           <img src={song.albumArtUrl || 'https://via.placeholder.com/300?text=Sampler'} alt={`Portada de ${song.title}`} className="song-cover-art-large" />
         </div>
-        {/* Columna de información con el wrapper para limitar el texto */}
         <div className="song-info-basic-column">
-          <div className="text-limiter-wrapper"> {/* <<< NUEVO CONTENEDOR WRAPPER */}
+          <div className="text-limiter-wrapper">
             <span className="title-detail-page" title={song.title || "Título Desconocido"}>
               {song.title || "Título Desconocido"}
             </span>
@@ -283,12 +271,7 @@ function SongDetailPage({
           <button onClick={togglePlayPause} className="play-pause-button-detail" disabled={!song.audioUrl}>
             {displayIsPlaying ? <PauseIconDetail /> : <PlayIconDetail />}
           </button>
-          <div className="waveform-placeholder-detail" ref={progressBarRef} onClick={handleProgressClick}>
-            <div className="progress-bar-detail" style={{ width: `${(displayDuration > 0 && displayDuration !== Infinity ? (displayCurrentTime / displayDuration) * 100 : 0)}%` }}></div>
-            {[...Array(50)].map((_, i) => (
-              <div key={i} className="waveform-bar-detail-item" style={{ height: `${Math.random() * 60 + 15}%` }}></div>
-            ))}
-          </div>
+          {/* BLOQUE ELIMINADO: La barra de progreso/waveform que estaba aquí ya no existe. */}
           <span className="time-display">{formatTime(displayCurrentTime)} / {formatTime(displayDuration)}</span>
         </div>
         {(!onGlobalPlayPause || (currentPlayingSong?.id !== song?.id && song?.audioUrl)) && (

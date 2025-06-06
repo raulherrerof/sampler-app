@@ -56,7 +56,7 @@ function App() {
 
    const filteredSongs = useMemo(() => {
     if (!searchTerm.trim()) {
-      return songs; // Devuelve todas las canciones si no hay búsqueda
+      return songs;
     }
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
     return songs.filter(song =>
@@ -126,9 +126,6 @@ function App() {
     };
   }, [activeOverlay]);
 
-  // Ya no necesitamos gridCategoriesInOrder si usamos initialCategoriesData directamente
-  // const gridCategoriesInOrder = initialCategoriesData.map(c => ({...c, size: c.size || ""}));
-
   const openLoginOverlay = () => { setSelectedSongForDetail(null); setActiveOverlay('login'); };
   const openRegisterOverlay = () => { setSelectedSongForDetail(null); setActiveOverlay('register'); };
   const openUploadOverlay = () => {
@@ -155,11 +152,11 @@ function App() {
     setIsLoggedIn(true);
     setCurrentUser(userData);
     closeOverlay();
-    fetchSongs(); // Volver a cargar canciones por si los likes/etc. dependen del usuario
+    fetchSongs();
   };
   const handleRegisterSuccess = () => {
     alert('¡Registro exitoso! Por favor, inicia sesión.');
-    setActiveOverlay('login'); // Cambiar a login después de registrar
+    setActiveOverlay('login');
   };
   const handleLogout = async () => {
     try {
@@ -172,7 +169,7 @@ function App() {
     setCurrentPlayingSong(null);
     setIsPlaying(false);
     closeOverlay();
-    fetchSongs(); // Volver a cargar canciones
+    fetchSongs();
   };
   const handleUploadSuccess = (newSongDataFromApi) => {
     const newSongWithCommentsEnsured = {
@@ -223,13 +220,13 @@ function App() {
   }, [selectedSongForDetail]);
 
   const handlePlaySong = useCallback((song) => {
-    if (!song || !song.audioUrl) { console.warn("Intento de reproducir canción sin audioUrl:", song); return; }
+    if (!song || !song.audioUrl) { return; }
     const songToPlay = songs.find(s => s.id === song.id) || song;
-    if (currentPlayingSong && currentPlayingSong.id === songToPlay.id) {
-      setIsPlaying(prevIsPlaying => !prevIsPlaying);
+    if (currentPlayingSong?.id === songToPlay.id) {
+      setIsPlaying(prev => !prev);
     } else {
-      setCurrentPlayingSong(songToPlay); setIsPlaying(true);
-      if (audioRef.current) { audioRef.current.currentTime = 0; setCurrentTime(0); }
+      setCurrentPlayingSong(songToPlay);
+      setIsPlaying(true);
     }
   }, [currentPlayingSong, songs]);
 
@@ -241,78 +238,88 @@ function App() {
   const playNextSong = useCallback(() => {
     if (songs.length === 0) return;
     const currentIndex = songs.findIndex(s => s.id === currentPlayingSong?.id);
-    let nextIndex = 0;
-    if (currentIndex !== -1 && songs.length > 0) { // Asegurarse que songs.length > 0
-        nextIndex = (currentIndex + 1) % songs.length;
-    } else if (songs.length > 0) { // Si no hay canción actual o no se encuentra, reproducir la primera
-        nextIndex = 0;
-    } else {
-        return; // No hay canciones para reproducir
-    }
+    const nextIndex = (currentIndex + 1) % songs.length;
     if (songs[nextIndex]) { handlePlaySong(songs[nextIndex]); }
   }, [songs, currentPlayingSong, handlePlaySong]);
 
   const playPreviousSong = useCallback(() => {
     if (songs.length === 0) return;
     const currentIndex = songs.findIndex(s => s.id === currentPlayingSong?.id);
-    let prevIndex = songs.length > 0 ? songs.length -1 : 0; // Si hay canciones, la última, sino la primera (aunque no debería llegar aquí si songs.length es 0)
-    if (currentIndex !== -1 && songs.length > 0) {
-        prevIndex = (currentIndex - 1 + songs.length) % songs.length;
-    } else if (songs.length > 0) {
-        prevIndex = songs.length -1; // Si no hay canción actual, reproducir la última
-    } else {
-        return; // No hay canciones
-    }
+    const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
     if (songs[prevIndex]) { handlePlaySong(songs[prevIndex]); }
   }, [songs, currentPlayingSong, handlePlaySong]);
 
   const handleSeek = useCallback((seekTime) => {
-    if (audioRef.current && !isNaN(seekTime)) { audioRef.current.currentTime = seekTime; setCurrentTime(seekTime); }
+    if (audioRef.current && !isNaN(seekTime)) { 
+      audioRef.current.currentTime = seekTime; 
+    }
   }, []);
 
   const handleVolumeChange = useCallback((newVolume) => {
-    if (audioRef.current && !isNaN(newVolume)) { const clampedVolume = Math.max(0, Math.min(1, newVolume)); audioRef.current.volume = clampedVolume; setVolume(clampedVolume); }
+    if (audioRef.current && !isNaN(newVolume)) { 
+      const clampedVolume = Math.max(0, Math.min(1, newVolume)); 
+      audioRef.current.volume = clampedVolume; 
+      setVolume(clampedVolume); 
+    }
   }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
       if (currentPlayingSong && currentPlayingSong.audioUrl) {
-        if (audio.src !== currentPlayingSong.audioUrl) { audio.src = currentPlayingSong.audioUrl; }
-        if (isPlaying) { const playPromise = audio.play(); if (playPromise !== undefined) { playPromise.catch(error => { console.warn("Play() fue rechazado:", error); setIsPlaying(false); }); }
-        } else { audio.pause(); }
-      } else { audio.pause(); }
+        if (audio.src !== currentPlayingSong.audioUrl) {
+          audio.src = currentPlayingSong.audioUrl;
+          setCurrentTime(0);
+          setDurationTotal(0);
+        }
+        if (isPlaying) { 
+          audio.play().catch(e => {
+            console.warn("Play() fue rechazado por el navegador. El usuario debe interactuar primero.", e);
+            setIsPlaying(false);
+          }); 
+        } else { 
+          audio.pause(); 
+        }
+      } else {
+        audio.pause();
+      }
     }
   }, [currentPlayingSong, isPlaying]);
 
   useEffect(() => {
-    if (audioRef.current) { audioRef.current.volume = volume; }
-  }, [volume]);
-
-  useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    const onLoadedMetadata = () => { if (!isNaN(audio.duration) && audio.duration !== Infinity) { setDurationTotal(audio.duration); } else { setDurationTotal(0); } };
-    const onTimeUpdate = () => setCurrentTime(audio.currentTime);
-    const onEnded = () => playNextSong();
-    const onPlayEvent = () => { if(!isPlaying) setIsPlaying(true);};
-    const onPauseEvent = () => { if(isPlaying) setIsPlaying(false);};
-    const onVolumeChangeInternal = () => setVolume(audio.volume);
-    audio.addEventListener('loadedmetadata', onLoadedMetadata);
-    audio.addEventListener('timeupdate', onTimeUpdate);
-    audio.addEventListener('ended', onEnded);
-    audio.addEventListener('play', onPlayEvent);
-    audio.addEventListener('pause', onPauseEvent);
-    audio.addEventListener('volumechange', onVolumeChangeInternal);
-    return () => {
-      audio.removeEventListener('loadedmetadata', onLoadedMetadata);
-      audio.removeEventListener('timeupdate', onTimeUpdate);
-      audio.removeEventListener('ended', onEnded);
-      audio.removeEventListener('play', onPlayEvent);
-      audio.removeEventListener('pause', onPauseEvent);
-      audio.removeEventListener('volumechange', onVolumeChangeInternal);
+
+    const handleLoadedMetadata = () => {
+      const newDuration = audio.duration;
+      if (!isNaN(newDuration) && newDuration > 0) {
+        setDurationTotal(newDuration);
+        
+        if (currentPlayingSong) {
+          setSongs(prevSongs => 
+            prevSongs.map(s => 
+              s.id === currentPlayingSong.id ? { ...s, duration: newDuration } : s
+            )
+          );
+        }
+      }
     };
-  }, [playNextSong, isPlaying]); // Asegúrate que las dependencias son correctas
+
+    const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const handleEnded = () => playNextSong();
+    
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('durationchange', handleLoadedMetadata);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('durationchange', handleLoadedMetadata);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [currentPlayingSong, playNextSong]);
 
   let OverlayComponentToRender = null;
   if (activeOverlay) {
@@ -337,7 +344,7 @@ function App() {
                                       isGlobalPlaying={isPlaying && currentPlayingSong?.id === selectedSongForDetail.id}
                                       onGlobalPlayPause={() => handlePlaySong(selectedSongForDetail)}
                                       currentPlayingSong={currentPlayingSong}
-                                      onLoginRedirect={openLoginOverlay} // Pasar la función para redirigir a login
+                                      onLoginRedirect={openLoginOverlay}
                                     />;
         }
         break;
@@ -357,7 +364,6 @@ function App() {
         searchTerm={searchTerm} onSearchTermChange={setSearchTerm}
       />
       <div className={`app-content-wrapper ${currentPlayingSong ? 'with-player-bar' : ''}`}>
-        {/* --- INICIO: RENDERIZADO CONDICIONAL DE BIENVENIDA/CATEGORÍAS O TÍTULO DE BÚSQUEDA --- */}
         {!searchTerm.trim() ? (
           <>
             <h2 className="welcome-title">Bienvenido a <span className="highlight">Sampler</span></h2>
@@ -375,13 +381,14 @@ function App() {
         ) : (
           <h2 className="search-results-title">Resultados para "{searchTerm}"</h2>
         )}
-        {/* --- FIN: RENDERIZADO CONDICIONAL --- */}
 
         <div className="song-list">
           {loadingSongs && <p>Cargando canciones...</p>}
           {!loadingSongs && filteredSongs.length > 0 && filteredSongs.map(song => (
             <SongPlayer
-              key={song.id} songData={song}
+              key={song.id}
+              songData={song}
+              duration={song.duration}
               onPlayClick={() => handlePlaySong(song)}
               onDetailClick={() => openSongDetailOverlay(song)}
               isCurrentlyPlaying={currentPlayingSong?.id === song.id && isPlaying}
@@ -397,9 +404,15 @@ function App() {
       </div>
       {currentPlayingSong && (
         <PlayerBar
-          song={currentPlayingSong} isPlaying={isPlaying} currentTime={currentTime}
-          duration={durationTotal} onPlayPause={togglePlayPause} onNext={playNextSong}
-          onPrev={playPreviousSong} onSeek={handleSeek} volume={volume}
+          song={currentPlayingSong}
+          isPlaying={isPlaying}
+          currentTime={currentTime}
+          duration={durationTotal}
+          onPlayPause={togglePlayPause}
+          onNext={playNextSong}
+          onPrev={playPreviousSong}
+          onSeek={handleSeek}
+          volume={volume}
           onVolumeChange={handleVolumeChange}
         />
       )}
@@ -413,4 +426,5 @@ function App() {
     </div>
   );
 }
+
 export default App;

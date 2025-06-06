@@ -1,9 +1,9 @@
-// ProfilePage.jsx (Sin cambios estructurales mayores, solo nos enfocaremos en el CSS)
+// ProfilePage.jsx (Con campo de confirmación de contraseña)
 import React, { useState, useEffect } from 'react';
 import './ProfilePage.css'; // Asegúrate de que este archivo se llame así y se importe
 
 const ProfileIconPlaceholder = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style={{ verticalAlign: 'middle', color: '#777' }}> {/* Quitado marginLeft si se maneja con gap */}
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style={{ verticalAlign: 'middle', color: '#777' }}>
     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
     <path d="M0 0h24v24H0z" fill="none"></path>
   </svg>
@@ -13,13 +13,14 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState(''); // NUEVO: Estado para la confirmación de la contraseña
   const [name, setName] = useState('');
   const [lastName, setLastName] = useState('');
   const [dob, setDob] = useState('');
   const [gender, setGender] = useState('');
   const [aboutMe, setAboutMe] = useState('');
   const [profilePicFile, setProfilePicFile] = useState(null);
-  const [profilePicName, setProfilePicName] = useState(''); // Para mostrar el nombre del archivo seleccionado
+  const [profilePicName, setProfilePicName] = useState('');
   const [profilePicPreview, setProfilePicPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -30,14 +31,17 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
     if (initialUserData) {
       setUsername(initialUserData.username || '');
       setEmail(initialUserData.email || '');
-      setName(initialUserData.name || initialUserData.nombre || ''); // Acepta 'name' o 'nombre'
-      setLastName(initialUserData.lastName || initialUserData.apellido || ''); // Acepta 'lastName' o 'apellido'
+      setName(initialUserData.name || initialUserData.nombre || '');
+      setLastName(initialUserData.lastName || initialUserData.apellido || '');
       setDob(initialUserData.dob ? new Date(initialUserData.dob).toISOString().split('T')[0] : '');
       setGender(initialUserData.gender || '');
       setAboutMe(initialUserData.aboutMe || '');
-      setProfilePicPreview(initialUserData.profilePicUrl || initialUserData.profile_pic_url || null); // Acepta ambas nomenclaturas
-      setProfilePicFile(null); // Resetear el archivo al cargar datos iniciales
-      setProfilePicName('');  // Resetear el nombre del archivo
+      setProfilePicPreview(initialUserData.profilePicUrl || initialUserData.profile_pic_url || null);
+      setProfilePicFile(null);
+      setProfilePicName('');
+      // Limpiar contraseñas al cargar
+      setPassword('');
+      setConfirmPassword('');
     }
   }, [initialUserData]);
 
@@ -45,12 +49,11 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
     const file = event.target.files[0];
     if (file) {
       setProfilePicFile(file);
-      setProfilePicName(file.name); // Guardar el nombre del archivo
+      setProfilePicName(file.name);
       const reader = new FileReader();
       reader.onloadend = () => setProfilePicPreview(reader.result);
       reader.readAsDataURL(file);
     } else {
-      // Si el usuario cancela la selección de archivo, volvemos a la imagen original o placeholder
       setProfilePicFile(null);
       setProfilePicName('');
       setProfilePicPreview(initialUserData?.profilePicUrl || initialUserData?.profile_pic_url || null);
@@ -60,36 +63,43 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
+
+    // MODIFICADO: Añadir validación de contraseñas
+    if (password !== confirmPassword) {
+      setError('Las contraseñas no coinciden. Por favor, inténtalo de nuevo.');
+      return; // Detener el envío del formulario si no coinciden
+    }
+
     setLoading(true);
 
     const formData = new FormData();
     formData.append('username', username);
     formData.append('email', email);
-    if (name) formData.append('name', name); // 'name' es más estándar para APIs
+    if (name) formData.append('name', name);
     if (lastName) formData.append('lastName', lastName);
     if (dob) formData.append('dob', dob);
     if (gender) formData.append('gender', gender);
     if (aboutMe) formData.append('aboutMe', aboutMe);
+    // Solo se envía la contraseña si el usuario ha escrito algo en el campo.
+    // La validación anterior ya asegura que si se envía, `password` y `confirmPassword` coinciden.
     if (password) formData.append('password', password);
     if (profilePicFile) formData.append('profilePic', profilePicFile);
 
     try {
-      const response = await fetch(`${API_URL}/api/update_profile.php`, { // Asegúrate que el endpoint sea correcto
+      const response = await fetch(`${API_URL}/api/update_profile.php`, {
         method: 'POST',
         body: formData,
         credentials: 'include',
       });
       const data = await response.json();
-      if (!response.ok || !data.success) { // Asumiendo que tu API devuelve { success: true, ... }
+      if (!response.ok || !data.success) {
         throw new Error(data.message || data.error || 'Error al actualizar el perfil');
       }
       if (onProfileUpdateSuccess && data.user) {
         onProfileUpdateSuccess(data.user);
       } else {
-        // Podría ser que onProfileUpdateSuccess no esté definido, o data.user no venga.
-        // Si la actualización fue exitosa pero no hay data.user, puedes llamar a onClose o recargar datos.
         console.warn("Perfil actualizado, pero no se recibió 'data.user' o 'onProfileUpdateSuccess' no está definida.");
-        onClose(); // Cierra el modal como fallback
+        onClose();
       }
     } catch (err) {
       console.error("Error actualizando perfil:", err);
@@ -99,20 +109,12 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
   };
 
   return (
-    // Este div ya tiene la clase base para el contenido del overlay
     <div className="profile-page-overlay-content">
-      {/* El botón de cerrar ya lo tienes en tu App.css para .overlay-close-button
-          Asegúrate de que onClose se pasa como prop */}
       {onClose && <button onClick={onClose} className="overlay-close-button" aria-label="Cerrar">×</button>}
-
-      {/* Encabezado del modal de perfil */}
       <header className="profile-header-modal">
-        {/* Usar las clases consistentes de App.css */}
         <h1 className="welcome-message-modal">Tu Perfil</h1>
       </header>
-
-      {/* Contenedor del formulario */}
-      <div className="profile-form-container"> {/* Esta clase la definiremos en ProfilePage.css */}
+      <div className="profile-form-container">
         {error && <p className="form-error-message" style={{color: 'red', textAlign: 'center', marginBottom: '15px'}}>{error}</p>}
         <form onSubmit={handleSubmit}>
             <div className="form-group">
@@ -126,6 +128,11 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
             <div className="form-group">
               <label htmlFor="password-profile">Nueva Contraseña</label>
               <input type="password" id="password-profile" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Dejar en blanco para no cambiar" />
+            </div>
+            {/* NUEVO: Campo de confirmación de contraseña */}
+            <div className="form-group">
+              <label htmlFor="confirm-password-profile">Confirmar Nueva Contraseña</label>
+              <input type="password" id="confirm-password-profile" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Repite la contraseña" />
             </div>
             <div className="form-group">
               <label htmlFor="name-profile">Nombre</label>
@@ -149,9 +156,9 @@ function ProfilePage({ initialUserData, onProfileUpdateSuccess, onClose }) {
             </div>
             <div className="form-group">
               <label htmlFor="aboutme-profile">Sobre ti</label>
-              <textarea id="aboutme-profile" value={aboutMe} onChange={(e) => setAboutMe(e.target.value)} rows="3"></textarea> {/* Reducido a 3 filas */}
+              <textarea id="aboutme-profile" value={aboutMe} onChange={(e) => setAboutMe(e.target.value)} rows="3"></textarea>
             </div>
-            <div className="form-group profile-pic-group"> {/* Agrupado para mejor estilo */}
+            <div className="form-group profile-pic-group">
               <label htmlFor="profile-pic-input" className="file-input-label profile-pic-label">
                 {profilePicPreview ?
                     <img src={profilePicPreview} alt="Vista previa de perfil" className="profile-pic-preview" /> :

@@ -1,9 +1,9 @@
-// UploadPage.jsx
+// UploadPage.jsx (CORREGIDO)
 import React, { useState } from 'react';
 import './UploadPage.css'; // Asegúrate que este archivo CSS se llame así
 
 const UploadIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '8px', verticalAlign: 'middle', color: '#b3b3b3' }}> {/* Ajustado el color y tamaño */}
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '8px', verticalAlign: 'middle', color: '#b3b3b3' }}>
     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
     <polyline points="17 8 12 3 7 8"></polyline>
     <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -55,6 +55,7 @@ function UploadPage({ onUploadSuccess, onClose }) {
     }
     setLoading(true);
     const formData = new FormData();
+    // En el backend, usas $_FILES['coverArt'] y $_FILES['audioFile'], así que mantenemos esos nombres.
     formData.append('title', title);
     formData.append('artist', artist);
     formData.append('featuredArtists', featuredArtists);
@@ -70,38 +71,38 @@ function UploadPage({ onUploadSuccess, onClose }) {
       });
       const data = await response.json();
 
-      if (!response.ok || data.error) {
+      // Corregimos la condición para que busque dentro del objeto 'song'
+      if (!response.ok || !data.success) { // <<< 1. VERIFICAMOS EL ÉXITO PRIMERO
         throw new Error(data.error || data.message || 'Error al subir la canción');
       }
-      if (onUploadSuccess && data.id) { // Asumiendo que la API devuelve el objeto de la canción subida con su id
-        onUploadSuccess(data);
+
+      // La lógica del éxito ahora busca dentro de `data.song`
+      if (onUploadSuccess && data.song && data.song.id) { // <<< 2. BUSCAMOS EL ID DENTRO DE `data.song`
+        onUploadSuccess(data.song); // Pasamos solo el objeto de la canción
         // Limpiar formulario
         setTitle(''); setArtist(''); setFeaturedArtists(''); setGenre('');
         setCoverArtFile(null); setAudioFile(null);
         setCoverArtName(''); setAudioFileName(''); setCoverArtPreview(null);
       } else {
-        console.warn("Subida exitosa pero no se recibió 'data.id' o 'onUploadSuccess' no está definida.", data);
+        console.warn("Subida exitosa pero la respuesta del servidor no tiene el formato esperado.", data);
         throw new Error('Respuesta inválida del servidor tras la subida.');
       }
     } catch (err) {
       console.error("Error subiendo canción:", err);
-      setError(err.message);
+      // Extraemos el mensaje de la respuesta si es posible
+      const errorMessage = err.response ? await err.response.json().then(d => d.details || d.error) : err.message;
+      setError(errorMessage || 'Ocurrió un error inesperado.');
     }
     setLoading(false);
   };
 
   return (
-    // Este div ya tiene la clase base para el contenido del overlay
     <div className="upload-page-overlay-content">
       {onClose && <button onClick={onClose} className="overlay-close-button" aria-label="Cerrar">×</button>}
-
-      {/* Encabezado del modal de subida - usamos clases de App.css */}
-      <header className="upload-header-modal"> {/* Clase de App.css */}
-        <h1 className="welcome-message-modal">Sube tu Música</h1> {/* Clase de App.css */}
+      <header className="upload-header-modal">
+        <h1 className="welcome-message-modal">Sube tu Música</h1>
       </header>
-
-      {/* Contenedor del formulario de subida */}
-      <div className="upload-form-container"> {/* Esta clase la definiremos en UploadPage.css */}
+      <div className="upload-form-container">
         {error && <p className="form-error-message" style={{color: 'red', textAlign: 'center', marginBottom: '15px'}}>{error}</p>}
         <form onSubmit={handleSubmit}>
             <div className="form-group">
@@ -113,7 +114,7 @@ function UploadPage({ onUploadSuccess, onClose }) {
               <input type="text" id="artist-upload" value={artist} onChange={(e) => setArtist(e.target.value)} required />
             </div>
             <div className="form-group">
-              <label htmlFor="featured-artists-upload">Artistas invitados (opcional, separados por coma)</label>
+              <label htmlFor="featured-artists-upload">Artistas invitados (opcional)</label>
               <input type="text" id="featured-artists-upload" value={featuredArtists} onChange={(e) => setFeaturedArtists(e.target.value)} placeholder="Ej: Artista1, Artista2"/>
             </div>
             <div className="form-group">
@@ -121,9 +122,9 @@ function UploadPage({ onUploadSuccess, onClose }) {
               <input type="text" id="genre-upload" value={genre} onChange={(e) => setGenre(e.target.value)} required />
             </div>
 
-            <hr className="form-separator" /> {/* Separador visual */}
+            <hr className="form-separator" />
 
-            <div className="form-group file-input-container"> {/* Contenedor para el input de portada */}
+            <div className="form-group file-input-container">
               <label htmlFor="cover-art-input" className="file-input-label">
                 {coverArtPreview ? (
                   <img src={coverArtPreview} alt="Vista previa portada" className="upload-preview-image" />
@@ -136,7 +137,7 @@ function UploadPage({ onUploadSuccess, onClose }) {
               {coverArtName && <span className="file-name-display">{coverArtName}</span>}
             </div>
 
-            <div className="form-group file-input-container"> {/* Contenedor para el input de audio */}
+            <div className="form-group file-input-container">
               <label htmlFor="audio-file-input" className="file-input-label">
                 <span>Seleccionar archivo de audio</span>
                 <UploadIcon />
