@@ -16,6 +16,9 @@ import TendenciasPage from './components/TendenciasPage';
 import TopEspanaPage from './components/TopEspanaPage';
 import DelMomentoPage from './components/DelMomentoPage';
 import RecomendadasPage from './components/RecomendadasPage';
+import ParaTiPage from './components/ParaTiPage';
+import NuevosPage from './components/NuevosPage';
+import AlbumDelMomentoPage from './components/AlbumDelMomentoPage';
 
 // Tus Imágenes
 import card1Img from './Imagenes/1.jpg';
@@ -26,16 +29,13 @@ import card5Img from './Imagenes/5.png';
 import card6Img from './Imagenes/6.png';
 import card7Img from './Imagenes/7.png';
 import card8Img from './Imagenes/8.png';
-import card9Img from './Imagenes/9.png';
-import card10Img from './Imagenes/10.png';
-import card11Img from './Imagenes/11.png';
 
 const initialCategoriesData = [
   { id: 1, title: "Tendencias", imageUrl: card1Img },
   { id: 2, title: "Top en España", imageUrl: card2Img },
-  { id: 3, title: "Del momento", imageUrl: card3Img },
-  { id: 4, title: "Recomendadas", imageUrl: card4Img },
-  { id: 5, title: "Álbum del momento", imageUrl: card5Img, size: "tall" },
+  { id: 3, title: "Del momento", imageUrl: card4Img },
+  { id: 4, title: "Recomendadas", imageUrl: card5Img },
+  { id: 5, title: "Álbum del momento", imageUrl: card3Img, size: "tall" },
   { id: 6, title: "Nuevos", imageUrl: card6Img, size: "wide" },
   { id: 7, title: "Para ti", imageUrl: card7Img },
   { id: 8, title: "Random", imageUrl: card8Img },
@@ -58,34 +58,50 @@ function App() {
   const [volume, setVolume] = useState(0.75);
   const audioRef = useRef(null);
 
+  // --- LÓGICA DE CATEGORÍAS ---
   const trendingSongs = useMemo(() => {
     return [...songs]
       .sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0))
-      .slice(0, 5);
+      .slice(0, 10);
   }, [songs]);
 
   const topEspanaSongs = useMemo(() => {
     return [...songs]
       .sort((a, b) => Number(b.id) - Number(a.id))
-      .slice(0, 5);
+      .slice(0, 10);
   }, [songs]);
 
   const delMomentoSongs = useMemo(() => {
     const shuffled = [...songs].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 5);
+    return shuffled.slice(0, 10);
   }, [songs]);
 
   const recomendadasSongs = useMemo(() => {
-    return songs.slice(0, 3);
+    return songs.slice(0, 10);
   }, [songs]);
 
-  const randomSong = useMemo(() => {
-    if (songs.length === 0) {
-      return [];
-    }
-    const randomIndex = Math.floor(Math.random() * songs.length);
-    return [songs[randomIndex]];
+  const ParaTiSongs = useMemo(() => {
+    const shuffled = [...songs].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 10);
   }, [songs]);
+
+  const nuevosSongs = useMemo(() => {
+    return [...songs]
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 10);
+  }, [songs]);
+  
+const albumDelMomentoSongs = useMemo(() => {
+    return songs
+      // 1. Filtramos para obtener solo las canciones de Feid
+      .filter(song => song.artist && song.artist.toLowerCase() === 'feid')
+      // 2. Ordenamos por fecha de subida (createdAt), de la más antigua a la más nueva
+      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+      // 3. Nos quedamos solo con las 10 primeras
+      .slice(0, 10);
+  }, [songs]);
+  
+  // --- FIN LÓGICA DE CATEGORÍAS ---
 
   const filteredSongs = useMemo(() => {
     if (!searchTerm.trim()) {
@@ -188,6 +204,9 @@ function App() {
   const openTopEspanaOverlay = () => setActiveOverlay('topEspana');
   const openDelMomentoOverlay = () => setActiveOverlay('delMomento');
   const openRecomendadasOverlay = () => setActiveOverlay('recomendadas');
+  const openParaTiOverlay = () => setActiveOverlay('ParaTi');
+  const openNuevosOverlay = () => setActiveOverlay('nuevos');
+  const openAlbumDelMomentoOverlay = () => setActiveOverlay('albumDelMomento');
   
   const handlePlaySong = useCallback((song) => {
     if (!song || !song.audioUrl) { return; }
@@ -402,6 +421,33 @@ function App() {
                                     currentPlayingSongId={currentPlayingSong?.id}
                                   />;
         break;
+      case 'ParaTi':
+        OverlayComponentToRender = <ParaTiPage
+                                    onClose={closeOverlay}
+                                    songsToDisplay={ParaTiSongs}
+                                    onPlaySongInTendencias={handlePlaySong}
+                                    isSongPlaying={isPlaying}
+                                    currentPlayingSongId={currentPlayingSong?.id}
+                                  />;
+        break;
+      case 'nuevos':
+        OverlayComponentToRender = <NuevosPage
+                                    onClose={closeOverlay}
+                                    songsToDisplay={nuevosSongs}
+                                    onPlaySongInTendencias={handlePlaySong}
+                                    isSongPlaying={isPlaying}
+                                    currentPlayingSongId={currentPlayingSong?.id}
+                                  />;
+        break;
+      case 'albumDelMomento':
+        OverlayComponentToRender = <AlbumDelMomentoPage
+                                    onClose={closeOverlay}
+                                    songsToDisplay={albumDelMomentoSongs}
+                                    onPlaySong={handlePlaySong}
+                                    isSongPlaying={isPlaying}
+                                    currentPlayingSongId={currentPlayingSong?.id}
+                                  />;
+        break;
       case 'login':
         OverlayComponentToRender = <LoginPage onLoginSuccess={handleLoginSuccess} onNavigateToRegister={() => setActiveOverlay('register')} onClose={closeOverlay} />;
         break;
@@ -462,6 +508,9 @@ function App() {
                     category.id === 2 ? openTopEspanaOverlay :
                     category.id === 3 ? openDelMomentoOverlay :
                     category.id === 4 ? openRecomendadasOverlay :
+                    category.id === 5 ? openAlbumDelMomentoOverlay :
+                    category.id === 6 ? openNuevosOverlay :
+                    category.id === 7 ? openParaTiOverlay :
                     category.id === 8 ? handleRandomClick :
                     undefined
                   }

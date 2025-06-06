@@ -1,0 +1,27 @@
+/* src/components/CategoryPages.css */
+
+.category-page-overlay-content {
+  padding: 25px 30px;
+  text-align: center;
+  width: 100%;
+  max-width: 750px;
+}
+
+.category-page-header {
+  margin-bottom: 25px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 15px;
+}
+
+.category-page-title {
+  font-size: 2em;
+  color: #ffffff;
+  margin: 0;
+}
+
+.song-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}

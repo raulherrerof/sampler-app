@@ -1,32 +1,24 @@
-// src/components/RecomendadasPage.jsx
-
+// src/components/NuevosPage.jsx
 import React from 'react';
 import SongPlayer from './SongPlayer';
-import './CategoryPages.css'; // <<< 1. Importamos el CSS compartido y genérico
+import './CategoryPages.css'; // Puedes usar un CSS genérico para todas las páginas de categoría
 
-// Las props que recibe el componente no cambian
-function RecomendadasPage({ onClose, songsToDisplay, onPlaySongInTendencias, isSongPlaying, currentPlayingSongId }) {
-  
+function NuevosPage({ onClose, songsToDisplay, onPlaySongInTendencias, isSongPlaying, currentPlayingSongId }) {
   if (!songsToDisplay || songsToDisplay.length === 0) {
-    // Usamos las clases genéricas para el mensaje de carga/vacío
     return (
       <div className="category-page-overlay-content">
         {onClose && <button onClick={onClose} className="overlay-close-button" aria-label="Cerrar">×</button>}
-        <header className="category-page-header">
-            <h2 className="category-page-title">Recomendadas para Ti</h2>
-        </header>
-        <p style={{marginTop: '20px'}}>No hay recomendaciones disponibles en este momento.</p>
+        <p>No hay canciones nuevas por el momento.</p>
       </div>
     );
   }
 
   return (
-    // <<< 2. Usamos las clases genéricas en todo el JSX
     <div className="category-page-overlay-content">
       {onClose && <button onClick={onClose} className="overlay-close-button" aria-label="Cerrar">×</button>}
       
       <header className="category-page-header">
-        <h2 className="category-page-title">Recomendadas para Ti</h2>
+        <h2 className="category-page-title">Nuevos Lanzamientos</h2>
       </header>
 
       <div className="song-list-container">
@@ -34,9 +26,10 @@ function RecomendadasPage({ onClose, songsToDisplay, onPlaySongInTendencias, isS
           <SongPlayer
             key={song.id}
             songData={song}
-            duration={song.duration} // Importante pasar la duración
+            duration={song.duration}
             onPlayClick={() => onPlaySongInTendencias(song)} 
-            onDetailClick={null} // No mostramos botón de detalle en esta vista
+            // Pasamos las props necesarias para que SongPlayer funcione dentro de este overlay
+            onDetailClick={null} // Opcional: puedes quitar el botón de detalle aquí si quieres
             isCurrentlyPlaying={currentPlayingSongId === song.id && isSongPlaying}
           />
         ))}
@@ -45,4 +38,4 @@ function RecomendadasPage({ onClose, songsToDisplay, onPlaySongInTendencias, isS
   );
 }
 
-export default RecomendadasPage;
+export default NuevosPage;

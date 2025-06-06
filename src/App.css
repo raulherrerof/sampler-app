@@ -23,6 +23,7 @@ body.overlay-active {
   max-width: 1450px;
   margin: 0 auto;
   padding: 0 40px 30px 40px;
+  padding-bottom: 90px; 
 }
 
 /* --- Header Reducido --- */

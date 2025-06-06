@@ -2,39 +2,44 @@
 
 import React from 'react';
 import SongPlayer from './SongPlayer';
-import './DelMomentoPage.css'; // Opcional, si quieres estilos específicos
+import './CategoryPages.css'; // <<< 1. Importamos el CSS compartido y genérico
 
+// Las props que recibe el componente no cambian
 function DelMomentoPage({ onClose, songsToDisplay, onPlaySongInTendencias, isSongPlaying, currentPlayingSongId }) {
-  if (!songsToDisplay) {
+  
+  if (!songsToDisplay || songsToDisplay.length === 0) {
+    // Usamos las clases genéricas para el mensaje de carga/vacío
     return (
-      <div className="del-momento-page-overlay-content">
+      <div className="category-page-overlay-content">
         {onClose && <button onClick={onClose} className="overlay-close-button" aria-label="Cerrar">×</button>}
-        <p>Canciones del momento...</p>
+        <header className="category-page-header">
+            <h2 className="category-page-title">Del Momento</h2>
+        </header>
+        <p style={{marginTop: '20px'}}>No hay canciones disponibles en este momento.</p>
       </div>
     );
   }
 
   return (
-    <div className="del-momento-page-overlay-content">
+    // <<< 2. Usamos las clases genéricas en todo el JSX
+    <div className="category-page-overlay-content">
       {onClose && <button onClick={onClose} className="overlay-close-button" aria-label="Cerrar">×</button>}
       
-      <header className="del-momento-header-modal">
-        <h2 className="del-momento-page-title">Del Momento</h2>
+      <header className="category-page-header">
+        <h2 className="category-page-title">Del Momento</h2>
       </header>
 
-      <div className="del-momento-song-list">
-        {songsToDisplay.length > 0 ? (
-          songsToDisplay.map(song => (
-            <SongPlayer
-              key={song.id}
-              songData={song}
-              onPlayClick={() => onPlaySongInTendencias(song)} 
-              isCurrentlyPlaying={currentPlayingSongId === song.id && isSongPlaying}
-            />
-          ))
-        ) : (
-          <p>No hay canciones disponibles en este momento.</p>
-        )}
+      <div className="song-list-container">
+        {songsToDisplay.map(song => (
+          <SongPlayer
+            key={song.id}
+            songData={song}
+            duration={song.duration} // Importante pasar la duración
+            onPlayClick={() => onPlaySongInTendencias(song)} 
+            onDetailClick={null} // No mostramos botón de detalle en esta vista
+            isCurrentlyPlaying={currentPlayingSongId === song.id && isSongPlaying}
+          />
+        ))}
       </div>
     </div>
   );

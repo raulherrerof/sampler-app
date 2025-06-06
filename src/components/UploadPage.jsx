@@ -1,6 +1,6 @@
-// UploadPage.jsx (CORREGIDO)
+// UploadPage.jsx
 import React, { useState } from 'react';
-import './UploadPage.css'; // Asegúrate que este archivo CSS se llame así
+import './UploadPage.css';
 
 const UploadIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '8px', verticalAlign: 'middle', color: '#b3b3b3' }}>
@@ -22,30 +22,65 @@ function UploadPage({ onUploadSuccess, onClose }) {
   const [coverArtPreview, setCoverArtPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // <<< 1. ESTADOS PARA EL FEEDBACK VISUAL DEL DRAG & DROP >>>
+  const [isDraggingCover, setIsDraggingCover] = useState(false);
+  const [isDraggingAudio, setIsDraggingAudio] = useState(false);
 
   const API_URL = process.env.REACT_APP_API_BASE_URL || '';
 
-  const handleCoverArtChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
+  // <<< 2. CREAMOS FUNCIONES GENÉRICAS PARA MANEJAR ARCHIVOS >>>
+  const processCoverArtFile = (file) => {
+    if (file && file.type.startsWith('image/')) {
       setCoverArtFile(file);
       setCoverArtName(file.name);
       const reader = new FileReader();
       reader.onloadend = () => setCoverArtPreview(reader.result);
       reader.readAsDataURL(file);
     } else {
-      setCoverArtFile(null); setCoverArtName(''); setCoverArtPreview(null);
+      setError('Por favor, selecciona un archivo de imagen válido para la portada.');
     }
+  };
+
+  const processAudioFile = (file) => {
+    if (file && file.type.startsWith('audio/')) {
+      setAudioFile(file);
+      setAudioFileName(file.name);
+    } else {
+      setError('Por favor, selecciona un archivo de audio válido.');
+    }
+  };
+
+  // <<< 3. LOS MANEJADORES DE CLIC AHORA USAN LAS FUNCIONES GENÉRICAS >>>
+  const handleCoverArtChange = (event) => {
+    const file = event.target.files[0];
+    if (file) processCoverArtFile(file);
   };
 
   const handleAudioFileChange = (event) => {
     const file = event.target.files[0];
-    if (file) {
-      setAudioFile(file); setAudioFileName(file.name);
-    } else {
-      setAudioFile(null); setAudioFileName('');
+    if (file) processAudioFile(file);
+  };
+  
+  // <<< 4. NUEVOS MANEJADORES DE EVENTOS PARA DRAG & DROP >>>
+  const handleDragEvents = (e, setDragging) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragging(true);
+    } else if (e.type === 'dragleave') {
+      setDragging(false);
     }
   };
+
+  const handleDrop = (e, fileProcessor, setDragging) => {
+    handleDragEvents(e, setDragging); // Llama para resetear el estado visual
+    setDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      fileProcessor(e.dataTransfer.files[0]);
+    }
+  };
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -55,7 +90,6 @@ function UploadPage({ onUploadSuccess, onClose }) {
     }
     setLoading(true);
     const formData = new FormData();
-    // En el backend, usas $_FILES['coverArt'] y $_FILES['audioFile'], así que mantenemos esos nombres.
     formData.append('title', title);
     formData.append('artist', artist);
     formData.append('featuredArtists', featuredArtists);
@@ -71,27 +105,21 @@ function UploadPage({ onUploadSuccess, onClose }) {
       });
       const data = await response.json();
 
-      // Corregimos la condición para que busque dentro del objeto 'song'
-      if (!response.ok || !data.success) { // <<< 1. VERIFICAMOS EL ÉXITO PRIMERO
-        throw new Error(data.error || data.message || 'Error al subir la canción');
+      if (!response.ok || !data.success) {
+        throw new Error(data.details || data.error || 'Error al subir la canción');
       }
 
-      // La lógica del éxito ahora busca dentro de `data.song`
-      if (onUploadSuccess && data.song && data.song.id) { // <<< 2. BUSCAMOS EL ID DENTRO DE `data.song`
-        onUploadSuccess(data.song); // Pasamos solo el objeto de la canción
-        // Limpiar formulario
+      if (onUploadSuccess && data.song && data.song.id) {
+        onUploadSuccess(data.song);
         setTitle(''); setArtist(''); setFeaturedArtists(''); setGenre('');
         setCoverArtFile(null); setAudioFile(null);
         setCoverArtName(''); setAudioFileName(''); setCoverArtPreview(null);
       } else {
-        console.warn("Subida exitosa pero la respuesta del servidor no tiene el formato esperado.", data);
         throw new Error('Respuesta inválida del servidor tras la subida.');
       }
     } catch (err) {
       console.error("Error subiendo canción:", err);
-      // Extraemos el mensaje de la respuesta si es posible
-      const errorMessage = err.response ? await err.response.json().then(d => d.details || d.error) : err.message;
-      setError(errorMessage || 'Ocurrió un error inesperado.');
+      setError(err.message);
     }
     setLoading(false);
   };
@@ -124,25 +152,38 @@ function UploadPage({ onUploadSuccess, onClose }) {
 
             <hr className="form-separator" />
 
-            <div className="form-group file-input-container">
+            {/* <<< 5. AÑADIMOS LOS EVENTOS DE DRAG & DROP AL CONTENEDOR >>> */}
+            <div 
+              className={`form-group file-input-container ${isDraggingCover ? 'drag-over' : ''}`}
+              onDragEnter={(e) => handleDragEvents(e, setIsDraggingCover)}
+              onDragLeave={(e) => handleDragEvents(e, setIsDraggingCover)}
+              onDragOver={(e) => handleDragEvents(e, setIsDraggingCover)}
+              onDrop={(e) => handleDrop(e, processCoverArtFile, setIsDraggingCover)}
+            >
               <label htmlFor="cover-art-input" className="file-input-label">
                 {coverArtPreview ? (
                   <img src={coverArtPreview} alt="Vista previa portada" className="upload-preview-image" />
                 ) : (
-                  <span>Seleccionar portada</span>
+                  <span>Arrastra una portada aquí o haz clic para seleccionar</span>
                 )}
                 <UploadIcon />
               </label>
-              <input type="file" id="cover-art-input" accept="image/jpeg, image/png, image/gif, image/webp" onChange={handleCoverArtChange} style={{ display: 'none' }} required />
+              <input type="file" id="cover-art-input" accept="image/jpeg, image/png, image/gif, image/webp" onChange={handleCoverArtChange} style={{ display: 'none' }} />
               {coverArtName && <span className="file-name-display">{coverArtName}</span>}
             </div>
 
-            <div className="form-group file-input-container">
+            <div 
+              className={`form-group file-input-container ${isDraggingAudio ? 'drag-over' : ''}`}
+              onDragEnter={(e) => handleDragEvents(e, setIsDraggingAudio)}
+              onDragLeave={(e) => handleDragEvents(e, setIsDraggingAudio)}
+              onDragOver={(e) => handleDragEvents(e, setIsDraggingAudio)}
+              onDrop={(e) => handleDrop(e, processAudioFile, setIsDraggingAudio)}
+            >
               <label htmlFor="audio-file-input" className="file-input-label">
-                <span>Seleccionar archivo de audio</span>
+                <span>Arrastra un archivo de audio aquí o haz clic para seleccionar</span>
                 <UploadIcon />
               </label>
-              <input type="file" id="audio-file-input" accept=".mp3,audio/mpeg,audio/wav,audio/ogg,audio/aac" onChange={handleAudioFileChange} style={{ display: 'none' }} required />
+              <input type="file" id="audio-file-input" accept=".mp3,audio/mpeg,audio/wav,audio/ogg,audio/aac" onChange={handleAudioFileChange} style={{ display: 'none' }} />
               {audioFileName && <span className="file-name-display">{audioFileName}</span>}
             </div>
 

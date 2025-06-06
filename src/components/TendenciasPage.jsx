@@ -1,43 +1,52 @@
-import React from 'react';
-import SongPlayer from './SongPlayer'; // Reutilizamos SongPlayer para la lista
-import './TendenciasPage.css'; // Crearemos este CSS
+// src/components/TendenciasPage.jsx
+import React, { useMemo } from 'react'; // <<< 1. IMPORTAMOS useMemo
+import SongPlayer from './SongPlayer';
+import './CategoryPages.css';
 
-// onClose viene de App.jsx si es un overlay
-// songsToDisplay son las canciones de tendencias pasadas desde App.jsx
-// onPlaySongInTendencias es la función de App.jsx para reproducir una canción
 function TendenciasPage({ onClose, songsToDisplay, onPlaySongInTendencias, isSongPlaying, currentPlayingSongId }) {
-  if (!songsToDisplay) {
+
+  // <<< 2. CREAMOS LA LISTA ALEATORIA USANDO useMemo >>>
+  const shuffledSongs = useMemo(() => {
+    // Si no hay canciones, devolvemos un array vacío
+    if (!songsToDisplay || songsToDisplay.length === 0) {
+      return [];
+    }
+    // Creamos una copia del array para no modificar el original y lo desordenamos
+    return [...songsToDisplay].sort(() => 0.5 - Math.random());
+  }, [songsToDisplay]); // La lista solo se volverá a desordenar si 'songsToDisplay' cambia
+
+  if (!shuffledSongs || shuffledSongs.length === 0) {
     return (
-      <div className="tendencias-page-overlay-content">
+      <div className="category-page-overlay-content">
         {onClose && <button onClick={onClose} className="overlay-close-button" aria-label="Cerrar">×</button>}
-        <p>Cargando tendencias...</p>
+        <header className="category-page-header">
+          <h2 className="category-page-title">Tendencias</h2>
+        </header>
+        <p style={{marginTop: '20px'}}>No hay canciones en tendencias en este momento.</p>
       </div>
     );
   }
 
   return (
-    <div className="tendencias-page-overlay-content">
+    <div className="category-page-overlay-content">
       {onClose && <button onClick={onClose} className="overlay-close-button" aria-label="Cerrar">×</button>}
       
-      <header className="tendencias-header-modal">
-        <h2 className="tendencias-page-title">Estas son las tendencias ahora mismo</h2>
+      <header className="category-page-header">
+        <h2 className="category-page-title">Tendencias</h2>
       </header>
 
-      <div className="tendencias-song-list">
-        {songsToDisplay.length > 0 ? (
-          songsToDisplay.map(song => (
-            <SongPlayer
-              key={song.id}
-              songData={song}
-              // Pasamos la función de App.jsx para que el SongPlayer pueda iniciar la reproducción global
-              onPlayClick={() => onPlaySongInTendencias(song)} 
-              // onDetailClick={() => onOpenSongDetailFromTendencias(song)} // Opcional: si quieres abrir detalle desde aquí
-              isCurrentlyPlaying={currentPlayingSongId === song.id && isSongPlaying}
-            />
-          ))
-        ) : (
-          <p>No hay canciones en tendencias en este momento.</p>
-        )}
+      <div className="song-list-container">
+        {/* <<< 3. USAMOS NUESTRA NUEVA LISTA ALEATORIA `shuffledSongs` PARA EL .map() >>> */}
+        {shuffledSongs.map(song => (
+          <SongPlayer
+            key={song.id}
+            songData={song}
+            duration={song.duration}
+            onPlayClick={() => onPlaySongInTendencias(song)} 
+            onDetailClick={null}
+            isCurrentlyPlaying={currentPlayingSongId === song.id && isSongPlaying}
+          />
+        ))}
       </div>
     </div>
   );
