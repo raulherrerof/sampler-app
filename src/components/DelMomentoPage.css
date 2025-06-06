@@ -1,0 +1,46 @@
+/* src/components/TendenciasPage/TendenciasPage.css */
+
+.tendencias-page-overlay-content {
+  padding: 20px;
+  text-align: center; /* Centrar el título */
+  /* background-color: #181818; */ /* Fondo si es diferente al overlay-content-wrapper */
+}
+
+.tendencias-header-modal {
+  margin-bottom: 25px;
+}
+
+.tendencias-page-title {
+  font-size: 1.8em; /* Ajusta según tu diseño */
+  color: #e0e0e0;
+  margin-top: 10px; /* Espacio si hay botón de cerrar */
+  margin-bottom: 20px;
+}
+
+.tendencias-song-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espacio entre canciones en la lista de tendencias */
+  max-width: 700px; /* O el ancho que prefieras para la lista */
+  margin: 0 auto; /* Centrar la lista */
+}
+
+/* El .overlay-close-button y otros estilos de modal (.overlay-backdrop, .overlay-content-wrapper) 
+   deben estar en App.css o en un CSS global. */
+
+/* Puedes reutilizar los estilos de .song-player de App.css 
+   o definir estilos específicos si quieres que se vean diferente aquí */
+.tendencias-song-list .song-player {
+  background-color: #222; /* Un fondo ligeramente diferente para distinguir */
+  /* ... otros estilos que quieras sobreescribir o añadir ... */
+}
+
+/* En tu archivo CSS */
+.category-card.clickable {
+  cursor: pointer; /* Cambia el cursor a una mano */
+  transition: transform 0.2s ease; /* Añade una transición suave */
+}
+
+.category-card.clickable:hover {
+  transform: scale(1.03); /* Agranda un poco la tarjeta al pasar el ratón por encima */
+}

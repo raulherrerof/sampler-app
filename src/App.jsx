@@ -1,8 +1,8 @@
-
+// App.jsx (Versión completa y correcta)
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import './App.css';
 
-
+// Tus Componentes
 import Header from './components/Header';
 import CategoryCard from './components/CategoryCard';
 import SongPlayer from './components/SongPlayer';
@@ -13,8 +13,12 @@ import ProfilePage from './components/ProfilePage';
 import SongDetailPage from './components/SongDetailPage';
 import PlayerBar from './components/PlayerBar';
 import TendenciasPage from './components/TendenciasPage';
-import TopEspanaPage from './components/TopEspanaPage'; 
+import TopEspanaPage from './components/TopEspanaPage';
+import DelMomentoPage from './components/DelMomentoPage';
+import RecomendadasPage from './components/RecomendadasPage';
+import RandomPage from './components/RandomPage'; // --- AÑADIR --- 1. Importar
 
+// Tus Imágenes
 import card1Img from './Imagenes/1.jpg';
 import card2Img from './Imagenes/2.png';
 import card3Img from './Imagenes/3.png';
@@ -55,14 +59,32 @@ function App() {
   const trendingSongs = useMemo(() => {
     return [...songs]
       .sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0))
-      .slice(0, 5);
+      .slice(0, 10);
   }, [songs]);
 
-  
-const topEspanaSongs = useMemo(() => {
+  const topEspanaSongs = useMemo(() => {
     return [...songs]
-      .sort((a, b) => Number(b.id) - Number(a.id)) 
-      .slice(0, 5); 
+      .sort((a, b) => Number(b.id) - Number(a.id))
+      .slice(0, 10);
+  }, [songs]);
+
+  const delMomentoSongs = useMemo(() => {
+    const shuffled = [...songs].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 10);
+  }, [songs]);
+
+  const recomendadasSongs = useMemo(() => {
+    return songs.slice(0, 4);
+  }, [songs]);
+
+  // --- AÑADIR --- 2. Lógica para "Random" (una sola canción)
+  const randomSong = useMemo(() => {
+    if (songs.length === 0) {
+      return []; // Devolvemos un array vacío si no hay canciones
+    }
+    const randomIndex = Math.floor(Math.random() * songs.length);
+    // Devolvemos la canción dentro de un array para mantener la consistencia de la prop
+    return [songs[randomIndex]];
   }, [songs]);
 
   const filteredSongs = useMemo(() => {
@@ -167,10 +189,25 @@ const topEspanaSongs = useMemo(() => {
     setActiveOverlay('tendencias');
   };
 
-  // --- AÑADIR --- 3. Crear la función para abrir el overlay de Top España
   const openTopEspanaOverlay = () => {
     setSelectedSongForDetail(null);
     setActiveOverlay('topEspana');
+  };
+
+  const openDelMomentoOverlay = () => {
+    setSelectedSongForDetail(null);
+    setActiveOverlay('delMomento');
+  };
+  
+  const openRecomendadasOverlay = () => {
+    setSelectedSongForDetail(null);
+    setActiveOverlay('recomendadas');
+  };
+
+  // --- AÑADIR --- 3. Función para abrir el overlay de "Random"
+  const openRandomOverlay = () => {
+    setSelectedSongForDetail(null);
+    setActiveOverlay('random');
   };
 
   const openLoginOverlay = () => { setSelectedSongForDetail(null); setActiveOverlay('login'); };
@@ -349,11 +386,38 @@ const topEspanaSongs = useMemo(() => {
                                     currentPlayingSongId={currentPlayingSong?.id}
                                   />;
         break;
-      // --- AÑADIR --- 4. Añadir el nuevo case para el overlay de Top España
       case 'topEspana':
         OverlayComponentToRender = <TopEspanaPage
                                     onClose={closeOverlay}
                                     songsToDisplay={topEspanaSongs}
+                                    onPlaySongInTendencias={handlePlaySong}
+                                    isSongPlaying={isPlaying}
+                                    currentPlayingSongId={currentPlayingSong?.id}
+                                  />;
+        break;
+      case 'delMomento':
+        OverlayComponentToRender = <DelMomentoPage
+                                    onClose={closeOverlay}
+                                    songsToDisplay={delMomentoSongs}
+                                    onPlaySongInTendencias={handlePlaySong}
+                                    isSongPlaying={isPlaying}
+                                    currentPlayingSongId={currentPlayingSong?.id}
+                                  />;
+        break;
+      case 'recomendadas':
+        OverlayComponentToRender = <RecomendadasPage
+                                    onClose={closeOverlay}
+                                    songsToDisplay={recomendadasSongs}
+                                    onPlaySongInTendencias={handlePlaySong}
+                                    isSongPlaying={isPlaying}
+                                    currentPlayingSongId={currentPlayingSong?.id}
+                                  />;
+        break;
+      // --- AÑADIR --- 4. Añadir el nuevo case para "Random"
+      case 'random':
+        OverlayComponentToRender = <RandomPage
+                                    onClose={closeOverlay}
+                                    songsToDisplay={randomSong}
                                     onPlaySongInTendencias={handlePlaySong}
                                     isSongPlaying={isPlaying}
                                     currentPlayingSongId={currentPlayingSong?.id}
@@ -414,10 +478,13 @@ const topEspanaSongs = useMemo(() => {
                   title={category.title}
                   imageUrl={category.imageUrl}
                   size={category.size || ""}
-                  // --- MODIFICAR --- 5. Añadir lógica para el onClick de la nueva categoría
+                  // --- MODIFICAR --- 5. Añadir el onClick para la nueva categoría
                   onClick={
                     category.id === 1 ? openTendenciasOverlay :
                     category.id === 2 ? openTopEspanaOverlay :
+                    category.id === 3 ? openDelMomentoOverlay :
+                    category.id === 4 ? openRecomendadasOverlay :
+                    category.id === 8 ? openRandomOverlay :
                     undefined
                   }
                 />
