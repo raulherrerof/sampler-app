@@ -1,3 +1,4 @@
+// Header.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import logoImage from "../Imagenes/logo.png";
 
@@ -10,7 +11,8 @@ const UserIconPlaceholderHeader = () => (
 const Header = ({ 
   onLoginClick, onRegisterClick, onUploadClick, onProfileClick, 
   isLoggedIn, onLogoutClick, currentUser,
-  searchTerm, onSearchTermChange // Asumiendo que estas vienen de App.jsx
+  searchTerm, onSearchTermChange,
+  onGoHome 
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -33,9 +35,15 @@ const Header = ({
 
   return (
     <header className="header">
-      <div className="logo">
+      <div 
+        className="logo" 
+        onClick={onGoHome} 
+        style={{ cursor: 'pointer' }} 
+        title="Ir a la página principal"
+      >
         <img src={logoImage} alt="Logo Sampler" className="logo-image" />
       </div>
+
       <div className="search-bar-container">
         <input 
           type="text" className="search-bar" placeholder="Buscar en Sampler..." 
@@ -79,4 +87,5 @@ const Header = ({
     </header>
   );
 };
+
 export default Header;

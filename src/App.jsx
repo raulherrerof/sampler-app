@@ -22,9 +22,6 @@ import card5Img from './Imagenes/5.png';
 import card6Img from './Imagenes/6.png';
 import card7Img from './Imagenes/7.png';
 import card8Img from './Imagenes/8.png';
-import card9Img from './Imagenes/9.png';
-import card10Img from './Imagenes/10.png';
-import card11Img from './Imagenes/11.png';
 
 const initialCategoriesData = [
   { id: 1, title: "Tendencias", imageUrl: card1Img }, 
@@ -92,17 +89,14 @@ function App() {
     setLoadingSongs(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/songs.php`, {credentials: 'include'});
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Error al cargar canciones: ${response.status} - ${errorText.substring(0,150)}`);
-        throw new Error('Error al cargar canciones');
-      }
+      if (!response.ok) { throw new Error('Error al cargar canciones'); }
       const fetchedSongs = await response.json();
-      const songsWithCommentsEnsured = (Array.isArray(fetchedSongs) ? fetchedSongs : []).map(song => ({
+      const songsWithDefaults = (Array.isArray(fetchedSongs) ? fetchedSongs : []).map(song => ({
         ...song,
-        comments: Array.isArray(song.comments) ? song.comments : []
+        comments: Array.isArray(song.comments) ? song.comments : [],
+        duration: song.duration || null,
       }));
-      setSongs(songsWithCommentsEnsured);
+      setSongs(songsWithDefaults);
     } catch (error) {
       console.error("Error en fetchSongs:", error.message);
       setSongs([]);
@@ -116,6 +110,30 @@ function App() {
   }, [checkLoginStatus, fetchSongs]);
 
   useEffect(() => {
+    if (songs.length > 0 && songs.some(s => !s.duration)) {
+      const fetchDurations = async () => {
+        const durationPromises = songs.map(song => {
+          if (song.duration || !song.audioUrl) {
+            return Promise.resolve(song.duration || 0);
+          }
+          return new Promise(resolve => {
+            const audio = new Audio(song.audioUrl);
+            audio.onloadedmetadata = () => resolve(audio.duration);
+            audio.onerror = () => resolve(0);
+          });
+        });
+        const allDurations = await Promise.all(durationPromises);
+        const songsWithDurations = songs.map((song, index) => ({
+          ...song,
+          duration: song.duration || allDurations[index],
+        }));
+        setSongs(songsWithDurations);
+      };
+      fetchDurations();
+    }
+  }, [songs]);
+
+  useEffect(() => {
     if (activeOverlay) {
       document.body.classList.add('overlay-active');
     } else {
@@ -125,6 +143,10 @@ function App() {
       document.body.classList.remove('overlay-active');
     };
   }, [activeOverlay]);
+
+  const handleGoHome = () => {
+    setSearchTerm('');
+  };
 
   const openLoginOverlay = () => { setSelectedSongForDetail(null); setActiveOverlay('login'); };
   const openRegisterOverlay = () => { setSelectedSongForDetail(null); setActiveOverlay('register'); };
@@ -171,16 +193,12 @@ function App() {
     closeOverlay();
     fetchSongs();
   };
-  const handleUploadSuccess = (newSongDataFromApi) => {
-    const newSongWithCommentsEnsured = {
-        ...newSongDataFromApi,
-        comments: Array.isArray(newSongDataFromApi.comments) ? newSongDataFromApi.comments : []
-    };
-    setSongs(prevSongs => [newSongWithCommentsEnsured, ...prevSongs]);
-    if (currentPlayingSong === null && newSongWithCommentsEnsured.audioUrl) {
-        handlePlaySong(newSongWithCommentsEnsured);
+  const handleUploadSuccess = (newSongData) => {
+    setSongs(prevSongs => [newSongData, ...prevSongs]);
+    if (currentPlayingSong === null && newSongData.audioUrl) {
+        handlePlaySong(newSongData);
     }
-    alert(`¡"${newSongWithCommentsEnsured.title}" ha sido subida con éxito!`);
+    alert(`¡"${newSongData.title}" ha sido subida con éxito!`);
     closeOverlay();
   };
 
@@ -198,10 +216,10 @@ function App() {
           : s
       )
     );
-    if (currentPlayingSong && currentPlayingSong.id === songId) {
+    if (currentPlayingSong?.id === songId) {
       setCurrentPlayingSong(prev => ({ ...prev, userHasLiked: newUserHasLiked, likeCount: newLikeCount, }));
     }
-    if (selectedSongForDetail && selectedSongForDetail.id === songId) {
+    if (selectedSongForDetail?.id === songId) {
         setSelectedSongForDetail(prev => ({ ...prev, userHasLiked: newUserHasLiked, likeCount: newLikeCount, }));
     }
   }, [currentPlayingSong, selectedSongForDetail]);
@@ -210,12 +228,12 @@ function App() {
     setSongs(prevSongs =>
       prevSongs.map(s =>
         s.id === songId
-          ? { ...s, comments: [newComment, ...(Array.isArray(s.comments) ? s.comments : [])] }
+          ? { ...s, comments: [newComment, ...(s.comments || [])] }
           : s
       )
     );
-    if (selectedSongForDetail && selectedSongForDetail.id === songId) {
-      setSelectedSongForDetail(prev => ({ ...prev, comments: [newComment, ...(Array.isArray(prev.comments) ? prev.comments : [])] }));
+    if (selectedSongForDetail?.id === songId) {
+      setSelectedSongForDetail(prev => ({ ...prev, comments: [newComment, ...(prev.comments || [])] }));
     }
   }, [selectedSongForDetail]);
 
@@ -270,16 +288,10 @@ function App() {
         if (audio.src !== currentPlayingSong.audioUrl) {
           audio.src = currentPlayingSong.audioUrl;
           setCurrentTime(0);
-          setDurationTotal(0);
+          setDurationTotal(currentPlayingSong.duration || 0);
         }
-        if (isPlaying) { 
-          audio.play().catch(e => {
-            console.warn("Play() fue rechazado por el navegador. El usuario debe interactuar primero.", e);
-            setIsPlaying(false);
-          }); 
-        } else { 
-          audio.pause(); 
-        }
+        if (isPlaying) { audio.play().catch(e => console.warn("Play() rechazado:", e)); }
+        else { audio.pause(); }
       } else {
         audio.pause();
       }
@@ -289,37 +301,16 @@ function App() {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-
-    const handleLoadedMetadata = () => {
-      const newDuration = audio.duration;
-      if (!isNaN(newDuration) && newDuration > 0) {
-        setDurationTotal(newDuration);
-        
-        if (currentPlayingSong) {
-          setSongs(prevSongs => 
-            prevSongs.map(s => 
-              s.id === currentPlayingSong.id ? { ...s, duration: newDuration } : s
-            )
-          );
-        }
-      }
-    };
-
     const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
     const handleEnded = () => playNextSong();
     
-    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-    audio.addEventListener('durationchange', handleLoadedMetadata);
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('ended', handleEnded);
-
     return () => {
-      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      audio.removeEventListener('durationchange', handleLoadedMetadata);
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('ended', handleEnded);
     };
-  }, [currentPlayingSong, playNextSong]);
+  }, [playNextSong]);
 
   let OverlayComponentToRender = null;
   if (activeOverlay) {
@@ -357,11 +348,16 @@ function App() {
     <div className="app-main-container">
       <audio ref={audioRef} preload="metadata" />
       <Header
-        onLoginClick={openLoginOverlay} onRegisterClick={openRegisterOverlay}
-        onUploadClick={openUploadOverlay} onProfileClick={openProfileOverlay}
-        isLoggedIn={isLoggedIn} onLogoutClick={handleLogout}
+        onLoginClick={openLoginOverlay} 
+        onRegisterClick={openRegisterOverlay}
+        onUploadClick={openUploadOverlay} 
+        onProfileClick={openProfileOverlay}
+        isLoggedIn={isLoggedIn} 
+        onLogoutClick={handleLogout}
         currentUser={currentUser}
-        searchTerm={searchTerm} onSearchTermChange={setSearchTerm}
+        searchTerm={searchTerm} 
+        onSearchTermChange={setSearchTerm}
+        onGoHome={handleGoHome}
       />
       <div className={`app-content-wrapper ${currentPlayingSong ? 'with-player-bar' : ''}`}>
         {!searchTerm.trim() ? (
@@ -407,13 +403,14 @@ function App() {
           song={currentPlayingSong}
           isPlaying={isPlaying}
           currentTime={currentTime}
-          duration={durationTotal}
+          duration={currentPlayingSong.duration || durationTotal}
           onPlayPause={togglePlayPause}
           onNext={playNextSong}
           onPrev={playPreviousSong}
           onSeek={handleSeek}
           volume={volume}
           onVolumeChange={handleVolumeChange}
+          onToggleLike={handleSongLikeUpdate}
         />
       )}
       {OverlayComponentToRender && (
