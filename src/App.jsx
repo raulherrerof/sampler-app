@@ -1,4 +1,4 @@
-// App.jsx (Versión completa y correcta)
+// App.jsx
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import './App.css';
 
@@ -16,7 +16,6 @@ import TendenciasPage from './components/TendenciasPage';
 import TopEspanaPage from './components/TopEspanaPage';
 import DelMomentoPage from './components/DelMomentoPage';
 import RecomendadasPage from './components/RecomendadasPage';
-import RandomPage from './components/RandomPage'; // --- AÑADIR --- 1. Importar
 
 // Tus Imágenes
 import card1Img from './Imagenes/1.jpg';
@@ -27,6 +26,9 @@ import card5Img from './Imagenes/5.png';
 import card6Img from './Imagenes/6.png';
 import card7Img from './Imagenes/7.png';
 import card8Img from './Imagenes/8.png';
+import card9Img from './Imagenes/9.png';
+import card10Img from './Imagenes/10.png';
+import card11Img from './Imagenes/11.png';
 
 const initialCategoriesData = [
   { id: 1, title: "Tendencias", imageUrl: card1Img },
@@ -34,7 +36,7 @@ const initialCategoriesData = [
   { id: 3, title: "Del momento", imageUrl: card3Img },
   { id: 4, title: "Recomendadas", imageUrl: card4Img },
   { id: 5, title: "Álbum del momento", imageUrl: card5Img, size: "tall" },
-  { id: 6, title: "Artistas del momento", imageUrl: card6Img, size: "wide" },
+  { id: 6, title: "Nuevos", imageUrl: card6Img, size: "wide" },
   { id: 7, title: "Para ti", imageUrl: card7Img },
   { id: 8, title: "Random", imageUrl: card8Img },
 ];
@@ -77,13 +79,11 @@ function App() {
     return songs.slice(0, 3);
   }, [songs]);
 
-  // --- AÑADIR --- 2. Lógica para "Random" (una sola canción)
   const randomSong = useMemo(() => {
     if (songs.length === 0) {
-      return []; // Devolvemos un array vacío si no hay canciones
+      return [];
     }
     const randomIndex = Math.floor(Math.random() * songs.length);
-    // Devolvemos la canción dentro de un array para mantener la consistencia de la prop
     return [songs[randomIndex]];
   }, [songs]);
 
@@ -184,30 +184,30 @@ function App() {
     setSearchTerm('');
   };
 
-  const openTendenciasOverlay = () => {
-    setSelectedSongForDetail(null);
-    setActiveOverlay('tendencias');
-  };
-
-  const openTopEspanaOverlay = () => {
-    setSelectedSongForDetail(null);
-    setActiveOverlay('topEspana');
-  };
-
-  const openDelMomentoOverlay = () => {
-    setSelectedSongForDetail(null);
-    setActiveOverlay('delMomento');
-  };
+  const openTendenciasOverlay = () => setActiveOverlay('tendencias');
+  const openTopEspanaOverlay = () => setActiveOverlay('topEspana');
+  const openDelMomentoOverlay = () => setActiveOverlay('delMomento');
+  const openRecomendadasOverlay = () => setActiveOverlay('recomendadas');
   
-  const openRecomendadasOverlay = () => {
-    setSelectedSongForDetail(null);
-    setActiveOverlay('recomendadas');
-  };
+  const handlePlaySong = useCallback((song) => {
+    if (!song || !song.audioUrl) { return; }
+    const songToPlay = songs.find(s => s.id === song.id) || song;
+    if (currentPlayingSong?.id === songToPlay.id) {
+      setIsPlaying(prev => !prev);
+    } else {
+      setCurrentPlayingSong(songToPlay);
+      setIsPlaying(true);
+    }
+  }, [currentPlayingSong, songs]);
 
-  // --- AÑADIR --- 3. Función para abrir el overlay de "Random"
-  const openRandomOverlay = () => {
-    setSelectedSongForDetail(null);
-    setActiveOverlay('random');
+  const handleRandomClick = () => {
+    if (songs.length === 0) {
+      alert("No hay canciones disponibles para reproducir.");
+      return;
+    }
+    const randomIndex = Math.floor(Math.random() * songs.length);
+    const songToPlay = songs[randomIndex];
+    handlePlaySong(songToPlay);
   };
 
   const openLoginOverlay = () => { setSelectedSongForDetail(null); setActiveOverlay('login'); };
@@ -298,17 +298,6 @@ function App() {
       setSelectedSongForDetail(prev => ({ ...prev, comments: [newComment, ...(prev.comments || [])] }));
     }
   }, [selectedSongForDetail]);
-
-  const handlePlaySong = useCallback((song) => {
-    if (!song || !song.audioUrl) { return; }
-    const songToPlay = songs.find(s => s.id === song.id) || song;
-    if (currentPlayingSong?.id === songToPlay.id) {
-      setIsPlaying(prev => !prev);
-    } else {
-      setCurrentPlayingSong(songToPlay);
-      setIsPlaying(true);
-    }
-  }, [currentPlayingSong, songs]);
 
   const togglePlayPause = useCallback(() => {
     if (!currentPlayingSong) return;
@@ -413,16 +402,6 @@ function App() {
                                     currentPlayingSongId={currentPlayingSong?.id}
                                   />;
         break;
-      // --- AÑADIR --- 4. Añadir el nuevo case para "Random"
-      case 'random':
-        OverlayComponentToRender = <RandomPage
-                                    onClose={closeOverlay}
-                                    songsToDisplay={randomSong}
-                                    onPlaySongInTendencias={handlePlaySong}
-                                    isSongPlaying={isPlaying}
-                                    currentPlayingSongId={currentPlayingSong?.id}
-                                  />;
-        break;
       case 'login':
         OverlayComponentToRender = <LoginPage onLoginSuccess={handleLoginSuccess} onNavigateToRegister={() => setActiveOverlay('register')} onClose={closeOverlay} />;
         break;
@@ -478,13 +457,12 @@ function App() {
                   title={category.title}
                   imageUrl={category.imageUrl}
                   size={category.size || ""}
-                  // --- MODIFICAR --- 5. Añadir el onClick para la nueva categoría
                   onClick={
                     category.id === 1 ? openTendenciasOverlay :
                     category.id === 2 ? openTopEspanaOverlay :
                     category.id === 3 ? openDelMomentoOverlay :
                     category.id === 4 ? openRecomendadasOverlay :
-                    category.id === 8 ? openRandomOverlay :
+                    category.id === 8 ? handleRandomClick :
                     undefined
                   }
                 />
