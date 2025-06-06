@@ -59,22 +59,22 @@ function App() {
   const trendingSongs = useMemo(() => {
     return [...songs]
       .sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0))
-      .slice(0, 10);
+      .slice(0, 5);
   }, [songs]);
 
   const topEspanaSongs = useMemo(() => {
     return [...songs]
       .sort((a, b) => Number(b.id) - Number(a.id))
-      .slice(0, 10);
+      .slice(0, 5);
   }, [songs]);
 
   const delMomentoSongs = useMemo(() => {
     const shuffled = [...songs].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 10);
+    return shuffled.slice(0, 5);
   }, [songs]);
 
   const recomendadasSongs = useMemo(() => {
-    return songs.slice(0, 4);
+    return songs.slice(0, 3);
   }, [songs]);
 
   // --- AÑADIR --- 2. Lógica para "Random" (una sola canción)
