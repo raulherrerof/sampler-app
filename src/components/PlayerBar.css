@@ -64,14 +64,40 @@
   color: #b3b3b3;
 }
 
+/* --- CAMBIO 3: Estilos para el botón 'Me gusta' para que funcione con la clase .liked --- */
 .like-button-player-bar {
   margin-left: 15px;
   padding: 0; /* Limpiar padding del botón */
+  color: #b3b3b3; /* Color por defecto (gris) */
+  transition: color 0.2s ease-in-out;
 }
+
+.like-button-player-bar:hover {
+  color: #fff; /* Color blanco en hover */
+}
+
 .like-button-player-bar svg {
   width: 18px;
   height: 18px;
+  fill: none; /* Por defecto, el corazón no tiene relleno */
+  stroke: currentColor; /* El borde toma el color del botón */
+  transition: fill 0.2s ease-in-out;
 }
+
+/* Cuando el botón tiene la clase .liked, se pone morado y se rellena */
+.like-button-player-bar.liked {
+  color: #8a2be2; /* El color del botón y del borde del icono será morado */
+}
+
+.like-button-player-bar.liked svg {
+  fill: currentColor; /* El relleno del icono toma el color del botón (morado) */
+}
+
+.like-button-player-bar.liked:hover {
+  filter: brightness(1.2); /* Aclarar un poco en hover cuando ya tiene like */
+}
+/* --- FIN DEL CAMBIO --- */
+
 
 /* Sección Central: Controles y Barra de Progreso */
 .player-controls-progress-wrapper {
@@ -199,7 +225,7 @@ input[type="range"].volume-bar:active::-moz-range-thumb {
 /* Estilo para la parte activa del track */
 input[type="range"].seek-bar,
 input[type="range"].volume-bar {
-    background-image: linear-gradient(#8a2be2, #8a2be2); /* Color verde Spotify para el progreso */
+    background-image: linear-gradient(#8a2be2, #8a2be2); /* Color morado para el progreso */
     background-repeat: no-repeat;
     /* background-size se establece con JS/inline style */
 }
@@ -228,7 +254,7 @@ input[type="range"].volume-bar {
 /* Ya deberías tenerlos en App.css, pero por si acaso */
 .song-player.playing-in-list .title,
 .song-player.playing-in-list .artist {
-  color: #8a2be2; /* Color verde Spotify para la canción activa en la lista */
+  color: #8a2be2; /* Color morado para la canción activa en la lista */
 }
 
 .play-pause-button-list { /* Estilo específico para el botón en la lista */
