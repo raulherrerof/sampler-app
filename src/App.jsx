@@ -233,11 +233,11 @@ const albumDelMomentoSongs = useMemo(() => {
   const openRegisterOverlay = () => { setSelectedSongForDetail(null); setActiveOverlay('register'); };
   const openUploadOverlay = () => {
     if (isLoggedIn) { setSelectedSongForDetail(null); setActiveOverlay('upload'); }
-    else { alert("Debes iniciar sesión para subir música."); openLoginOverlay(); }
+    else { openLoginOverlay(); }
   };
   const openProfileOverlay = () => {
     if (isLoggedIn) { setSelectedSongForDetail(null); setActiveOverlay('profile'); }
-    else { alert("Debes iniciar sesión para ver tu perfil."); openLoginOverlay(); }
+    else { openLoginOverlay(); }
   };
   const openSongDetailOverlay = (song) => {
     const songWithFullData = songs.find(s => s.id === song.id) || song;
